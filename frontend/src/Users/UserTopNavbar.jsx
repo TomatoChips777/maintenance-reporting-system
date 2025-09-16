@@ -88,7 +88,7 @@ function UserTopNavbar() {
           onClick={() => handleNavClick("Report")}
           className="fw-bold fs-5 fs-md-4 fs-lg-3"
         >
-          LC Reporting
+          Maintenance Reporting
         </Navbar.Brand>
 
         {/* Toggle button on the right */}

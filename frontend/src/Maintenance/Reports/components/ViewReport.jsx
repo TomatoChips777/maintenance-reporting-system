@@ -9,23 +9,39 @@ const ViewReport = ({ show, handleClose, report }) => {
     status: '',
     category: '',
     location: '',
-    schedule_date: ''
+    schedule_date: '',
+    assigned_staff: '',
   });
   const [saving, setSaving] = useState(false);
-
+  //Staff
+  const [staff, setStaff] = useState([]);
   // For confirmation modal
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingChange, setPendingChange] = useState(null);
   const [showSendBack, setShowSendBack] = useState(null);
 
+  const [successModal, setShowSuccessModal] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const fetchStaff = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_GET_MAINTENANCE_STAFF}`);
+      setStaff(response.data);
+    } catch (error) {
+      // pass
+    }
+  }
   useEffect(() => {
+    fetchStaff();
     if (report) {
       setFormData({
         priority: report.priority || '',
         status: report.status || '',
         category: report.category || '',
         location: report.location || '',
-        schedule_date: report.schedule_date || '' // default if exists
+        schedule_date: report.schedule_date || '',// default if exists,
+        assigned_staff: report.assigned_staff || '',
       });
     }
   }, [report]);
@@ -67,21 +83,37 @@ const ViewReport = ({ show, handleClose, report }) => {
   const handleSave = async () => {
     if (!report?.id) return;
 
+
+    if (!formData.priority || !formData.category) {
+      setErrorMessage("Please select both a priority level and a category before saving.");
+      setShowError(true);
+      return;
+    } else if (!formData.priority) {
+      setErrorMessage("Please select a priority level before saving.");
+      setShowError(true);
+      return;
+    } else if (!formData.category) {
+      setErrorMessage("Please select a category before saving.");
+      setShowError(true);
+      return;
+    }
     try {
       setSaving(true);
       const response = await axios.put(
         `${import.meta.env.VITE_UPDATE_MAINTENANCE_REPORT}/${report.id}`,
         formData
       );
-
       if (response.status === 200) {
         handleClose();
+        setShowSuccessModal(true);
       } else {
-        alert("Failed to save changes. Please try again.");
+        setErrorMessage("Failed to save changes. Please try again.");
+        setShowError(true);
       }
     } catch (error) {
       console.error("Failed to update report:", error);
-      alert("Failed to save changes. Please try again.");
+      setErrorMessage("Failed to save changes. Please try again.");
+      setShowError(true);
     } finally {
       setSaving(false);
     }
@@ -237,13 +269,30 @@ const ViewReport = ({ show, handleClose, report }) => {
               </Form.Group>
             </Col>
           </Row>
+          <Form.Group>
+            <Form.Label>Assigned Staff</Form.Label>
+            <Form.Select
+              name="assigned_staff"
+              value={formData.assigned_staff}
+              onChange={handleInputChange}
+            >
+              <option value="">Select Staff</option>
+              {staff.length > 0 &&
+                staff.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+            </Form.Select>
+          </Form.Group>
+
         </Modal.Body>
         <Modal.Footer>
-          {report?.status === 'Pending' && (
+          {/* {report?.status === 'Pending' && (
             <Button variant="danger" onClick={handleSendBack} disabled={saving}>
               Send Back
             </Button>
-          )}
+          )} */}
           <Button variant="secondary" onClick={handleClose} disabled={saving}>
             Close
           </Button>
@@ -293,6 +342,38 @@ const ViewReport = ({ show, handleClose, report }) => {
           </Button>
           <Button variant="danger" onClick={confirmSendBack} disabled={saving}>
             {saving ? "Sending..." : "Yes, Send Back"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Validation/Error Modal */}
+      <Modal show={showError} onHide={() => setShowError(false)} centered animation={false}>
+        <Modal.Header closeButton>
+          <Modal.Title>Notice</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{errorMessage}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => setShowError(false)}>
+            OK
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal show={successModal} onHide={() => setShowSuccessModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Report Updated</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>The report has been successfully updated.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant='secondary'
+            onClick={() => setShowSuccessModal(false)}
+          >
+            Close
           </Button>
         </Modal.Footer>
       </Modal>

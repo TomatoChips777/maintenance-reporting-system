@@ -8,7 +8,7 @@ import FormatDate from '../../extra/DateFormat';
 import { useAuth } from '../../../AuthContext';
 function Staff() {
   const { user } = useAuth();
-  const [users, setUsers] = useState([]);
+  const [staff, setStaff] = useState([]);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,10 +27,10 @@ function Staff() {
     status: 1,
   });
 
-  const fetchUsers = async () => {
+  const fetchStaff = async () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_GET_MAINTENANCE_STAFF}`);
-      setUsers(res.data);
+      setStaff(res.data);
     } catch (err) {
       console.log(err);
     } finally {
@@ -39,20 +39,20 @@ function Staff() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchStaff();
   }, []);
 
   const filteredUsers = useMemo(() => {
-    return users.filter(user => {
+    return staff.filter(staff => {
       const matchesSearch =
-        user.name.toLowerCase().includes(search.toLowerCase()) ||
-        user.email.toLowerCase().includes(search.toLowerCase());
+        staff.name.toLowerCase().includes(search.toLowerCase()) ||
+        staff.email.toLowerCase().includes(search.toLowerCase());
 
-      const matchesRole = roleFilter === 'All' || user.role === roleFilter;
+      const matchesRole = roleFilter === 'All' || staff.role === roleFilter;
 
       return matchesSearch && matchesRole;
     });
-  }, [users, search, roleFilter]);
+  }, [staff, search, roleFilter]);
 
   const currentData = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
@@ -81,9 +81,9 @@ function Staff() {
     }
   };
 
-  const handleEditSubmit = async (user) => {
+  const handleEditSubmit = async (staff) => {
     try {
-      const res = await axios.put(`${import.meta.env.VITE_UPDATE_USER}/${user.id}`, user);
+      const res = await axios.put(`${import.meta.env.VITE_UPDATE_STAFF_STATUS}/${staff.id}`, staff);
       if (res.data.success) {
         setShowEditModal(false);
         fetchUsers();
@@ -107,19 +107,17 @@ function Staff() {
     setCurrentPage(1);
   };
 
-  const toggleUserStatus = async (userId, currentStatus) => {
+  const toggleStaffStatus = async (staffId, currentStatus) => {
 
-    if(user.id === userId){
-      return;
-    }
+
     const newStatus = currentStatus === 1 ? 0 : 1;
     try {
-      const response = await axios.put(`${import.meta.env.VITE_ACTIVATE_DEACTIVATE_USER}/${userId}`, {
+      const response = await axios.put(`${import.meta.env.VITE_UPDATE_STAFF_STATUS}/${staffId}`, {
                 status: newStatus,
         });
       if (response.data.success) {
-        setUsers(users.map(user => 
-          user.id === userId ? { ...user, status: newStatus } : user
+        setUsers(staff.map(staff => 
+          staff.id === staffId ? { ...staff, status: newStatus } : staff
         ));
       }
     } catch (err) {
@@ -179,22 +177,22 @@ function Staff() {
                 </td>
               </tr>
             ) : currentData.length > 0 ? (
-              currentData.map(user => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.role}</td>
+              currentData.map(staff => (
+                <tr key={staff.id}>
+                  <td>{staff.id}</td>
+                  <td>{staff.name}</td>
+                  <td>{staff.email}</td>
+                  <td>{staff.role}</td>
                   <td className='text-center'>
                     <Form.Check
                       type="checkbox"
-                      checked={user.status === 1}
-                      onChange={() => toggleUserStatus(user.id, user.status)}
+                      checked={staff.status === 1}
+                      onChange={() => toggleStaffStatus(staff.id, staff.status)}
                     />
                   </td>
-                  <td>{FormatDate(user.created_at)}</td>
+                  <td>{FormatDate(staff.created_at)}</td>
                   <td className="text-center">
-                    <Button variant="warning" size="sm" className="me-2" onClick={() => handleEdit(user)}>
+                    <Button variant="warning" size="sm" className="me-2" onClick={() => handleEdit(staff)}>
                       <i className="bi bi-pencil"></i>
                     </Button>
                     {/* <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)}>

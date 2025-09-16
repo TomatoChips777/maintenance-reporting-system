@@ -74,7 +74,6 @@ router.post('/create-report', upload.single('image'), (req, res) => {
         res.json({ success: true, message: 'Report submitted successfully', reportId: result.insertId });
     });
 });
-
 // Get All Reports
 router.get('/', (req, res) => {
     const query = `
@@ -324,7 +323,6 @@ router.put('/report/archive-report/:id', (req, res) => {
     });
 });
 
-
 router.put('/report/send-back/:id', (req, res) => {
     const { id } = req.params;
     const { reason } = req.body;
@@ -353,7 +351,6 @@ router.put('/report/send-back/:id', (req, res) => {
         });
     });
 });
-
 
 router.post("/create", upload.single('image'), (req, res) => {
     const {

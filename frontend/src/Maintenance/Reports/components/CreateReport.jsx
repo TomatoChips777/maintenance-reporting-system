@@ -6,6 +6,7 @@ import axios from 'axios';
 const CreateReport = ({ show, handleClose }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [successModal, setShowSuccessModal] = useState(false);
   const [formData, setFormData] = useState({
     user_id: user.id,
     location: '',
@@ -68,6 +69,7 @@ const CreateReport = ({ show, handleClose }) => {
       );
 
       if (response.data.success) {
+        setShowSuccessModal(true);
         handleClose();
         resetForm();
       }
@@ -79,6 +81,7 @@ const CreateReport = ({ show, handleClose }) => {
   };
 
   return (
+    <>
     <Modal show={show} onHide={handleClose} size="lg" animation={false}>
       <Modal.Header closeButton>
         <Modal.Title>New Report</Modal.Title>
@@ -214,6 +217,25 @@ const CreateReport = ({ show, handleClose }) => {
         </Form>
       </Modal.Body>
     </Modal>
+
+    <Modal show={successModal} onHide={() => setShowSuccessModal(false)}>
+      <Modal.Header closeButton>
+      <Modal.Title>Report Submitted</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>The report has been successfully posted.</p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button 
+        variant='secondary'
+        onClick={() => setShowSuccessModal(false)}
+        >
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+    
+    </>
   );
 };
 

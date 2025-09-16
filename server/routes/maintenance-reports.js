@@ -5,188 +5,19 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 
-
-// Not implemented
-router.delete('/admin/report/:id', (req, res) => {
-    const { id } = req.params;
-    const { role } = req.body;
-
-    if (role !== 'admin') {
-        return res.status(400).json({ success: false, message: `Unauthorized: You cannot delete this report` });
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = 'uploads/';
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
     }
-
-    db.query('SELECT image_path FROM tbl_reports WHERE id = ?', [id], (err, rows) => {
-        if (err) {
-            console.error("Error fetching report:", err);
-            return res.status(500).json({ success: false, message: 'Failed to fetch report' });
-        }
-        if (rows.length === 0) {
-            return res.status(403).json({ success: false, message: "Unauthorized: You cannot delete this report" });
-        }
-
-        const imagePath = rows[0].image_path;
-        if (imagePath) {
-            const filePath = path.join(__dirname, '../uploads', imagePath);
-
-            console.log("Attempting to delete file:", filePath);
-            if (fs.existsSync(filePath)) {
-                fs.unlink(filePath, (err) => {
-                    if (err) {
-                        console.error("Error deleting file:", err);
-                    } else {
-                        console.log("File deleted successfully:", filePath);
-                    }
-                });
-            } else {
-                console.warn("File not found:", filePath);
-            }
-        }
-
-        db.query('DELETE FROM tbl_reports WHERE id = ?', [id], (err) => {
-            if (err) {
-                console.error("Error deleting report:", err);
-                return res.status(500).json({ success: false, message: 'Failed to delete report' });
-            }
-            req.io.emit('reportDeleted', { reportId: id });
-            res.json({ success: true, message: 'Report deleted successfully' });
-        });
-    });
 });
-
-// Not implemented
-router.delete('/report/:id', (req, res) => {
-    const { id } = req.params;
-    const { userId } = req.body;
-
-    if (!userId) {
-        return res.status(400).json({ success: false, message: `User ID is required ${userId}` });
-    }
-
-    db.query('SELECT image_path FROM tbl_reports WHERE id = ? AND user_id = ?', [id, userId], (err, rows) => {
-        if (err) {
-            console.error("Error fetching report:", err);
-            return res.status(500).json({ success: false, message: 'Failed to fetch report' });
-        }
-        if (rows.length === 0) {
-            return res.status(403).json({ success: false, message: "Unauthorized: You cannot delete this report" });
-        }
-
-        const imagePath = rows[0].image_path;
-        if (imagePath) {
-            const filePath = path.join(__dirname, '../uploads', imagePath);
-
-            console.log("Attempting to delete file:", filePath);
-            if (fs.existsSync(filePath)) {
-                fs.unlink(filePath, (err) => {
-                    if (err) {
-                        console.error("Error deleting file:", err);
-                    } else {
-                        console.log("File deleted successfully:", filePath);
-                    }
-                });
-            } else {
-                console.warn("File not found:", filePath);
-            }
-        }
-
-        db.query('DELETE FROM tbl_reports WHERE id = ? AND user_id = ?', [id, userId], (err) => {
-            if (err) {
-                console.error("Error deleting report:", err);
-                return res.status(500).json({ success: false, message: 'Failed to delete report' });
-            }
-            // req.io.emit('reportDeleted', { reportId: id });
-            req.io.emit('update');
-            res.json({ success: true, message: 'Report deleted successfully' });
-        });
-    });
-});
-// Not implemented
-router.put('/reports/archive-maintenance-report/:id', (req, res) => {
-    const { id } = req.params;
-    const query = `UPDATE tbl_reports SET archived = 1 WHERE id = ?`;
-
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            console.error("Error archiving report:", err);
-            return res.status(500).json({ success: false, message: "Error archiving report" });
-        }
-        req.io.emit('update');
-        res.json({ success: true, message: "Report archived successfully" });
-    })
-
-});
-//Not Implemented
-router.get('/user/:userId', (req, res) => {
-    const { userId } = req.params;
-
-    const query = `SELECT * FROM tbl_reports WHERE user_id = ? AND archived = 0 ORDER BY created_at DESC`;
-    db.query(query, [userId], (err, rows) => {
-        if (err) {
-            console.error("Error fetching user reports:", err);
-            return res.status(500).json({ success: false, message: "Failed to fetch reports" });
-        }
-        res.json({ success: true, reports: rows });
-    });
-});
-//Not Implemented
-router.put("/admin/edit-report-type/:reportId", (req, res) => {
-    const { report_type, category, priority, assigned_staff, status, type, item_name, contact_info, sender_id, location, description, } = req.body;
-    const { reportId } = req.params;
-    // Update `tbl_reports` first
-    const updateReportQuery = "UPDATE tbl_reports SET report_type = ? WHERE id = ?";
-
-    db.query(updateReportQuery, [report_type, reportId], (err, result) => {
-        if (err) {
-            console.error("Error updating report type:", err);
-            return res.status(500).json({ success: false, message: "Failed to update report type" });
-        }
-
-        if (report_type === "Maintenance Report") {
-            const maintenanceQuery = `
-                INSERT INTO tbl_maintenance_reports (report_id, category, priority, assigned_staff, status) 
-                VALUES (?, ?, ?, ?, ?) 
-                ON DUPLICATE KEY UPDATE 
-                category = ?, priority = ?, assigned_staff = ?, status = ?`;
-
-            db.query(
-                maintenanceQuery,
-                [reportId, category, priority, assigned_staff, status, category, priority, assigned_staff, status],
-                (err, maintenanceResult) => {
-                    if (err) {
-                        console.error("Error updating maintenance report:", err);
-                        return res.status(500).json({ success: false, message: "Failed to update maintenance report" });
-                    }
-                    req.io.emit('update');
-                    req.io.emit('updateReports');
-                    res.json({ success: true, message: "Report updated successfully" });
-                }
-            );
-        } else if (report_type === "Lost And Found") {
-            const lostFoundQuery = `
-                INSERT INTO tbl_lost_found (user_id, report_id, type, category, location, description, item_name, contact_info) 
-                VALUES (?, ?, ?, ?, ?, ? , ? , ?) 
-                ON DUPLICATE KEY UPDATE 
-                type = ?, item_name = ?, contact_info = ?`;
-
-            db.query(
-                lostFoundQuery,
-                [sender_id, reportId, type, category, location, description, item_name, contact_info, type, item_name, contact_info],
-                (err, lostFoundResult) => {
-                    if (err) {
-                        console.error("Error updating lost and found report:", err);
-                        return res.status(500).json({ success: false, message: "Failed to update lost and found report" });
-                    }
-                    req.io.emit('update'); // Notify frontend
-                    res.json({ success: true, message: "Report updated successfully" });
-                }
-            );
-        } else {
-            req.io.emit('update'); // Notify frontend
-            res.json({ success: true, message: "Report type updated successfully" });
-        }
-    });
-});
-
+const upload = multer({ storage });
 
 // Fetching all the maintenance-reports
 router.get('/', (req, res) => {
@@ -220,7 +51,7 @@ router.get('/', (req, res) => {
 
 router.put("/admin/edit/:reportId", async (req, res) => {
     try {
-        const { category, priority, status } = req.body;
+        const { category, priority, status, assigned_staff } = req.body;
         const { reportId } = req.params;
 
         // Step 1: Get current report with type
@@ -249,10 +80,10 @@ router.put("/admin/edit/:reportId", async (req, res) => {
         if (report_type === "Maintenance") {
             const updateMaintenanceQuery = `
                 UPDATE tbl_maintenance_reports
-                SET category = ?, priority = ?
+                SET category = ?, priority = ?, assigned_staff = ?
                 WHERE report_id = ?
             `;
-            await db.queryAsync(updateMaintenanceQuery, [category, priority, reportId]);
+            await db.queryAsync(updateMaintenanceQuery, [category, priority, assigned_staff ? assigned_staff : null, reportId]);
         }
 
         // Step 4: Notifications only if status changed
@@ -344,5 +175,110 @@ router.get('/get-staff', async (req, res) => {
         res.status(500).json({ eror: 'Internal server error' });
     }
 })
+
+router.put('/update-staff-status/:staff_id', async (req, res) =>{
+    const {staff_id } = req.params;
+    const {status} = req.body;
+    if(status !== 0 && status !== 1){
+        return res.status(400).json({success: false, message: 'Invalid status values.'});
+    }
+
+    try{
+        const result = await db.queryAsync("UPDATE tbl_maintenance_staff SET status = ? WHERE id = ?", [status, staff_id]);
+
+        if(result.affectedRows === 0){
+            return status(404).json({success: false, message: 'Staff not found.'});
+        }
+    }catch(err){
+        console.error('Activate/Deactivate error:', err);
+        res.status(500).json({success: false, message: 'Database error'});
+    }
+})
+router.post("/create-report", upload.single('image'), (req, res) => {
+    const {
+        report_type,
+        category,
+        priority,
+        assigned_staff,
+        status,
+        type,
+        item_name,
+        contact_info,
+        sender_id,
+        location,
+        description,
+        is_anonymous,
+        user_id
+    } = req.body;
+    const image_path = req.file ? req.file.filename : null;
+    const insertReportQuery = `
+        INSERT INTO tbl_reports (user_id, report_type, status, location, description, image_path)
+        VALUES (?, ?, ?, ?, ?, ?)`;
+
+    db.query(insertReportQuery, [user_id, report_type, status || 'Pending', location, description, image_path], (err, result) => {
+        if (err) {
+            console.error("Error inserting into tbl_reports:", err);
+            return res.status(500).json({ success: false, message: "Failed to create base report" });
+        }
+
+        const reportId = result.insertId;
+
+        // Step 2: Insert into related table based on report_type
+        if (report_type === "Maintenance") {
+            const maintenanceQuery = `
+                INSERT INTO tbl_maintenance_reports (report_id, category, priority, assigned_staff) 
+                VALUES (?, ?, ?, ?)`;
+            
+            db.query(maintenanceQuery, [reportId, category, priority, assigned_staff], (err) => {
+                if (err) {
+                    console.error("Error inserting into maintenance report:", err);
+                    return res.status(500).json({ success: false, message: "Failed to create maintenance report" });
+                }
+                req.io.emit('updateReports');
+                req.io.emit('update');
+                res.json({ success: true, message: "Maintenance report created successfully" });
+            });
+
+        } else if (report_type === "Lost And Found") {
+            const lostFoundQuery = `
+                INSERT INTO tbl_lost_found 
+                (user_id, report_id, type, category, location, description, item_name, contact_info, is_anonymous) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+            db.query(
+                lostFoundQuery,
+                [user_id, reportId, type, category, location, description, item_name, contact_info, is_anonymous ? 1 : 0],
+                (err) => {
+                    if (err) {
+                        console.error("Error inserting into lost and found:", err);
+                        return res.status(500).json({ success: false, message: "Failed to create lost and found report" });
+                    }
+
+                    req.io.emit('update');
+                    res.json({ success: true, message: "Lost & Found report created successfully" });
+                }
+            );
+
+        } else if (report_type === "Incident") {
+            const incidentQuery = `
+                INSERT INTO tbl_incident_reports (report_id, category, priority, assigned_staff) 
+                VALUES (?, ?, ?, ?)`;
+
+            db.query(incidentQuery, [reportId, category, priority, assigned_staff], (err) => {
+                if (err) {
+                    console.error("Error inserting into incident report:", err);
+                    return res.status(500).json({ success: false, message: "Failed to create incident report" });
+                }
+
+                req.io.emit('update');
+                res.json({ success: true, message: "Incident report created successfully" });
+            });
+
+        } else {
+            // If it's not one of the known types
+            res.json({ success: true, message: "Report created, but no specific report type handled." });
+        }
+    });
+});
 
 module.exports = router;

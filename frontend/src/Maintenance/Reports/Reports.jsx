@@ -105,7 +105,7 @@ function Reports() {
         setCurrentPage(1);
     };
     return (
-        <Container fluid className='p-0 y-0' >
+        <Container fluid className='p-0 y-0'  >
             <Card className='p-1'>
 
                 <h1 className='mb-4 text-center'>
