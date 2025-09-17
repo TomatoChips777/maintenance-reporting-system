@@ -17,6 +17,7 @@ const Dashboard = () => {
   const [recentlyCompletedReports, setRecentlyCompletedReports] = useState([]); // reports with completed status
   const [avgData, setAvgData] = useState([]);
 
+  
   // Fetch Data function
   const fetchData = async () => {
     axios.get(`${import.meta.env.VITE_DASHBOARD_DATA}/${user.id}`)
@@ -53,6 +54,7 @@ const Dashboard = () => {
     return <div className="text-center mt-5"><Spinner animation="border" variant="primary" /></div>;
   }
 
+  
   return (
     <div>
       <div className="d-flex justify-content-end align-items-center mb-3">
@@ -100,6 +102,28 @@ const Dashboard = () => {
                 </Card.Header>
                 <Card.Body> 
                   <Charts type="reportStatus" data={categoryData} />
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+
+
+           <Row className="mb-4">
+            <Col>
+              <Card className="mb-3">
+                <Card.Header className="fw-semibold text-primary d-flex justify-content-between">
+                  Borrowers Frequency
+                </Card.Header>
+                <Card.Body>
+                  <Charts type="borrowerRanking" data={null} />
+                </Card.Body>
+              </Card>
+              <Card className="mb-3">
+                <Card.Header className="fw-semibold text-primary d-flex justify-content-between">
+                  Assist Frequencys
+                </Card.Header>
+                <Card.Body>
+                  <Charts type="assistFrequency" data={null} />
                 </Card.Body>
               </Card>
             </Col>

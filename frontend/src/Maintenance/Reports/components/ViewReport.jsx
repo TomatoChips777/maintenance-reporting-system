@@ -3,18 +3,16 @@ import FormatDate from '../../../extra/DateFormat';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const ViewReport = ({ show, handleClose, report }) => {
+const ViewReport = ({ show, handleClose, report, staff }) => {
   const [formData, setFormData] = useState({
     priority: '',
     status: '',
     category: '',
     location: '',
     schedule_date: '',
-    assigned_staff: '',
+    assigned_staff: [],
   });
   const [saving, setSaving] = useState(false);
-  //Staff
-  const [staff, setStaff] = useState([]);
   // For confirmation modal
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingChange, setPendingChange] = useState(null);
@@ -24,16 +22,7 @@ const ViewReport = ({ show, handleClose, report }) => {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const fetchStaff = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_GET_MAINTENANCE_STAFF}`);
-      setStaff(response.data);
-    } catch (error) {
-      // pass
-    }
-  }
   useEffect(() => {
-    fetchStaff();
     if (report) {
       setFormData({
         priority: report.priority || '',
@@ -41,7 +30,9 @@ const ViewReport = ({ show, handleClose, report }) => {
         category: report.category || '',
         location: report.location || '',
         schedule_date: report.schedule_date || '',// default if exists,
-        assigned_staff: report.assigned_staff || '',
+        assigned_staff: report.assigned_staff
+          ? report.assigned_staff.split(",").map(String)
+          : [],
       });
     }
   }, [report]);
@@ -64,6 +55,14 @@ const ViewReport = ({ show, handleClose, report }) => {
     }
   };
 
+  const handleStaffChange = (e) => {
+    const options = Array.from(e.target.selectedOptions, (option) => option.value);
+    setFormData((prev) => ({
+      ...prev,
+      assigned_staff: options,
+    }));
+  };
+
   const confirmStatusChange = () => {
     if (pendingChange) {
       setFormData((prev) => ({
@@ -83,7 +82,6 @@ const ViewReport = ({ show, handleClose, report }) => {
   const handleSave = async () => {
     if (!report?.id) return;
 
-
     if (!formData.priority || !formData.category) {
       setErrorMessage("Please select both a priority level and a category before saving.");
       setShowError(true);
@@ -97,11 +95,16 @@ const ViewReport = ({ show, handleClose, report }) => {
       setShowError(true);
       return;
     }
+    const payload = {
+      ...formData,
+      assigned_staff: formData.assigned_staff.join(","),
+    };
+
     try {
       setSaving(true);
       const response = await axios.put(
         `${import.meta.env.VITE_UPDATE_MAINTENANCE_REPORT}/${report.id}`,
-        formData
+        payload
       );
       if (response.status === 200) {
         handleClose();
@@ -150,7 +153,7 @@ const ViewReport = ({ show, handleClose, report }) => {
   return (
     <>
       {/* Main Report Modal */}
-      <Modal show={show} onHide={handleClose} size="xl" animation={false}>
+      <Modal show={show} onHide={handleClose} size="lg" animation={false}>
         <Modal.Header closeButton>
           <Modal.Title>Viewing Report</Modal.Title>
         </Modal.Header>
@@ -259,7 +262,7 @@ const ViewReport = ({ show, handleClose, report }) => {
             </Col>
             <Col md={6}>
               <Form.Group>
-                <Form.Label><strong>Schedule Date</strong></Form.Label>
+                <Form.Label><strong>Set Schedule</strong><small className='text-muted'>(Optional)</small></Form.Label>
                 <Form.Control
                   type="date"
                   name="schedule_date"
@@ -269,23 +272,62 @@ const ViewReport = ({ show, handleClose, report }) => {
               </Form.Group>
             </Col>
           </Row>
-          <Form.Group>
-            <Form.Label>Assigned Staff</Form.Label>
-            <Form.Select
-              name="assigned_staff"
-              value={formData.assigned_staff}
-              onChange={handleInputChange}
-            >
-              <option value="">Select Staff</option>
-              {staff.length > 0 &&
-                staff.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-            </Form.Select>
-          </Form.Group>
+          <Row className="mb-3">
+            <Col sm={3}><strong>Assigned Staff:</strong></Col>
+            <Col>
+              {report?.assigned_staff
+                ? report.assigned_staff
+                  .split(",")
+                  .map((id) => {
+                    const s = staff.find((s) => s.id == id && s.status === 1);
+                    return s ? s.name : null;
+                  })
+                  .filter(Boolean) // remove nulls (inactive staff)
+                  .join(", ") || "—"
+                : "—"}
+            </Col>
+          </Row>
 
+          <Form.Group>
+            <Form.Label><strong>Assigned Staff</strong></Form.Label>
+            <div style={{
+              maxHeight: "200px",
+              overflowY: "auto",
+              border: "1px solid #dee2e6",
+              borderRadius: "4px",
+              padding: "8px"
+            }}>
+              {staff.length > 0 ? (
+                staff
+                  .filter((s) => s.status === 1)
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((s) => (
+                    <div key={s.id} className="d-flex justify-content-between mb-1">
+                      <Form.Check
+                        type="checkbox"
+                        id={`staff-${s.id}`}
+                        value={s.id}
+                        checked={formData.assigned_staff.includes(String(s.id))}
+                        onChange={(e) => {
+                          const { checked, value } = e.target;
+                          setFormData((prev) => ({
+                            ...prev,
+                            assigned_staff: checked
+                              ? [...prev.assigned_staff, value]
+                              : prev.assigned_staff.filter((id) => id !== value),
+                          }));
+                        }}
+                        label={s.name}
+                        className="me-2"
+                      />
+                      <small className="text-muted">({s.role})</small>
+                    </div>
+                  ))
+              ) : (
+                <p className="text-muted">No staff available</p>
+              )}
+            </div>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           {/* {report?.status === 'Pending' && (

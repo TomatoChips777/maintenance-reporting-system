@@ -43,15 +43,13 @@ function UserReports() {
 
   }, []);
 
-
-
   // Filter reports by search + status
   const filteredReports = useMemo(() => {
     return reports.filter(report => {
       const matchesSearch =
-        report.description.toLowerCase().includes(search.toLowerCase()) ||
-        report.location.toLowerCase().includes(search.toLowerCase()) ||
-        report.status.toLowerCase().includes(search.toLowerCase());
+        report.description?.toLowerCase().includes(search.toLowerCase()) ||
+        report.location?.toLowerCase().includes(search.toLowerCase()) ||
+        report.status?.toLowerCase().includes(search.toLowerCase());
 
       const matchesStatus =
         statusFilter === "All" || report.status === statusFilter;

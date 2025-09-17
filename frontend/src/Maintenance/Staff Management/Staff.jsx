@@ -6,6 +6,7 @@ import AddStaffModal from './components/AddStaffModal';
 import EditStaffModal from './components/EditStaffModal';
 import FormatDate from '../../extra/DateFormat';
 import { useAuth } from '../../../AuthContext';
+import { io } from 'socket.io-client';
 function Staff() {
   const { user } = useAuth();
   const [staff, setStaff] = useState([]);
@@ -16,10 +17,10 @@ function Staff() {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedStaff, setSelectedStaff] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [newUser, setNewUser] = useState({
+  const [newStaff, setNewStaff] = useState({
     name: '',
     email: '',
     contact_number: '',
@@ -40,13 +41,22 @@ function Staff() {
 
   useEffect(() => {
     fetchStaff();
+    const socket = io(`${import.meta.env.VITE_API_URL}`);
+    socket.on('updateUser', () => {
+      fetchStaff();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+
   }, []);
 
-  const filteredUsers = useMemo(() => {
+  const filteredStaff = useMemo(() => {
     return staff.filter(staff => {
       const matchesSearch =
-        staff.name.toLowerCase().includes(search.toLowerCase()) ||
-        staff.email.toLowerCase().includes(search.toLowerCase());
+        staff.name?.toLowerCase().includes(search.toLowerCase()) ||
+        staff.email?.toLowerCase().includes(search.toLowerCase());
 
       const matchesRole = roleFilter === 'All' || staff.role === roleFilter;
 
@@ -54,53 +64,68 @@ function Staff() {
     });
   }, [staff, search, roleFilter]);
 
+  // Get unique roles from staff
+  const uniqueRoles = useMemo(() => {
+    const roles = staff.map(s => s.role).filter(Boolean); // remove null/empty roles
+    return ["All", ...new Set(roles)]; // add "All" at the start
+  }, [staff]);
+
   const currentData = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return filteredUsers.slice(start, start + itemsPerPage);
-  }, [filteredUsers, currentPage, itemsPerPage]);
+    return filteredStaff.slice(start, start + itemsPerPage);
+  }, [filteredStaff, currentPage, itemsPerPage]);
 
   const handleAddChange = (e) => {
     const { name, value } = e.target;
-    setNewUser(prev => ({ ...prev, [name]: value }));
+    setNewStaff(prev => ({ ...prev, [name]: value }));
   };
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setSelectedUser(prev => ({ ...prev, [name]: value }));
+    setSelectedStaff(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleAddSubmit = async (user) => {
+  const handleAddSubmit = async (staff) => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_ADD_MAINTENANCE_STAFF}`, user);
+      const res = await axios.post(`${import.meta.env.VITE_ADD_MAINTENANCE_STAFF}`, staff);
       if (res.data.success) {
         setShowAddModal(false);
-        fetchUsers();
+        resetForm();
+        return res.data;
       }
+
     } catch (err) {
       console.log(err);
+      throw err;
     }
   };
 
-  const handleEditSubmit = async (staff) => {
-    try {
-      const res = await axios.put(`${import.meta.env.VITE_UPDATE_STAFF_STATUS}/${staff.id}`, staff);
-      if (res.data.success) {
-        setShowEditModal(false);
-        fetchUsers();
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
-  const handleEdit = (user) => {
-    setSelectedUser(user);
+const handleEditSubmit = async (staff) => {
+  if (!staff || !staff.id) {
+    throw new Error("Staff ID missing, cannot update."); // force error if no ID
+  }
+
+  try {
+    const res = await axios.put(
+      `${import.meta.env.VITE_UPDATE_MAINTENANCE_STAFF_DETAILS}/${staff.id}`,
+      staff
+    );
+
+    if (res.data.success) {
+      setShowEditModal(false);
+      return res.data;
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+  const handleEdit = (staff) => {
+    setSelectedStaff(staff);
     setShowEditModal(true);
   };
 
-  const handleDelete = (id) => {
-    setUsers(users.filter(user => user.id !== id));
-  };
 
   const handlePageSizeChange = (e) => {
     setItemsPerPage(Number(e.target.value));
@@ -109,14 +134,13 @@ function Staff() {
 
   const toggleStaffStatus = async (staffId, currentStatus) => {
 
-
     const newStatus = currentStatus === 1 ? 0 : 1;
     try {
       const response = await axios.put(`${import.meta.env.VITE_UPDATE_STAFF_STATUS}/${staffId}`, {
-                status: newStatus,
-        });
+        status: newStatus,
+      });
       if (response.data.success) {
-        setUsers(staff.map(staff => 
+        setUsers(staff.map(staff =>
           staff.id === staffId ? { ...staff, status: newStatus } : staff
         ));
       }
@@ -124,6 +148,16 @@ function Staff() {
       console.log(err);
     }
   };
+
+  const resetForm = () => {
+    setNewStaff({
+      name: '',
+      email: '',
+      contact_number: '',
+      role: '',
+      status: 1,
+    })
+  }
 
   return (
     <Container fluid className="p-0">
@@ -141,13 +175,11 @@ function Staff() {
           </Col>
           <Col md={3}>
             <Form.Select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
-              <option value="All">All Roles</option>
-              <option value="User">User</option>
-              <option value="Admin">Admin</option>
-              <option value="Report Manager">Report Manager</option>
-              <option value="Maintenance Manager">Maitenance Manager</option>
-              <option value="Incident Manager">Incident Manager</option>
-              <option value="Lost & Found Manager">Lost & Found Manager</option>
+              {uniqueRoles.map((role, index) => (
+                <option key={index} value={role}>
+                  {role}
+                </option>
+              ))}
             </Form.Select>
           </Col>
           <Col md={3} className="d-flex justify-content-end align-items-center">
@@ -195,9 +227,6 @@ function Staff() {
                     <Button variant="warning" size="sm" className="me-2" onClick={() => handleEdit(staff)}>
                       <i className="bi bi-pencil"></i>
                     </Button>
-                    {/* <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)}>
-                      <i className="bi bi-trash"></i>
-                    </Button> */}
                   </td>
                 </tr>
               ))
@@ -210,7 +239,7 @@ function Staff() {
         </Table>
 
         <PaginationControls
-          filteredReports={filteredUsers}
+          filteredReports={filteredStaff}
           pageSize={itemsPerPage}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
@@ -222,16 +251,18 @@ function Staff() {
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
         onSubmit={handleAddSubmit}
-        newUser={newUser}
+        newStaff={newStaff}
         handleChange={handleAddChange}
+        uniqueRoles={uniqueRoles}
       />
 
       <EditStaffModal
         show={showEditModal}
         onHide={() => setShowEditModal(false)}
         onSave={handleEditSubmit}
-        user={selectedUser || newUser}
+        staff={selectedStaff || newStaff}
         handleChange={handleEditChange}
+        uniqueRoles={uniqueRoles}
       />
     </Container>
   );

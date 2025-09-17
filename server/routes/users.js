@@ -63,7 +63,6 @@ router.post('/login', async (req, res) => {
                 updates.push('token = ?');
                 params.push(token);
             }
-
             if (updates.length > 0) {
                 const updateQuery = `UPDATE tbl_users SET ${updates.join(', ')} WHERE email = ?`;
                 params.push(email);

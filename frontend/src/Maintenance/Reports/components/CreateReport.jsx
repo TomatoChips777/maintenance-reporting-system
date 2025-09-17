@@ -3,16 +3,17 @@ import { Modal, Form, Button, Spinner, Row, Col } from 'react-bootstrap';
 import { useAuth } from '../../../../AuthContext';
 import axios from 'axios';
 
-const CreateReport = ({ show, handleClose }) => {
+const CreateReport = ({ show, handleClose, staff }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [successModal, setShowSuccessModal] = useState(false);
+
   const [formData, setFormData] = useState({
     user_id: user.id,
     location: '',
     category: '',
     priority: '',
-    assigned_staff: '',
+    assigned_staff: [],
     status: '',
     image: null,
     description: '',
@@ -26,13 +27,21 @@ const CreateReport = ({ show, handleClose }) => {
       location: '',
       category: '',
       priority: '',
-      assigned_staff: '',
+      assigned_staff: [],
       status: '',
       image: null,
       description: '',
       report_type: 'Maintenance',
-      is_anonymous: false, 
+      is_anonymous: false,
     });
+  };
+
+  const handleStaffChange = (e) => {
+    const options = Array.from(e.target.selectedOptions, option => option.value);
+    setFormData((prev) => ({
+      ...prev,
+      assigned_staff: options,
+    }));
   };
 
   const handleInputChange = (e) => {
@@ -50,6 +59,36 @@ const CreateReport = ({ show, handleClose }) => {
     }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   const formDataObj = new FormData();
+  //   Object.entries({ ...formData, user_id: user?.id }).forEach(([key, value]) => {
+  //     if (value !== null && value !== undefined && value !== '') {
+  //       formDataObj.append(key, value);
+  //     }
+  //   });
+
+  //   try {
+  //     const response = await axios.post(
+  //       `${import.meta.env.VITE_CREATE_MAINTENANCE_REPORT}`,
+  //       formDataObj,
+  //       { headers: { 'Content-Type': 'multipart/form-data' } }
+  //     );
+
+  //     if (response.data.success) {
+  //       setShowSuccessModal(true);
+  //       handleClose();
+  //       resetForm();
+  //     }
+  //   } catch (error) {
+  //     console.log('Error creating report:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -57,7 +96,11 @@ const CreateReport = ({ show, handleClose }) => {
     const formDataObj = new FormData();
     Object.entries({ ...formData, user_id: user?.id }).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== '') {
-        formDataObj.append(key, value);
+        if (key === "assigned_staff") {
+          formDataObj.append(key, value.join(","));
+        } else {
+          formDataObj.append(key, value);
+        }
       }
     });
 
@@ -82,159 +125,183 @@ const CreateReport = ({ show, handleClose }) => {
 
   return (
     <>
-    <Modal show={show} onHide={handleClose} size="lg" animation={false}>
-      <Modal.Header closeButton>
-        <Modal.Title>New Report</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-          {/* First row: Location + Category */}
-          <Row className="mb-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Location</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Category</Form.Label>
-                <Form.Select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Category</option>
-                  <option value="Electrical">Electrical</option>
-                  <option value="Plumbing">Plumbing</option>
-                  <option value="Cleaning">Cleaning</option>
-                  <option value="General Repair">General Repair</option>
-                  <option value="Other">Other</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
+      <Modal show={show} onHide={handleClose} size="lg" animation={false}>
+        <Modal.Header closeButton>
+          <Modal.Title>New Report</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            {/* First row: Location + Category */}
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Location</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Category</Form.Label>
+                  <Form.Select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Plumbing">Plumbing</option>
+                    <option value="Cleaning">Cleaning</option>
+                    <option value="General Repair">General Repair</option>
+                    <option value="Other">Other</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
 
-          {/* Second row: Priority + Status */}
-          <Row className="mb-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Priority</Form.Label>
-                <Form.Select
-                  name="priority"
-                  value={formData.priority}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Priority</option>
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                  <option value="Urgent">Urgent</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Status</Form.Label>
-                <Form.Select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select Status</option>
-                  <option value="Pending">Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Resolved">Resolved</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
+            {/* Second row: Priority + Status */}
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Priority</Form.Label>
+                  <Form.Select
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select Priority</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Urgent">Urgent</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Status</Form.Label>
+                  <Form.Select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select Status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Form.Group>
+              <Form.Label><strong>Assigned Staff</strong></Form.Label>
+              <div style={{
+                maxHeight: "200px",
+                overflowY: "auto",
+                border: "1px solid #dee2e6",
+                borderRadius: "4px",
+                padding: "8px"
+              }}>
+                {staff.length > 0 ? (
+                  staff
+                  .filter((s) => s.status === 1)
+                  .sort((a,b) => a.name.localeCompare(b.name))
+                  .map((s) => (
+                    <div key={s.id} className="d-flex justify-content-between mb-1">
+                      <Form.Check
+                        type="checkbox"
+                        id={`staff-${s.id}`}
+                        value={s.id}
+                        checked={formData.assigned_staff.includes(String(s.id))}
+                        onChange={(e) => {
+                          const { checked, value } = e.target;
+                          setFormData((prev) => ({
+                            ...prev,
+                            assigned_staff: checked
+                              ? [...prev.assigned_staff, value]
+                              : prev.assigned_staff.filter((id) => id !== value),
+                          }));
+                        }}
+                        label={s.name}
+                        className="me-2"
+                      />
+                      <small className="text-muted">({s.role})</small>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted">No staff available</p>
+                )}
+              </div>
+            </Form.Group>
+            {/* Fourth row: Upload Image */}
+            <Row className="mb-3">
+              <Col>
+                <Form.Group>
+                  <Form.Label>Upload Image</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
 
-          {/* Third row: Assigned Staff */}
-          <Row className="mb-3">
-            <Col>
-              <Form.Group>
-                <Form.Label>Assigned Staff <small className='text-muted'>(Optional)</small></Form.Label>
-                <Form.Control
-                  type="text"
-                  name="assigned_staff"
-                  value={formData.assigned_staff}
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+            {/* Fifth row: Description */}
+            <Row className="mb-3">
+              <Col>
+                <Form.Group>
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={4}
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
 
-          {/* Fourth row: Upload Image */}
-          <Row className="mb-3">
-            <Col>
-              <Form.Group>
-                <Form.Label>Upload Image</Form.Label>
-                <Form.Control
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+            {/* Buttons */}
+            <div className="d-flex justify-content-between">
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              <Button variant="dark" type="submit" disabled={loading}>
+                {loading ? <Spinner animation="border" size="sm" /> : 'Submit'}
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
 
-          {/* Fifth row: Description */}
-          <Row className="mb-3">
-            <Col>
-              <Form.Group>
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={4}
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-            </Col>
-          </Row>         
+      <Modal show={successModal} onHide={() => setShowSuccessModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Report Submitted</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>The report has been successfully posted.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant='secondary'
+            onClick={() => setShowSuccessModal(false)}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
-          {/* Buttons */}
-          <div className="d-flex justify-content-between">
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-            <Button variant="dark" type="submit" disabled={loading}>
-              {loading ? <Spinner animation="border" size="sm" /> : 'Submit'}
-            </Button>
-          </div>
-        </Form>
-      </Modal.Body>
-    </Modal>
-
-    <Modal show={successModal} onHide={() => setShowSuccessModal(false)}>
-      <Modal.Header closeButton>
-      <Modal.Title>Report Submitted</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <p>The report has been successfully posted.</p>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button 
-        variant='secondary'
-        onClick={() => setShowSuccessModal(false)}
-        >
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
-    
     </>
   );
 };

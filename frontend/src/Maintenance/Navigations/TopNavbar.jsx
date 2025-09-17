@@ -137,7 +137,7 @@ function TopNavbar({ toggleSidebar }) {
                 <Dropdown.Menu className="notification-menu">
 
                   <Dropdown.ItemText>
-                    You have {notifications.filter(n => !n.read).length} unread notifications
+                    You have {notifications.filter(n => !n.read).length} unread notifications 
                   </Dropdown.ItemText>
 
                   <Dropdown.Divider />

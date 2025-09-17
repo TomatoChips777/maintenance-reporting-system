@@ -6,13 +6,7 @@ const db = require('../config/db');
 router.get('/:user_id', async (req, res) => {
   const { user_id } = req.params;
   try {
-    //   const reportsToday = `
-    //   SELECT COUNT(*) AS count
-    //   FROM tbl_reports
-    //   WHERE DATE(created_at) = CURDATE()
-    // `;
-    //   const reportsTodayResult = await db.queryAsync(reportsToday);
-    // Overdue Returns: Count items that are not returned and have passed their return date
+
     const urgentReports = `
     SELECT COUNT(*) AS count FROM tbl_maintenance_reports tmr 
     LEFT JOIN tbl_reports tr ON tmr.report_id = tr.id     
@@ -72,6 +66,7 @@ router.get('/:user_id', async (req, res) => {
     const assistFrequencyResult = await db.queryAsync(assistFrequencyQuery);
 
 
+    
     const inventoryQuery = `
       SELECT item_name AS item, status, category, quantity AS total, quantity AS available
       FROM inventory_items

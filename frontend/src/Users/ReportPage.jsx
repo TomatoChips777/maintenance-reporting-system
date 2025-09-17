@@ -102,6 +102,7 @@ function ReportPage() {
       });
 
       resetForm();
+      setError("");
       setShowSuccessModal(true);
     } catch {
       setError("Failed to submit the report");
@@ -174,7 +175,7 @@ function ReportPage() {
           />
         </Form.Group>
 
-        {error && <Alert variant="danger">{error}</Alert>}
+        {error && <Alert variant="danger rounded-0">{error}</Alert>}
         <div className="d-flex justify-content-end">
           <Button variant="primary" type="submit" disabled={loading}>
             {loading ? "Submitting..." : "Submit Report"}

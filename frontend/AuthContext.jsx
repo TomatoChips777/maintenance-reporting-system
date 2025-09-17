@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 const AuthContext = createContext(null);
-const VITE_API_URL = import.meta.env.VITE_API_URL
 
 
 export const AuthProvider = ({ children }) => {

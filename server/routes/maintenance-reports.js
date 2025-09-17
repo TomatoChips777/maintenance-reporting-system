@@ -142,11 +142,9 @@ router.put("/admin/edit/:reportId", async (req, res) => {
 });
 router.post('/add-staff', async (req, res) => {
     const { name, email, contact_number, role, status } = req.body;
-    console.log(name, email, contact_number, role, status);
     if (!email || !name) {
         return res.status(500).json({ error: 'Name and email are required' });
     }
-
     try {
         const existingUser = await db.queryAsync('SELECT id FROM tbl_maintenance_staff WHERE email = ?', [email]);
 
@@ -157,7 +155,7 @@ router.post('/add-staff', async (req, res) => {
         await db.queryAsync('INSERT INTO tbl_maintenance_staff (name, email, contact_number, role) VALUES (?, ?, ?, ?)',
             [name, email, contact_number, role ? role : null]
         );
-
+        req.io.emit('updateUser');
         return res.json({ success: true, message: 'Staff added successfully' });
     } catch (err) {
         console.error('Failed to add staff:', err);
@@ -176,24 +174,90 @@ router.get('/get-staff', async (req, res) => {
     }
 })
 
-router.put('/update-staff-status/:staff_id', async (req, res) =>{
-    const {staff_id } = req.params;
-    const {status} = req.body;
-    if(status !== 0 && status !== 1){
-        return res.status(400).json({success: false, message: 'Invalid status values.'});
+router.put('/update-staff-status/:staff_id', async (req, res) => {
+    const { staff_id } = req.params;
+    const { status } = req.body;
+    if (status !== 0 && status !== 1) {
+        return res.status(400).json({ success: false, message: 'Invalid status values.' });
     }
 
-    try{
+    try {
         const result = await db.queryAsync("UPDATE tbl_maintenance_staff SET status = ? WHERE id = ?", [status, staff_id]);
 
-        if(result.affectedRows === 0){
-            return status(404).json({success: false, message: 'Staff not found.'});
+        if (result.affectedRows === 0) {
+            return status(404).json({ success: false, message: 'Staff not found.' });
         }
-    }catch(err){
+        req.io.emit('updateUser');
+    } catch (err) {
         console.error('Activate/Deactivate error:', err);
-        res.status(500).json({success: false, message: 'Database error'});
+        res.status(500).json({ success: false, message: 'Database error' });
     }
 })
+
+router.put('/update-staff/:staff_id', async (req, res) => {
+    const { staff_id } = req.params;
+    const { name, email, contact_number, role, status } = req.body;
+
+    try {
+        // 🔍 Check email uniqueness (only if provided)
+        if (email) {
+            const checkEmailQuery = `
+                SELECT id FROM tbl_maintenance_staff 
+                WHERE email = ? AND id != ?
+            `;
+            const existing = await db.queryAsync(checkEmailQuery, [email, staff_id]);
+
+            if (existing.length > 0) {
+                return res.status(409).json({ error: 'Email already exists' });
+            }
+        }
+
+        const updates = [];
+        const params = [];
+
+        if (name) {
+            updates.push('name = ?');
+            params.push(name);
+        }
+        if (email) {
+            updates.push('email = ?');
+            params.push(email);
+        }
+        if (contact_number) {
+            updates.push('contact_number = ?');
+            params.push(contact_number);
+        }
+        if (role) {
+            updates.push('role = ?');
+            params.push(role);
+        }
+        if (status !== undefined) {  
+            updates.push('status = ?');
+            params.push(status);
+        }
+
+        if (updates.length === 0) {
+            return res.status(400).json({ success: false, message: 'No fields to update' });
+        }
+
+        const updateQuery = `UPDATE tbl_maintenance_staff SET ${updates.join(', ')} WHERE id = ?`;
+        params.push(staff_id);
+
+        const result = await db.queryAsync(updateQuery, params);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        req.io.emit('updateUser');
+        return res.json({ success: true, message: 'User updated successfully' });
+
+    } catch (err) {
+        console.error('Update user error:', err);
+        res.status(500).json({ success: false, message: 'Database error' });
+    }
+});
+
 router.post("/create-report", upload.single('image'), (req, res) => {
     const {
         report_type,
@@ -210,17 +274,18 @@ router.post("/create-report", upload.single('image'), (req, res) => {
         is_anonymous,
         user_id
     } = req.body;
+    console.log(is_anonymous);
     const image_path = req.file ? req.file.filename : null;
     const insertReportQuery = `
-        INSERT INTO tbl_reports (user_id, report_type, status, location, description, image_path)
-        VALUES (?, ?, ?, ?, ?, ?)`;
+        INSERT INTO tbl_reports (user_id, report_type, status, location, description, image_path, is_anonymous)
+        VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
-    db.query(insertReportQuery, [user_id, report_type, status || 'Pending', location, description, image_path], (err, result) => {
+    db.query(insertReportQuery, [user_id, report_type, status || 'Pending', location, description, image_path, is_anonymous], (err, result) => {
         if (err) {
             console.error("Error inserting into tbl_reports:", err);
             return res.status(500).json({ success: false, message: "Failed to create base report" });
         }
-
+        
         const reportId = result.insertId;
 
         // Step 2: Insert into related table based on report_type
@@ -228,7 +293,7 @@ router.post("/create-report", upload.single('image'), (req, res) => {
             const maintenanceQuery = `
                 INSERT INTO tbl_maintenance_reports (report_id, category, priority, assigned_staff) 
                 VALUES (?, ?, ?, ?)`;
-            
+
             db.query(maintenanceQuery, [reportId, category, priority, assigned_staff], (err) => {
                 if (err) {
                     console.error("Error inserting into maintenance report:", err);

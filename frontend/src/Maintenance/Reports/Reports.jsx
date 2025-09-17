@@ -11,6 +11,7 @@ import { io } from 'socket.io-client';
 
 function Reports() {
     const [reports, setReports] = useState([]);
+    const [staff, setStaff] = useState([]);
     const [showViewModal, setShowViewModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
@@ -33,13 +34,23 @@ function Reports() {
         }
     }
 
+    const fetchStaff = async ()=>{
+        try{
+            const response = await axios.get(`${import.meta.env.VITE_GET_MAINTENANCE_STAFF}`);
+            setStaff(response.data);
+        }catch(error){
+
+        }
+    }
+
+
     const filteredReports = useMemo(() => {
         return reports.filter(report => {
             const matchesSearch =
-                report.description.toLowerCase().includes(search.toLowerCase()) ||
-                report.location.toLowerCase().includes(search.toLowerCase()) ||
-                report.reporter_name.toLowerCase().includes(search.toLowerCase()) ||
-                report.category.toLowerCase().includes(search.toLowerCase());
+                report.description?.toLowerCase().includes(search.toLowerCase()) ||
+                report.location?.toLowerCase().includes(search.toLowerCase()) ||
+                report.reporter_name?.toLowerCase().includes(search.toLowerCase()) ||
+                report.category?.toLowerCase().includes(search.toLowerCase());
 
             const matchesStatus = statusFilter === 'All' || report.status === statusFilter;
             const matchesPriority = priorityFilter === 'All' || report.priority === priorityFilter;
@@ -78,6 +89,7 @@ function Reports() {
 
             }
         }
+        fetchStaff();
         setSelectedReport(report);
         setShowViewModal(true)
     };
@@ -86,6 +98,7 @@ function Reports() {
     };
 
     const handleOpenCreateModal = () => {
+        fetchStaff();
         setShowCreateModal(true);
     };
     const handleCloseCreateModal = () => {
@@ -242,12 +255,14 @@ function Reports() {
                 show={showViewModal}
                 handleClose={handleCloseViewModal}
                 report={selectedReport}
+                staff={staff}
             />
 
             {/* Create Report Modal */}
             <CreateReport
                 show={showCreateModal}
                 handleClose={handleCloseCreateModal}
+                staff={staff}
             />
 
             {/* Archive Alert Modal */}
