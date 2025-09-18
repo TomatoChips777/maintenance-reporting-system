@@ -34,7 +34,7 @@ function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles
               name="name"
               value={staff.name}
               onChange={(e) => {
-                e.target.value = e.target.value.replace(/\s+/g, " "); // allow single spaces only
+                e.target.value = e.target.value.replace(/\s+/g, " ").trimStart(); // allow single spaces only
                 handleChange(e);
                 setEmailError(""); // reset error on typing
               }}
@@ -50,7 +50,7 @@ function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles
               name="email"
               value={staff.email}
               onChange={(e) => {
-                e.target.value = e.target.value.replace(/\s/g, ""); // remove ALL spaces
+                e.target.value = e.target.value.replace(/\s/g, "").trimStart(); // remove ALL spaces
                 handleChange(e);
                 setEmailError(""); // reset error when editing
               }}
@@ -71,7 +71,7 @@ function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles
               name="role"
               value={staff.role}
               onChange={(e) => {
-                e.target.value = e.target.value.replace(/\s+/g, " ");
+                e.target.value = e.target.value.replace(/\s+/g, " ").trimStart();
                 handleChange(e);
               }}
             />

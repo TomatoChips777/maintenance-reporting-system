@@ -274,7 +274,6 @@ router.post("/create-report", upload.single('image'), (req, res) => {
         is_anonymous,
         user_id
     } = req.body;
-    console.log(is_anonymous);
     const image_path = req.file ? req.file.filename : null;
     const insertReportQuery = `
         INSERT INTO tbl_reports (user_id, report_type, status, location, description, image_path, is_anonymous)

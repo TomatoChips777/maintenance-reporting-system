@@ -1,7 +1,8 @@
 import { Modal, Button, Row, Col, Form, Image } from 'react-bootstrap';
 import FormatDate from '../../../extra/DateFormat';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import { Search } from 'react-bootstrap-icons';
 
 const ViewReport = ({ show, handleClose, report, staff }) => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,8 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
   const [successModal, setShowSuccessModal] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [searchStaff, setSearchStaff] = useState("");
 
   useEffect(() => {
     if (report) {
@@ -62,6 +65,15 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
       assigned_staff: options,
     }));
   };
+
+  const filterStaff = useMemo(() => {
+    return staff.filter(staff => {
+      const matchesSearch = staff.name?.toLowerCase().includes(searchStaff.toLocaleLowerCase()) ||
+                            staff.role?.toLowerCase().includes(searchStaff.toLowerCase());
+      return matchesSearch;
+    });
+  }, [staff, searchStaff]);
+
 
   const confirmStatusChange = () => {
     if (pendingChange) {
@@ -153,7 +165,7 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
   return (
     <>
       {/* Main Report Modal */}
-      <Modal show={show} onHide={handleClose} size="lg" animation={false}>
+      <Modal show={show} onHide={() => {handleClose(); setSearchStaff('');}} size="lg" animation={false}>
         <Modal.Header closeButton>
           <Modal.Title>Viewing Report</Modal.Title>
         </Modal.Header>
@@ -272,10 +284,12 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
               </Form.Group>
             </Col>
           </Row>
+
+
           <Row className="mb-3">
             <Col sm={3}><strong>Assigned Staff:</strong></Col>
             <Col>
-              {report?.assigned_staff
+            <p style={{fontSize: '12px', fontWeight: 'lighter'}} className='text-muted'>{report?.assigned_staff
                 ? report.assigned_staff
                   .split(",")
                   .map((id) => {
@@ -284,50 +298,72 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
                   })
                   .filter(Boolean) // remove nulls (inactive staff)
                   .join(", ") || "—"
-                : "—"}
+                : "—"}</p>
+              
             </Col>
-          </Row>
+            <Form.Group>
+              {/* Search Staff */}
+              <Form.Control
+                type="text"
+                placeholder="🔍 Search staff..."
+                value={searchStaff}
+                onChange={(e) => setSearchStaff(e.target.value)}
+                className="mb-2"
+              />
 
-          <Form.Group>
-            <Form.Label><strong>Assigned Staff</strong></Form.Label>
-            <div style={{
-              maxHeight: "200px",
-              overflowY: "auto",
-              border: "1px solid #dee2e6",
-              borderRadius: "4px",
-              padding: "8px"
-            }}>
-              {staff.length > 0 ? (
-                staff
-                  .filter((s) => s.status === 1)
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((s) => (
-                    <div key={s.id} className="d-flex justify-content-between mb-1">
-                      <Form.Check
-                        type="checkbox"
-                        id={`staff-${s.id}`}
-                        value={s.id}
-                        checked={formData.assigned_staff.includes(String(s.id))}
-                        onChange={(e) => {
-                          const { checked, value } = e.target;
-                          setFormData((prev) => ({
-                            ...prev,
-                            assigned_staff: checked
-                              ? [...prev.assigned_staff, value]
-                              : prev.assigned_staff.filter((id) => id !== value),
-                          }));
-                        }}
-                        label={s.name}
-                        className="me-2"
-                      />
-                      <small className="text-muted">({s.role})</small>
-                    </div>
-                  ))
-              ) : (
-                <p className="text-muted">No staff available</p>
-              )}
-            </div>
-          </Form.Group>
+              {/* Header */}
+              <div className="d-flex justify-content-between px-2 py-1 bg-light border border-bottom-0 rounded-0 mb-1">
+                <strong>Name</strong>
+                <strong>Role</strong>
+              </div>
+
+              {/* Staff List */}
+              <div
+                style={{
+                  maxHeight: "220px",
+                  overflowY: "auto",
+                  border: "1px solid #dee2e6",
+                  borderRadius: "0px",
+                  padding: "6px",
+                  borderTop: '0px',
+                  background: "#fff",
+                }}
+              >
+                {filterStaff.length > 0 ? (
+                  filterStaff
+                    .filter((s) => s.status === 1)
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((s) => (
+                      <div
+                        key={s.id}
+                        className="d-flex justify-content-between align-items-center border-bottom py-1"
+                      >
+                        <Form.Check
+                          type="checkbox"
+                          id={`staff-${s.id}`}
+                          value={s.id}
+                          checked={formData.assigned_staff.includes(String(s.id))}
+                          onChange={(e) => {
+                            const { checked, value } = e.target;
+                            setFormData((prev) => ({
+                              ...prev,
+                              assigned_staff: checked
+                                ? [...prev.assigned_staff, value]
+                                : prev.assigned_staff.filter((id) => id !== value),
+                            }));
+                          }}
+                          label={s.name}
+                          className="me-2"
+                        />
+                        <small className='text-muted'>{s.role}</small>
+                      </div>
+                    ))
+                ) : (
+                  <p className="text-muted text-center mb-0">No staff available</p>
+                )}
+              </div>
+            </Form.Group>
+          </Row>
         </Modal.Body>
         <Modal.Footer>
           {/* {report?.status === 'Pending' && (
@@ -335,7 +371,7 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
               Send Back
             </Button>
           )} */}
-          <Button variant="secondary" onClick={handleClose} disabled={saving}>
+          <Button variant="secondary" onClick={() =>{handleClose(); setSearchStaff('');}} disabled={saving}>
             Close
           </Button>
           <Button variant="success" onClick={handleSave} disabled={saving}>

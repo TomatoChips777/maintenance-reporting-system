@@ -38,6 +38,7 @@ function ReportPage() {
   const [loading, setLoading] = useState(false);
   const [showGoogleLogin, setShowGoogleLogin] = useState(false);
   const [successModal, setShowSuccessModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -84,6 +85,11 @@ function ReportPage() {
 
   const handleFormSubmission = async () => {
     setLoading(true);
+    if (!formData.location.trim() || !formData.description.trim()) {
+      setErrorMessage("Location and description are required.");
+      setLoading(false);
+      return;
+    }
     try {
       const submissionData = new FormData();
       submissionData.append("user_id", formData.user_id);
@@ -125,14 +131,19 @@ function ReportPage() {
         <Form.Group className="mb-2">
           <Form.Label>Location of Issue</Form.Label>
           <Form.Control
+            className={`rounded-0 p-2 ${errorMessage ? 'is-invalid' : ''}`}
             type="text"
             placeholder="e.g. Library - 2nd Floor"
             required
             value={formData.location}
-            onChange={(e) =>
-              setFormData({ ...formData, location: e.target.value })
+            onChange={(e) => { setFormData({ ...formData, location: e.target.value.replace(/\s+/g, " ").trimStart() }); setErrorMessage(""); }
             }
           />
+          {errorMessage && (
+            <Form.Control.Feedback type="invalid">
+              {errorMessage}
+            </Form.Control.Feedback>
+          )}
         </Form.Group>
 
         {/* Description */}
@@ -144,8 +155,7 @@ function ReportPage() {
             placeholder="Describe the issue..."
             required
             value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
+            onChange={(e) => { setFormData({ ...formData, description: e.target.value.trimStart() }); setErrorMessage(""); }
             }
           />
         </Form.Group>

@@ -1,105 +1,3 @@
-// import { Modal, Button, Form } from 'react-bootstrap';
-// import { useState } from 'react';
-
-// function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange }) {
-//   const [emailError, setEmailError] = useState("");
-
-//   const handleSave = async () => {
-//     try {
-//       await onSubmit(newStaff);
-//       setEmailError("");
-//     } catch (err) {
-//       if (err.response && err.response.status === 409) {
-//         setEmailError(err.response.data.error);
-//       } else {
-//         setEmailError("Something went wrong.");
-//       }
-//     }
-//   };
-//   return (
-//     <Modal show={show} onHide={onHide} size="lg" animation={false}>
-//       <Modal.Header closeButton>
-//         <Modal.Title>Add New Staff</Modal.Title>
-//       </Modal.Header>
-//       <Modal.Body>
-//         <Form>
-//           <Form.Group className="mb-3 p-2">
-//             <Form.Label>Name</Form.Label>
-//             <Form.Control
-//               className="p-2 rounded-0"
-//               type="text"
-//               placeholder="Enter a name"
-//               name="name"
-//               value={newStaff.name}
-//               onChange={handleChange}
-//             />
-//           </Form.Group>
-
-//           <Form.Group className="mb-3 p-2">
-//             <Form.Label>Email</Form.Label>
-//             <Form.Control
-//               className={`rounded-0 p-2 ${emailError ? 'is-invalid' : ''}`} // 
-//               type="email"
-//               placeholder="Enter an email"
-//               name="email"
-//               value={newStaff.email}
-//               onChange={handleChange}
-//             />
-//             {emailError && (
-//               <Form.Control.Feedback type="invalid">
-//                 {emailError}
-//               </Form.Control.Feedback>
-//             )}
-//           </Form.Group>
-
-//           <Form.Group className="mb-3 p-2">
-//             <Form.Label>Contact Number</Form.Label>
-//             <Form.Control
-//               className="p-2 rounded-0"
-//               type="text"
-//               placeholder="Enter a contact number"
-//               name="contact_number"
-//               value={newStaff.contact_number}
-//               onChange={handleChange}
-//             />
-//           </Form.Group>
-
-//           <Form.Group className="mb-3 p-2">
-//             <Form.Label>Role <small className='text-muted'>(Optional)</small></Form.Label>
-//             <Form.Control
-//               className="p-2 rounded-0"
-//               type="text"
-//               placeholder="Enter a role (Optional)"
-//               name="role"
-//               value={newStaff.role}
-//               onChange={handleChange}
-//             />
-//           </Form.Group>
-
-//           <Form.Group className="mb-3 p-2">
-//             <Form.Label>Status</Form.Label>
-//             <Form.Select
-//               className="p-2 rounded-0"
-//               name="status"
-//               value={newStaff.status}
-//               onChange={handleChange}
-//             >
-//               <option value={1}>Active</option>
-//               <option value={0}>Inactive</option>
-//             </Form.Select>
-//           </Form.Group>
-//         </Form>
-//       </Modal.Body>
-//       <Modal.Footer>
-//         <Button variant="secondary rounded-0" onClick={onHide}>Cancel</Button>
-//         <Button variant="primary rounded-0" onClick={handleSave}>Save</Button>
-//       </Modal.Footer>
-//     </Modal>
-//   );
-// }
-
-// export default AddStaffModal;
-
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useState } from 'react';
 
@@ -108,7 +6,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
 
   const handleSave = async () => {
     try {
-      // Trim fields before save
+      // clean input fields before saving
       const cleanedStaff = {
         ...newStaff,
         name: newStaff.name.trim().replace(/\s+/g, " "),
@@ -145,7 +43,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
               name="name"
               value={newStaff.name}
               onChange={(e) => {
-                e.target.value = e.target.value.replace(/\s+/g, " "); // only single spaces
+                e.target.value = e.target.value.replace(/\s+/g, " ").trimStart(); // only single spaces
                 handleChange(e);
               }}
             />
@@ -161,10 +59,11 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
               name="email"
               value={newStaff.email}
               onChange={(e) => {
-                e.target.value = e.target.value.replace(/\s/g, ""); // remove all spaces
-                handleChange(e);
+                const cleaned = e.target.value.replace(/\s/g, ""); // remove ALL spaces
+                handleChange({ target: { name: e.target.name, value: cleaned } });
                 setEmailError("");
-              }}
+              }}zzs
+
             />
             {emailError && (
               <Form.Control.Feedback type="invalid">
@@ -183,7 +82,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
               name="contact_number"
               value={newStaff.contact_number}
               onChange={(e) => {
-                e.target.value = e.target.value.replace(/\s/g, ""); // no spaces
+                e.target.value = e.target.value.replace(/\s/g, "").trimStart(); // no spaces
                 handleChange(e);
               }}
             />
@@ -200,7 +99,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
               name="role"
               value={newStaff.role}
               onChange={(e) => {
-                e.target.value = e.target.value.replace(/\s+/g, " "); // only single spaces
+                e.target.value = e.target.value.replace(/\s+/g, " ").trimStart();; // only single spaces
                 handleChange(e);
               }}
             />

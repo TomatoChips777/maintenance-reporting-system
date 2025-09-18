@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Modal, Form, Button, Spinner, Row, Col } from 'react-bootstrap';
 import { useAuth } from '../../../../AuthContext';
 import axios from 'axios';
@@ -7,7 +7,8 @@ const CreateReport = ({ show, handleClose, staff }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [successModal, setShowSuccessModal] = useState(false);
-
+  const [searchStaff, setSearchStaff] = useState('');
+  
   const [formData, setFormData] = useState({
     user_id: user.id,
     location: '',
@@ -35,6 +36,15 @@ const CreateReport = ({ show, handleClose, staff }) => {
       is_anonymous: false,
     });
   };
+
+  const filterStaff = useMemo(() =>{
+    return staff.filter(staff =>{
+      const matchesSearch = staff.name?.toLowerCase().includes(searchStaff.toLowerCase()) ||
+                            staff.role?.toLowerCase().includes(searchStaff.toLowerCase());
+      ;
+      return matchesSearch;
+    })
+  }, [staff, searchStaff ]);
 
   const handleStaffChange = (e) => {
     const options = Array.from(e.target.selectedOptions, option => option.value);
@@ -115,6 +125,7 @@ const CreateReport = ({ show, handleClose, staff }) => {
         setShowSuccessModal(true);
         handleClose();
         resetForm();
+        setSearchStaff('');
       }
     } catch (error) {
       console.log('Error creating report:', error);
@@ -125,7 +136,7 @@ const CreateReport = ({ show, handleClose, staff }) => {
 
   return (
     <>
-      <Modal show={show} onHide={handleClose} size="lg" animation={false}>
+      <Modal show={show} onHide={() => {handleClose(); setSearchStaff('')}} size="lg" animation={false}>
         <Modal.Header closeButton>
           <Modal.Title>New Report</Modal.Title>
         </Modal.Header>
@@ -202,20 +213,42 @@ const CreateReport = ({ show, handleClose, staff }) => {
               </Col>
             </Row>
             <Form.Group>
-              <Form.Label><strong>Assigned Staff</strong></Form.Label>
-              <div style={{
-                maxHeight: "200px",
+            {/* Search Staff */}
+            <Form.Control
+              type="text"
+              placeholder="🔍 Search staff..."
+              value={searchStaff}
+              onChange={(e) => setSearchStaff(e.target.value)}
+              className="mb-2"
+            />
+
+            {/* Header */}
+            <div className="d-flex justify-content-between px-2 py-1 bg-light border border-bottom-0 rounded-0 mb-1">
+              <strong>Name</strong>
+              <strong>Role</strong>
+            </div>
+
+            {/* Staff List */}
+            <div
+              style={{
+                maxHeight: "220px",
                 overflowY: "auto",
                 border: "1px solid #dee2e6",
-                borderRadius: "4px",
-                padding: "8px"
-              }}>
-                {staff.length > 0 ? (
-                  staff
+                borderRadius: "0px",
+                padding: "6px",
+                borderTop: '0px',
+                background: "#fff",
+              }}
+            >
+              {filterStaff.length > 0 ? (
+                filterStaff
                   .filter((s) => s.status === 1)
-                  .sort((a,b) => a.name.localeCompare(b.name))
+                  .sort((a, b) => a.name.localeCompare(b.name))
                   .map((s) => (
-                    <div key={s.id} className="d-flex justify-content-between mb-1">
+                    <div
+                      key={s.id}
+                      className="d-flex justify-content-between align-items-center border-bottom py-1"
+                    >
                       <Form.Check
                         type="checkbox"
                         id={`staff-${s.id}`}
@@ -233,14 +266,14 @@ const CreateReport = ({ show, handleClose, staff }) => {
                         label={s.name}
                         className="me-2"
                       />
-                      <small className="text-muted">({s.role})</small>
+                      <small className='text-muted'>{s.role}</small>
                     </div>
                   ))
-                ) : (
-                  <p className="text-muted">No staff available</p>
-                )}
-              </div>
-            </Form.Group>
+              ) : (
+                <p className="text-muted text-center mb-0">No staff available</p>
+              )}
+            </div>
+          </Form.Group>
             {/* Fourth row: Upload Image */}
             <Row className="mb-3">
               <Col>
@@ -274,7 +307,7 @@ const CreateReport = ({ show, handleClose, staff }) => {
 
             {/* Buttons */}
             <div className="d-flex justify-content-between">
-              <Button variant="secondary" onClick={handleClose}>
+              <Button variant="secondary" onClick={() => {handleClose(); setSearchStaff('');}}>
                 Close
               </Button>
               <Button variant="dark" type="submit" disabled={loading}>
@@ -296,7 +329,7 @@ const CreateReport = ({ show, handleClose, staff }) => {
           <Button
             variant='secondary'
             onClick={() => setShowSuccessModal(false)}
-          >
+          > 
             Close
           </Button>
         </Modal.Footer>

@@ -158,7 +158,7 @@ function UserReports() {
                   }`}
               >
                 {report.viewed !== 0 && (
-                  <p className="text-truncate mb-0 text-muted" style={{ maxWidth: "80%" }}>
+                  <p className="text-truncate mb-0 text-muted" style={{ maxWidth: "80%", fontWeight: 'lighter' }}>
                     {report.viewed === 1 ? "Viewed" : report.viewed}
                   </p>
                 )}
@@ -200,9 +200,12 @@ function UserReports() {
 
               {/* Details Section */}
               <Col md={7}>
-                <h5 className="fw-bold mb-2">{expandedReport.location}</h5>
+              <div className="d-flex justify-content-between">
+                <h5 className="fw-bold mb-2">{expandedReport.location} </h5>
+                <p style={{fontWeight: 'lighter'}} className="text-muted">{expandedReport.viewed === 1 ? 'Viewed' : ''}</p>
+              </div>
                 <span
-                  className={`badge px-3 py-2 fs-6 mb-3 ${expandedReport.status === "Pending"
+                  className={`badge px-3 py-2 fs-6 mb-3 rounded-0 ${expandedReport.status === "Pending"
                       ? "bg-warning text-dark"
                       : expandedReport.status === "In Progress"
                         ? "bg-primary"
@@ -243,7 +246,6 @@ function UserReports() {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         handlePageSizeChange={handlePageSizeChange}
-        // showPageSizeSelect={false}
         pageSizeOptions={[
           { value: 4, label: "4 per page" },
           { value: 8, label: "8 per page" },

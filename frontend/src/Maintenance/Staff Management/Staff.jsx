@@ -14,7 +14,6 @@ function Staff() {
   const [roleFilter, setRoleFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
@@ -103,7 +102,7 @@ function Staff() {
 
 const handleEditSubmit = async (staff) => {
   if (!staff || !staff.id) {
-    throw new Error("Staff ID missing, cannot update."); // force error if no ID
+    throw new Error("Staff ID missing, cannot update."); // force error if no ID 
   }
 
   try {
@@ -267,5 +266,4 @@ const handleEditSubmit = async (staff) => {
     </Container>
   );
 }
-
 export default Staff;

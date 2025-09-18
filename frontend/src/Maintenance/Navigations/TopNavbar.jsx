@@ -6,7 +6,7 @@ import { io } from 'socket.io-client';
 import TextTruncate from '../../extra/TextTruncate';
 import FormatDate from '../../extra/DateFormat';
 import { PersonCircle } from 'react-bootstrap-icons';
-
+    
 function TopNavbar({ toggleSidebar }) {
   const { user, signOut } = useAuth();
 
