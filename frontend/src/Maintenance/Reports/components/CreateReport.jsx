@@ -147,13 +147,17 @@ const CreateReport = ({ show, handleClose, staff }) => {
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>Location</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    required
-                  />
+                 <Form.Control
+                  type="text"
+                  name="location"
+                  placeholder='Location'
+                  value={formData.location}
+                  onChange={(e) => { 
+                    const cleaned = e.target.value.trimStart(); 
+                    handleInputChange({ target: { name: e.target.name, value: cleaned } });
+                  }}
+                  required
+                />
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -214,6 +218,7 @@ const CreateReport = ({ show, handleClose, staff }) => {
             </Row>
             <Form.Group>
             {/* Search Staff */}
+            <Form.Label>Assign Staff<small className='text-muted'>(Optional)</small></Form.Label>
             <Form.Control
               type="text"
               placeholder="🔍 Search staff..."
@@ -265,8 +270,9 @@ const CreateReport = ({ show, handleClose, staff }) => {
                         }}
                         label={s.name}
                         className="me-2"
+                        style={{fontSize: '12px'}}
                       />
-                      <small className='text-muted'>{s.role}</small>
+                      <small className='text-muted' style={{fontSize: '10px'}}>{s.role}</small>
                     </div>
                   ))
               ) : (

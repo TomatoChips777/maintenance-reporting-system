@@ -55,18 +55,14 @@ router.get('/:user_id', async (req, res) => {
     `;
     const borrowersRankingResult = await db.queryAsync(borrowersRankingQuery);
 
-    const assistFrequencyQuery = `
-      SELECT assisted_by, COUNT(*) AS assist_count
-      FROM borrowed_items
-      WHERE assisted_by IS NOT NULL AND assisted_by != ''
-      GROUP BY assisted_by
-      ORDER BY assist_count DESC
-      LIMIT 10;
+    const assignedFrequencyQuery = `
+      SELECT ms.id, ms.name, 
+      COUNT(*) AS count FROM tbl_maintenance_reports tmr 
+      JOIN tbl_maintenance_staff ms ON FIND_IN_SET(ms.id, tmr.assigned_staff) > 0 
+      GROUP BY ms.id, ms.name ORDER BY count DESC LIMIT 10; 
     `;
-    const assistFrequencyResult = await db.queryAsync(assistFrequencyQuery);
+    const assignedFrequencyResult = await db.queryAsync(assignedFrequencyQuery);
 
-
-    
     const inventoryQuery = `
       SELECT item_name AS item, status, category, quantity AS total, quantity AS available
       FROM inventory_items
@@ -102,26 +98,66 @@ router.get('/:user_id', async (req, res) => {
     `;
     const reportsTodayList = await db.queryAsync(reportsTodayListQuery);
     // In Progress Reports (list)
-    const inProgressListQuery = `
-      SELECT tr.id, tr.location, tr.description, tmr.priority, tr.created_at, tr.updated_at, 
-      TIME_FORMAT(tr.updated_at, '%h:%i %p') AS time 
-      FROM tbl_maintenance_reports tmr 
-      LEFT JOIN tbl_reports tr ON tmr.report_id = tr.id
-      WHERE tr.status = 'In Progress' AND tr.archived = 0 ORDER BY tr.updated_at DESC LIMIT 10; 
+    // const inProgressListQuery = `
+    //   SELECT tr.id, tr.location, tr.description, tmr.priority, tr.created_at, tr.updated_at, 
+    //   TIME_FORMAT(tr.updated_at, '%h:%i %p') AS time 
+    //   FROM tbl_maintenance_reports tmr 
+    //   LEFT JOIN tbl_reports tr ON tmr.report_id = tr.id
+    //   WHERE tr.status = 'In Progress' AND tr.archived = 0 ORDER BY tr.updated_at DESC LIMIT 10; 
+    // `;
+    const inProgressListQuery = `SELECT 
+      tr.id, 
+      tr.location, 
+      tr.description, 
+      tmr.priority, 
+      tr.created_at, 
+      tr.updated_at,
+      TIME_FORMAT(tr.updated_at, '%h:%i %p') AS time,
+      GROUP_CONCAT(ms.name ORDER BY ms.name SEPARATOR ', ') AS assigned_staff_names
+      FROM tbl_maintenance_reports tmr
+      LEFT JOIN tbl_reports tr 
+        ON tmr.report_id = tr.id
+      LEFT JOIN tbl_maintenance_staff ms 
+        ON FIND_IN_SET(ms.id, tmr.assigned_staff) > 0
+      WHERE tr.status = 'In Progress' 
+        AND tr.archived = 0
+      GROUP BY tr.id, tr.location, tr.description, tmr.priority, tr.created_at, tr.updated_at
+      ORDER BY tr.updated_at DESC
+      LIMIT 10
     `;
     const inProgressList = await db.queryAsync(inProgressListQuery);
 
     // Recently Completed Reports (list)
-    const recentlyCompletedListQuery = `
-      SELECT tr.id, tr.location, tr.description, tmr.priority, tr.created_at, tr.updated_at,
-      TIME_FORMAT(tr.updated_at, '%h:%i %p') AS time
-      FROM tbl_maintenance_reports tmr LEFT JOIN tbl_reports tr
-      ON tmr.report_id = tr.id
-      WHERE tr.status IN ('Resolved', 'Completed')
-        AND tr.archived = 0
-      ORDER BY tr.updated_at DESC
-      LIMIT 10
-    `;
+    // const recentlyCompletedListQuery = `
+    //   SELECT tr.id, tr.location, tr.description, tmr.priority, tr.created_at, tr.updated_at,
+    //   TIME_FORMAT(tr.updated_at, '%h:%i %p') AS time
+    //   FROM tbl_maintenance_reports tmr LEFT JOIN tbl_reports tr
+    //   ON tmr.report_id = tr.id
+    //   WHERE tr.status IN ('Resolved', 'Completed')
+    //     AND tr.archived = 0
+    //   ORDER BY tr.updated_at DESC
+    //   LIMIT 10
+    // `;
+    const recentlyCompletedListQuery = `SELECT 
+  tr.id, 
+  tr.location, 
+  tr.description, 
+  tmr.priority, 
+  tr.created_at, 
+  tr.updated_at,
+  TIME_FORMAT(tr.updated_at, '%h:%i %p') AS time,
+  GROUP_CONCAT(ms.name ORDER BY ms.name SEPARATOR ', ') AS assigned_staff_names
+FROM tbl_maintenance_reports tmr
+LEFT JOIN tbl_reports tr 
+  ON tmr.report_id = tr.id
+LEFT JOIN tbl_maintenance_staff ms 
+  ON FIND_IN_SET(ms.id, tmr.assigned_staff) > 0
+WHERE tr.status IN ('Resolved', 'Completed') 
+  AND tr.archived = 0
+GROUP BY tr.id, tr.location, tr.description, tmr.priority, tr.created_at, tr.updated_at
+ORDER BY tr.updated_at DESC
+LIMIT 10;
+`
     const recentlyCompletedList = await db.queryAsync(recentlyCompletedListQuery);
 
     ;
@@ -205,7 +241,7 @@ router.get('/:user_id', async (req, res) => {
         yearly
       },
       borrowersRanking: borrowersRankingResult,
-      assistFrequency: assistFrequencyResult
+      assignedFrequency: assignedFrequencyResult
     });
 
   } catch (err) {

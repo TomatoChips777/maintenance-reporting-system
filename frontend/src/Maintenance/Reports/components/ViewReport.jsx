@@ -354,8 +354,9 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
                           }}
                           label={s.name}
                           className="me-2"
+                          style={{fontSize: '12px'}}
                         />
-                        <small className='text-muted'>{s.role}</small>
+                        <small className='text-muted' style={{fontSize: '10px'}}>{s.role}</small>
                       </div>
                     ))
                 ) : (

@@ -33,6 +33,7 @@ const LoginScreen = () => {
       );
       signIn(response.data);
     } catch (error) {
+      setPassword("");
       setError("Check your email or password");
     } finally {
       setLoading(false);
@@ -72,7 +73,7 @@ const LoginScreen = () => {
         >
           <Card.Body>
             <Card.Title className="mb-4 fs-3 fw-bold text-success">
-              Welcome To Campus Issue Reporting System
+              Welcome To Maintenance Reporting System
             </Card.Title>
             <Card.Text className="mb-4 text-muted">
               Sign in with Google or use your account credentials
@@ -106,26 +107,24 @@ const LoginScreen = () => {
               <span className="text-muted">or</span>
             </div>
             {/* Error Message */}
-            {error && (
-              <Alert
-                variant="danger"
-                style={{ borderRadius: "10px" }}
-                className="mt-3"
-              >
-                {error}
-              </Alert>
-            )}
+
             {/* Manual Login */}
             <Form onSubmit={handleManualLogin}>
               <Form.Group controlId="email" className="mb-3">
                 <Form.Control
                   type="email"
+                  className={`${error ? 'is-invalid' : ''}`}
                   placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); setError("") }}
                   required
                   style={{ borderRadius: "12px", padding: "12px" }}
                 />
+                {error && (
+                  <Form.Control.Feedback type="invalid">
+                    {error}
+                  </Form.Control.Feedback>
+                )}
               </Form.Group>
 
               <Form.Group controlId="password" className="mb-3">
@@ -137,6 +136,7 @@ const LoginScreen = () => {
                   required
                   style={{ borderRadius: "12px", padding: "12px" }}
                 />
+
               </Form.Group>
 
               <Button

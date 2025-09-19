@@ -231,7 +231,7 @@ const handleEditSubmit = async (staff) => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center">No users found.</td>
+                <td colSpan="7" className="text-center">No staff found.</td>
               </tr>
             )}
           </tbody>

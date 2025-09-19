@@ -34,7 +34,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
       <Modal.Body>
         <Form>
           {/* Name */}
-          <Form.Group className="mb-3 p-2">
+          <Form.Group className="mb-1 p-2">
             <Form.Label>Name</Form.Label>
             <Form.Control
               className="p-2 rounded-0"
@@ -50,7 +50,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
           </Form.Group>
 
           {/* Email */}
-          <Form.Group className="mb-3 p-2">
+          <Form.Group className="mb-1 p-2">
             <Form.Label>Email</Form.Label>
             <Form.Control
               className={`rounded-0 p-2 ${emailError ? 'is-invalid' : ''}`}
@@ -62,8 +62,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
                 const cleaned = e.target.value.replace(/\s/g, ""); // remove ALL spaces
                 handleChange({ target: { name: e.target.name, value: cleaned } });
                 setEmailError("");
-              }}zzs
-
+              }}
             />
             {emailError && (
               <Form.Control.Feedback type="invalid">
@@ -73,7 +72,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
           </Form.Group>
 
           {/* Contact Number */}
-          <Form.Group className="mb-3 p-2">
+          <Form.Group className="mb-1 p-2">
             <Form.Label>Contact Number</Form.Label>
             <Form.Control
               className="p-2 rounded-0"
@@ -89,7 +88,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
           </Form.Group>
 
           {/* Role */}
-          <Form.Group className="mb-3 p-2">
+          <Form.Group className="mb-1 p-2">
             <Form.Label>Role <small className='text-muted'>(Optional)</small></Form.Label>
             <Form.Control
               className="p-2 rounded-0"
@@ -111,7 +110,7 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
           </Form.Group>
 
           {/* Status */}
-          <Form.Group className="mb-3 p-2">
+          <Form.Group className="mb-1 p-2">
             <Form.Label>Status</Form.Label>
             <Form.Select
               className="p-2 rounded-0"
@@ -132,5 +131,4 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
     </Modal>
   );
 }
-
 export default AddStaffModal;

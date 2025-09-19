@@ -367,27 +367,29 @@ const Charts = ({ type, data }) => {
     );
   }
 
-  if (type === 'assistFrequency') {
-    const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
+  if (type === 'assignedStaffFrequency') {
 
     const chartData = data
       .map((record, index) => ({
-        assistant: `Staff ${index + 1}`,
-        name: record.assisted_by,
-        count: parseInt(record.assist_count, 10),
-        fill: colors[index % colors.length]
+        assistant: `Top ${index + 1}`,
+        name: record.name,
+        count: parseInt(record.count, 10),
+        fill: COLORS[index % COLORS.length]
       }));
 
     return (
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="assistant" />
+          <XAxis dataKey="assistant" tick={{ fontSize: 10, fill: '#999' }} />
           <YAxis />
+  
           <Tooltip
-            formatter={(value) => [`${value} assists`, 'Assisted']}
+            formatter={(value) => [`${value}`, 'Assigned Count']}
             labelFormatter={(label, payload) => `${payload[0]?.payload?.name}`}
+            contentStyle={{ fontSize: '10px'}}
           />
+
           <Bar dataKey="count">
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />

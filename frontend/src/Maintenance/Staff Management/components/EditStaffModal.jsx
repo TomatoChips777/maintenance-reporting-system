@@ -25,7 +25,7 @@ function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group className="mb-3 p-2">
+          <Form.Group className="mb-1 p-2">
             <Form.Label>Name</Form.Label>
             <Form.Control
               className="p-2 rounded-0"
@@ -41,7 +41,7 @@ function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles
             />
           </Form.Group>
 
-          <Form.Group className="mb-3 p-2">
+          <Form.Group className="mb-1 p-2">
             <Form.Label>Email</Form.Label>
             <Form.Control
               className={`rounded-0 p-2 ${emailError ? 'is-invalid' : ''}`}
@@ -62,7 +62,7 @@ function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles
             )}
           </Form.Group>
 
-          <Form.Group className="mb-3 p-2">
+          <Form.Group className="mb-1 p-2">
             <Form.Label>Role</Form.Label>
             <Form.Control
               type="text"
@@ -82,7 +82,7 @@ function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles
             </datalist>
           </Form.Group>
 
-          <Form.Group className="mb-3 p-2">
+          <Form.Group className="mb-1 p-2">
             <Form.Label>Status</Form.Label>
             <Form.Control
               className="p-2 rounded-0"

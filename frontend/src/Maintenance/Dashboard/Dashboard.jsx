@@ -16,7 +16,7 @@ const Dashboard = () => {
   const [inProgressReports, setInProgressReports] = useState([]); // holds reports with a status of in-progress
   const [recentlyCompletedReports, setRecentlyCompletedReports] = useState([]); // reports with completed status
   const [avgData, setAvgData] = useState([]);
-
+  const [assignedStaffFrequency, setAssignedStaffFrequency] = useState([]);
   
   // Fetch Data function
   const fetchData = async () => {
@@ -29,6 +29,7 @@ const Dashboard = () => {
         setRecentlyCompletedReports(res.data.recentlyCompletedList || []);
         setCategoryData(res.data.categoryData || []);
         setAvgData(res.data.trends);
+        setAssignedStaffFrequency(res.data.assignedFrequency || [])
         setLoading(false);
       })
       .catch(err => {
@@ -59,7 +60,7 @@ const Dashboard = () => {
     <div>
       <div className="d-flex justify-content-end align-items-center mb-3">
       </div>
-      <Card className="mb-4">
+      <Card className='mb-4'>
         <Card.Body>
 
           {/* Quick stats Overview */}
@@ -106,12 +107,10 @@ const Dashboard = () => {
               </Card>
             </Col>
           </Row>
-
-
            <Row className="mb-4">
             <Col>
               <Card className="mb-3">
-                <Card.Header className="fw-semibold text-primary d-flex justify-content-between">
+                <Card.Header className="fw-semibold d-flex justify-content-between">
                   Borrowers Frequency
                 </Card.Header>
                 <Card.Body>
@@ -119,11 +118,11 @@ const Dashboard = () => {
                 </Card.Body>
               </Card>
               <Card className="mb-3">
-                <Card.Header className="fw-semibold text-primary d-flex justify-content-between">
-                  Assist Frequencys
+                <Card.Header className="fw-semibold d-flex justify-content-between">
+                  Assigned Frequency
                 </Card.Header>
                 <Card.Body>
-                  <Charts type="assistFrequency" data={null} />
+                  <Charts type="assignedStaffFrequency" data={assignedStaffFrequency} />
                 </Card.Body>
               </Card>
             </Col>
@@ -184,6 +183,14 @@ const Dashboard = () => {
                         <ul className="mb-0">
                           <li>{report.description}</li>
                         </ul>
+                        {report.assigned_staff_names && (
+                          <>
+                          <small className='text-muted fw-bold'>Assigned Staff</small>
+                          <ul className='mb-0'>
+                            <li style={{fontWeight: 'lighter', fontSize: '12px'}}>{report.assigned_staff_names}</li>
+                          </ul>
+                          </>
+                        )}
                       </Accordion.Body>
                     </Accordion.Item>
                   ))}
@@ -198,7 +205,7 @@ const Dashboard = () => {
               Recently Completed Reports
             </Card.Header>
             <Card.Body>
-              {recentlyCompletedReports.length === 0 ? (
+              {recentlyCompletedReports?.length === 0 ? (
                 <p>No reports completed recently</p>
               ) : (
                 <Accordion flush>
@@ -207,15 +214,23 @@ const Dashboard = () => {
                       <Accordion.Header>
                         <div className="w-100 d-flex justify-content-between">
                           <span>{report.location}</span>
-                          <span>{FormatDate(report.updated_at, 'short')}  | {report.time}</span>
+                          <span>{FormatDate(report?.updated_at, 'short')}  | {report.time}</span>
                         </div>
                       </Accordion.Header>
                       <Accordion.Body>
                         <strong>Priority:</strong> {report.priority} <br />
                         <strong>Description:</strong>
                         <ul className="mb-0">
-                          <li>{report.description}</li>
+                          <li>{report?.description}</li>
                         </ul>
+                        {report?.assigned_staff_names && (
+                          <>
+                          <small className='text-muted fw-bold'>Assigned Staff</small>
+                          <ul className='mb-0'>
+                          <li style={{fontWeight: 'lighter', fontSize: '12px'}}>{report?.assigned_staff_names}</li>
+                          </ul>
+                          </>
+                        )}
                       </Accordion.Body>
                     </Accordion.Item>
                   ))}
@@ -224,7 +239,6 @@ const Dashboard = () => {
             </Card.Body>
 
             {/* <Charts type="resolutionTrends" data={avgData} /> */}
-
           </Card>
           {/* <DashboardInventoryCard inventoryData={inventoryData} /> */}
         </Col>
