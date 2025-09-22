@@ -1,10 +1,11 @@
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Spinner } from 'react-bootstrap';
 import { useState, useMemo } from 'react';
 
 function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles }) {
   const [emailError, setEmailError] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const handleSave = async () => {
+    setLoading(true);
     try {
       await onSave(staff);
       setEmailError("");
@@ -14,6 +15,8 @@ function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles
       } else {
         setEmailError("Something went wrong.");
       }
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -101,8 +104,8 @@ function EditStaffModal({ show, onHide, onSave, staff, handleChange, uniqueRoles
         <Button variant="secondary rounded-0" onClick={onHide}>
           Cancel
         </Button>
-        <Button variant="primary rounded-0" onClick={handleSave}>
-          Save Changes
+        <Button variant="primary rounded-0" onClick={handleSave} disabled={loading}>
+          {loading ? <Spinner animation='border'  size='sm' /> : 'Save Changes' } 
         </Button>
       </Modal.Footer>
     </Modal>

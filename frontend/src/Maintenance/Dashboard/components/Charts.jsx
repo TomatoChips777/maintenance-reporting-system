@@ -383,7 +383,7 @@ const Charts = ({ type, data }) => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="assistant" tick={{ fontSize: 10, fill: '#999' }} />
           <YAxis />
-  
+      
           <Tooltip
             formatter={(value) => [`${value}`, 'Assigned Count']}
             labelFormatter={(label, payload) => `${payload[0]?.payload?.name}`}

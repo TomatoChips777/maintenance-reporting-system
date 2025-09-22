@@ -1,10 +1,11 @@
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Spinner } from 'react-bootstrap';
 import { useState } from 'react';
 
 function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueRoles }) {
   const [emailError, setEmailError] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const handleSave = async () => {
+    setLoading(true);
     try {
       // clean input fields before saving
       const cleanedStaff = {
@@ -23,6 +24,8 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
       } else {
         setEmailError("Something went wrong.");
       }
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -126,7 +129,8 @@ function AddStaffModal({ show, onHide, onSubmit, newStaff, handleChange, uniqueR
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary rounded-0" onClick={onHide}>Cancel</Button>
-        <Button variant="primary rounded-0" onClick={handleSave}>Save</Button>
+        <Button variant="primary rounded-0" onClick={handleSave} disabled={loading}>
+          {loading ? <Spinner animation='border' size='sm'/> : 'Save'}</Button>
       </Modal.Footer>
     </Modal>
   );

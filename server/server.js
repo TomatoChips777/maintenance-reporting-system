@@ -79,9 +79,14 @@ const { checkUpcomingEvents } = require('./utils/checkEvent');
 setInterval(() => checkUpcomingEvents(io), 10 * 1000);
 
 
+// const port = 3000;
+// server.listen(port, () => {
+//     console.log(`Server is listening on http://localhost:${port}`);
+// });
+
 const port = 3000;
-server.listen(port, () => {
-    console.log(`Server is listening on http://localhost:${port}`);
+server.listen(port, "0.0.0.0", () => {
+  console.log(`Server is listening on http://0.0.0.0:${port}`);
 });
 
 io.on('connection', (socket) => {

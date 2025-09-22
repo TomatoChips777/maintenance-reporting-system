@@ -126,7 +126,7 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
         setShowError(true);
       }
     } catch (error) {
-      console.error("Failed to update report:", error);
+      // console.error("Failed to update report:", error);
       setErrorMessage("Failed to save changes. Please try again.");
       setShowError(true);
     } finally {
@@ -269,6 +269,7 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
                   <option value="Pending">Pending</option>
                   <option value="In Progress">In Progress</option>
                   <option value="Resolved">Resolved</option>
+                  <option value=""></option>
                 </Form.Select>
               </Form.Group>
             </Col>
