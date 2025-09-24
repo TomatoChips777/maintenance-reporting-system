@@ -161,6 +161,13 @@
   background-color: #8ec1de !important;
 }
 
+.custom-checkbox input[type="checkbox"]:checked {
+  background-color: #008000;
+  border-color: #004d00;
+}
+.custom-checkbox input[type="checkbox"]:focus {
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25); 
+}
 
 .btn-primary {
   --bs-btn-color: #fff;
@@ -310,5 +317,9 @@
 .bg-info      { background-color: #0099cc !important; }
 
 .bg-dark      { background-color: #222222 !important; }
+
+
+
+
 
 

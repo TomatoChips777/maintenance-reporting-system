@@ -5,24 +5,7 @@ import {
 } from 'recharts';
 import { Form } from 'react-bootstrap';
 
-// const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#a6cee3', '#b2df8a'];
-const COLORS = [
-  '#4C72B0', // Faded Blue
-  '#55A868', // Faded Green
-  '#C44E52', // Faded Red
-  '#8172B3', // Faded Purple
-  '#937860', // Faded Brown
-  '#64B5CD', // Faded Cyan
-  '#E3BA22', // Faded Gold/Yellow
-  '#DD8452', // Faded Orange
-  '#6D904F', // Olive Green
-  '#8C564B', // Muted Brick
-  '#BCBD22', // Mustard Green
-  '#17BECF', // Teal Blue
-  '#9C755F', // Tan
-  '#7F7F7F', // Classic Gray
-];
-
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#a6cee3', '#b2df8a'];
 
 const Charts = ({ type, data }) => {
   const [timeframe, setTimeframe] = useState('day');
@@ -62,7 +45,7 @@ const Charts = ({ type, data }) => {
     }, {});
   };
 
-  if (type === 'reportsFrequency') {
+  if (type === 'borrowingFrequency') {
     const groupedData = groupByTimeframe(data, 'created_at');
     const chartData = Object.entries(groupedData)
       .map(([key, count]) => ({ date: key, count }))
@@ -74,20 +57,19 @@ const Charts = ({ type, data }) => {
     return (
       <>
         <div className="d-flex justify-content-between align-items-center mb-2">
-          <p className="mb-0 text-muted" style={{ fontSize: '13px' }}>
+          <p className="mb-0 text-muted">
             <strong>Total Reports:</strong> {total} | <strong>Date Range:</strong> {firstDate} – {lastDate}
           </p>
           {renderTimeframeSelector()}
         </div>
-
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#999" }} />
+            <XAxis dataKey="date" />
             <YAxis allowDecimals={false} />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="count" stroke="#8ec1de" strokeWidth={3} />
+            <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={3} />
           </LineChart>
         </ResponsiveContainer>
       </>
@@ -114,76 +96,71 @@ const Charts = ({ type, data }) => {
       </ResponsiveContainer>
     );
   }
-  if (type === 'resolutionTrends') {
-    const [timeframe, setTimeframe] = useState('daily');
 
-    const trendData = data?.[timeframe] || [];
-
-    // Normalize keys for chart
-    const chartData = trendData.map(item => {
-      if (timeframe === 'daily') {
-        return { label: item.day, avg: Number(item.avg_resolution_hours) };
-      }
-      if (timeframe === 'weekly') {
-        return { label: `${item.year}-W${item.week}`, avg: Number(item.avg_resolution_hours) };
-      }
-      if (timeframe === 'monthly') {
-        return { label: `${item.year}-${item.month}`, avg: Number(item.avg_resolution_hours) };
-      }
-      if (timeframe === 'yearly') {
-        return { label: `${item.year}`, avg: Number(item.avg_resolution_hours) };
-      }
-      return { label: '', avg: 0 };
-    });
-
-    return (
-      <>
-        <div className="d-flex justify-content-between align-items-center mb-2">
-          <h6 className="mb-0 text-muted">Average Resolution Time (hours)</h6>
-          <Form.Select
-            value={timeframe}
-            onChange={(e) => setTimeframe(e.target.value)}
-            style={{ width: '150px' }}
-          >
-            <option value="daily">Per Day</option>
-            <option value="weekly">Per Week</option>
-            <option value="monthly">Per Month</option>
-            <option value="yearly">Per Year</option>
-          </Form.Select>
-        </div>
-
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" />
-            <YAxis />
-            <Tooltip formatter={(value) => [`${value.toFixed(2)} hrs`, "Avg Time"]} />
-            <Legend />
-            <Line type="monotone" dataKey="avg" stroke="#82ca9d" strokeWidth={3} />
-          </LineChart>
-        </ResponsiveContainer>
-      </>
-    );
-  }
-
-  if (type === 'reportStatus') {
+  // if (type === 'inventoryStatus') {
+  //   const statusCounts = data.reduce((acc, item) => {
+  //     acc[item.status] = (acc[item.status] || 0) + 1;
+  //     return acc;
+  //   }, {});
+  //   const statusChartData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
+  
+  //   const categoryCounts = data.reduce((acc, item) => {
+  //     const category = item.category || 'Uncategorized';
+  //     acc[category] = (acc[category] || 0) + 1;
+  //     return acc;
+  //   }, {});
+  //   const categoryChartData = Object.entries(categoryCounts).map(([name, value]) => ({ name, value }));
+  
+  //   return (
+  //     <div className="d-flex flex-column flex-md-row justify-content-around gap-4">
+  //       <div style={{ flex: 1 }}>
+  //         <h6 className="text-center">Inventory Status</h6>
+  //         <ResponsiveContainer width="100%" height={300}>
+  //           <PieChart>
+  //             <Pie data={statusChartData} dataKey="value" nameKey="name" outerRadius={100} label>
+  //               {statusChartData.map((_, idx) => (
+  //                 <Cell key={`status-${idx}`} fill={COLORS[idx % COLORS.length]} />
+  //               ))}
+  //             </Pie>
+  //             <Tooltip />
+  //           </PieChart>
+  //         </ResponsiveContainer>
+  //       </div>
+  //       <div style={{ flex: 1 }}>
+  //         <h6 className="text-center">Category Distribution</h6>
+  //         <ResponsiveContainer width="100%" height={300}>
+  //           <PieChart>
+  //             <Pie data={categoryChartData} dataKey="value" nameKey="name" outerRadius={100} label>
+  //               {categoryChartData.map((_, idx) => (
+  //                 <Cell key={`category-${idx}`} fill={COLORS[idx % COLORS.length]} />
+  //               ))}
+  //             </Pie>
+  //             <Tooltip />
+  //           </PieChart>
+  //         </ResponsiveContainer>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+  
+  if (type === 'inventoryStatus') {
     const statusCounts = data.reduce((acc, item) => {
       acc[item.status] = (acc[item.status] || 0) + 1;
       return acc;
     }, {});
     const statusChartData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
-
+  
     const categoryCounts = data.reduce((acc, item) => {
       const category = item.category || 'Uncategorized';
       acc[category] = (acc[category] || 0) + 1;
       return acc;
     }, {});
     const categoryChartData = Object.entries(categoryCounts).map(([name, value]) => ({ name, value }));
-
+  
     return (
       <div className="d-flex flex-column flex-md-row justify-content-around gap-4">
         <div style={{ flex: 1 }}>
-          <h6 className="text-center">Status</h6>
+          <h6 className="text-center">Inventory Status</h6>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -223,7 +200,7 @@ const Charts = ({ type, data }) => {
       </div>
     );
   }
-
+  
 
   if (type === 'borrowingByDepartment') {
     const grouped = data.reduce((acc, record) => {
@@ -331,7 +308,7 @@ const Charts = ({ type, data }) => {
       '#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1',
       '#a4de6c', '#d0ed57', '#d88884', '#888888', '#c6b4ce'
     ];
-
+  
     const chartData = data
       .map((record, index) => ({
         borrower: `User ${index + 1}`,
@@ -340,7 +317,7 @@ const Charts = ({ type, data }) => {
         fill: colors[index % colors.length] // cycle through colors if more than 10
       }))
       .slice(0, 10);
-
+  
     return (
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData}>
@@ -360,30 +337,28 @@ const Charts = ({ type, data }) => {
       </ResponsiveContainer>
     );
   }
-
-  if (type === 'assignedStaffFrequency') {
-
+  
+  if (type === 'assistFrequency') {
+    const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
+  
     const chartData = data
       .map((record, index) => ({
-        assistant: `Top ${index + 1}`,
-        name: record.name,
-        count: parseInt(record.count, 10),
-        fill: COLORS[index % COLORS.length]
+        assistant: `Staff ${index + 1}`,
+        name: record.assisted_by,
+        count: parseInt(record.assist_count, 10),
+        fill: colors[index % colors.length]
       }));
-
+  
     return (
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="assistant" tick={{ fontSize: 10, fill: '#999' }} />
+          <XAxis dataKey="assistant" />
           <YAxis />
-      
           <Tooltip
-            formatter={(value) => [`${value}`, 'Assigned Count']}
+            formatter={(value) => [`${value} assists`, 'Assisted']}
             labelFormatter={(label, payload) => `${payload[0]?.payload?.name}`}
-            contentStyle={{ fontSize: '10px'}}
           />
-
           <Bar dataKey="count">
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -393,7 +368,7 @@ const Charts = ({ type, data }) => {
       </ResponsiveContainer>
     );
   }
-
+  
   return <p className="text-muted">Invalid chart type.</p>;
 };
 

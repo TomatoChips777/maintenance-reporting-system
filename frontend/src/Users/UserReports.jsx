@@ -5,7 +5,10 @@ import axios from "axios";
 import FormatDate from "../extra/DateFormat";
 import PaginationControls from "../extra/Paginations";
 import { io } from "socket.io-client";
+import { useLocation, useNavigate } from "react-router-dom";
+
 function UserReports() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -122,9 +125,9 @@ function UserReports() {
       ) : (
 
         <ul className="list-group">
-          {currentData.map(report => (
+          {currentData.map((report, index) => (
             <li
-              key={report.id}
+              key={report.id || index}
               className="list-group-item p-4 mb-3 shadow-sm rounded-3 border-1 bg-white"
             >
               {/* Header */}
@@ -164,7 +167,9 @@ function UserReports() {
                 )}
                 <button
                   className="btn btn-sm btn-outline-primary"
-                  onClick={() => setExpandedReport(report)}
+                  // onClick={() => setExpandedReport(report)}
+                    onClick={() => navigate('/user/view-report', { state: { report, user } })}
+
                 >
                   View Details
                 </button>

@@ -145,7 +145,7 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
       setSaving(true);
       const response = await axios.put(
         `${import.meta.env.VITE_SEND_BACK_REPORT}/${report.id}`,
-        { reason: "Not related to this department" }
+        { reason: "Not related to this department", location: report?.location}
       );
 
       if (response.status === 200) {
@@ -354,7 +354,7 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
                             }));
                           }}
                           label={s.name}
-                          className="me-2"
+                          className="me-2 custom-checkbox"
                           style={{fontSize: '12px'}}
                         />
                         <small className='text-muted' style={{fontSize: '10px'}}>{s.role}</small>
@@ -368,17 +368,15 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          {/* {report?.status === 'Pending' && (
+          {report?.status === 'Pending' && (
             <Button variant="danger" onClick={handleSendBack} disabled={saving}>
               Send Back
             </Button>
-          )} */}
-          <Button variant="secondary" onClick={() =>{handleClose(); setSearchStaff('');}} disabled={saving}>
-            Close
-          </Button>
+          )}
           <Button variant="success" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save Changes"}
           </Button>
+          <Button variant='secondary' onClick={() => {handleClose(); setSearchStaff('');}} disabled={saving}>Close</Button>
         </Modal.Footer>
       </Modal>
 
@@ -413,7 +411,7 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
         <Modal.Body>
           <p>
             Are you sure you want to send this report back to the
-            <strong> Report Manager</strong>?
+            <strong> Report Approver</strong>?
           </p>
         </Modal.Body>
         <Modal.Footer>

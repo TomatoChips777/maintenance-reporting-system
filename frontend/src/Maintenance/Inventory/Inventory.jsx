@@ -34,7 +34,8 @@ function InventoryScreen({ handleAskButton }) {
       const response = await axios.get(`${import.meta.env.VITE_GET_INVENTORY_ITEM}`);
       setItems(response.data);
     } catch (error) {
-      console.log(error);
+      setLoading(false);
+      // console.log(error);
     } finally {
       setLoading(false);
     }
@@ -50,11 +51,7 @@ function InventoryScreen({ handleAskButton }) {
       socket.disconnect();
     };
   }, []);
-
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  // }, [search, statusFilter, itemsPerPage]);
-
+  
   const filteredItems = useMemo(() => {
     return items.filter(item => {
       const matchesSearch =

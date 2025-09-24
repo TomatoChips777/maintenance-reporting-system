@@ -9,11 +9,11 @@ function Sidebar({ sidebarOpen, activeLink, handleLinkClick }) {
     // Dagdagan kung kailangan
     const routeMap = {
       Dashboard: '/',
-      Staff: '/staff',
       Reports: '/reports',
       Inventory: '/inventory',
       Borrowing: '/borrowing',
       Notifications: '/notifications',
+      'Maintenance Reports': '/maintenance-reports',
     };
     navigate(routeMap[key]);
   };
@@ -22,16 +22,14 @@ function Sidebar({ sidebarOpen, activeLink, handleLinkClick }) {
     <div className={`sidebar bg-success text-white ${sidebarOpen ? '' : 'collapsed'}`}>
       <div className="sidebar-header text-center py-4">
         <i className="bi bi-box-fill fs-1 text-light"></i>
-        {/* {sidebarOpen && <h5 className="mt-2 mb-0">Maintenance System</h5>} */}
+        {/* {sidebarOpen && <h5 className="mt-2 mb-0">Report Management System</h5>} */}
       </div>
       <hr />
       <Nav className="flex-column">
         {[
           { key: 'Dashboard', icon: 'speedometer2' },
-          {key: 'Staff', icon: 'people-fill'},
           {key: 'Reports', icon: 'clipboard-data'},
-          { key: 'Inventory', icon: 'box-seam' },
-          { key: 'Borrowing', icon: 'arrow-left-right' },
+          {key: 'Maintenance Reports', icon: 'wrench-adjustable'},
           { key: 'Notifications', icon: 'bell' },
         ].map(({ key, icon }) => (
           <Nav.Link

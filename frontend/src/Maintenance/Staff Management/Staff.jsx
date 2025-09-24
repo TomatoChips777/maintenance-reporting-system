@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Container, Table, Form, Button, Row, Col, Card, Spinner } from 'react-bootstrap';
+import { Container, Table, Form, Button, Row, Col, Card, Spinner, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import PaginationControls from '../../extra/Paginations';
 import AddStaffModal from './components/AddStaffModal';
@@ -207,8 +207,14 @@ const handleEditSubmit = async (staff) => {
                   <Spinner animation="border" variant="primary" />
                 </td>
               </tr>
-            ) : currentData.length > 0 ? (
-              currentData.map(staff => (
+            ) : currentData.length === 0 ?(
+              <tr>
+                <td colSpan="7" className='text-center'>
+                <Alert variant='light' className='mb-0'>No records found.</Alert>
+                </td>
+              </tr>
+            ) : (
+                currentData.map(staff => (
                 <tr key={staff.id}>
                   <td>{staff.id}</td>
                   <td>{staff.name}</td>
@@ -217,6 +223,7 @@ const handleEditSubmit = async (staff) => {
                   <td className='text-center'>
                     <Form.Check
                       type="checkbox"
+                      className='custom-checkbox'
                       checked={staff.status === 1}
                       onChange={() => toggleStaffStatus(staff.id, staff.status)}
                     />
@@ -229,10 +236,6 @@ const handleEditSubmit = async (staff) => {
                   </td>
                 </tr>
               ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="text-center">No staff found.</td>
-              </tr>
             )}
           </tbody>
         </Table>

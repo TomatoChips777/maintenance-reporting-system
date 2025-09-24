@@ -9,6 +9,7 @@ import LoginScreen from './LoginScreen';
 import { useAuth } from '../AuthContext';
 import UserDashboard from './Users/UserDashboard';
 import MaintenanceApp from './Maintenance/MaintenanceApp';
+import ReportsApproverApp from './Reports Approver/ReportsApproverApp';
 function App() {
   const { isAuthenticated, isLoading, role } = useAuth();
   if (isLoading) return <div>Loading...</div>;
@@ -19,6 +20,8 @@ function App() {
         <MaintenanceApp />
       ) : isAuthenticated && role == 'User' ? (
         <UserDashboard />
+      ) : isAuthenticated && role =='Report Approver' ? (
+        <ReportsApproverApp />
       ) : (
         <Routes>
           <Route path="/" element={<LoginScreen />} />

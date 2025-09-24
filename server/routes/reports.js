@@ -97,7 +97,37 @@ router.get('/', (req, res) => {
 router.get('/get-user-reports/:userId', (req, res) => {
     const { userId } = req.params;
 
-    const query = `SELECT * FROM tbl_reports WHERE user_id = ? AND archived = 0 ORDER BY created_at DESC`;
+    // const query = `SELECT * FROM tbl_reports WHERE user_id = ? AND archived = 0 ORDER BY created_at DESC`;
+    // const query = `SELECT tr.*, tmr.* 
+    //     FROM tbl_reports tr
+    //     LEFT JOIN tbl_maintenance_reports tmr 
+    //         ON tr.id = tmr.report_id
+    //     WHERE tr.user_id = ?
+    //       AND tr.archived = 0
+    //     ORDER BY tr.created_at DESC`;
+    const query = `SELECT 
+        tr.id,
+        tr.user_id,
+        tr.location,
+        tr.report_type,
+        tr.description,
+        tr.image_path,
+        tr.status,
+        tr.is_anonymous,
+        tr.created_at,
+        tr.updated_at,
+        tr.viewed,
+        tr.archived,
+        tmr.id AS maintenance_id,
+        tmr.category,
+        tmr.priority,
+        tmr.assigned_staff
+        FROM tbl_reports tr
+        LEFT JOIN tbl_maintenance_reports tmr 
+        ON tr.id = tmr.report_id
+        WHERE tr.user_id = ?
+        AND tr.archived = 0
+        ORDER BY tr.created_at DESC;`
     db.query(query, [userId], (err, rows) => {
         if (err) {
             console.error("Error fetching user reports:", err);
@@ -325,12 +355,11 @@ router.put('/report/archive-report/:id', (req, res) => {
 
 router.put('/report/send-back/:id', (req, res) => {
     const { id } = req.params;
-    const { reason } = req.body;
-
+    const { reason, location } = req.body;
 
     const query1 = `UPDATE tbl_reports 
-                  SET report_type = ''
-                  WHERE id = ?`;
+                    SET report_type = ''
+                    WHERE id = ?`;
 
     const query2 = `DELETE FROM tbl_maintenance_reports WHERE report_id = ?`;
 
@@ -345,12 +374,102 @@ router.put('/report/send-back/:id', (req, res) => {
                 console.error("Error deleting from tbl_maintenance_reports:", err2);
                 return res.status(500).json({ success: false, message: "Failed to clean maintenance record" });
             }
-            req.io.emit('updateReports');
 
-            res.json({ success: true, message: "Report sent back to manager", reason });
+            // Step 2: Create a new notification
+            const notifMsg = `A report about ${location} has been returned.`;
+            const notifInsert = `INSERT INTO notifications (message, title) VALUES (?, "Returned Report")`;
+
+            db.query(notifInsert, [notifMsg], (err3, notifResult) => {
+                if (err3) {
+                    console.error("Error inserting notification:", err3);
+                    return res.status(500).json({ success: false, message: "Failed to create notification" });
+                }
+
+                const notifId = notifResult.insertId;
+                console.log("Notif Id", notifId);
+                // Step 3: Get all admins and staff
+                const getReceivers = `SELECT id FROM tbl_users WHERE role="admin" OR role="Report Approver"`;
+                db.query(getReceivers, (err4, receivers) => {
+                    if (err4) {
+                        console.error("Error fetching receivers:", err4);
+                        return res.status(500).json({ success: false, message: "Failed to fetch receivers" });
+                    }
+
+                    if (receivers.length > 0) {
+                        const receiverValues = receivers.map(user => [notifId, user.id, false]); // false = unread
+                        const insertReceivers = `INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?`;
+
+                        db.query(insertReceivers, [receiverValues], (err5) => {
+                            if (err5) {
+                                console.error("Error inserting notification receivers:", err5);
+                                return res.status(500).json({ success: false, message: "Failed to assign notifications" });
+                            }
+
+                            // Emit socket update
+                            req.io.emit('updateReports');
+                            req.io.emit('updateNotifications');
+                            return res.json({ success: true, message: "Report sent back to manager", reason });
+                        });
+                    } else {
+
+                        req.io.emit('updateReports');
+                        return res.json({ success: true, message: "Report sent back (no receivers found)", reason });
+                    }
+                });
+            });
         });
     });
 });
+
+// router.put('/report/send-back/:id', (req, res) => {
+//     const { id } = req.params;
+//     const { reason, location } = req.body;
+
+
+//     const query1 = `UPDATE tbl_reports 
+//                   SET report_type = ''
+//                   WHERE id = ?`;
+
+//     const query2 = `DELETE FROM tbl_maintenance_reports WHERE report_id = ?`;
+
+//     db.query(query1, [id], (err) => {
+//         if (err) {
+//             console.error("Error updating tbl_reports:", err);
+//             return res.status(500).json({ success: false, message: "Failed to reset report" });
+//         }
+
+//         db.query(query2, [id], (err2) => {
+//             if (err2) {
+//                 console.error("Error deleting from tbl_maintenance_reports:", err2);
+//                 return res.status(500).json({ success: false, message: "Failed to clean maintenance record" });
+//             }
+//             // Step 2: Create a new notification
+//             const notifMsg = `A report about${location} has been returned.`;
+//             const notifResult = db.queryAsync(
+//                 'INSERT INTO notifications (message, title) VALUES (?, "Returned Report")',
+//                 [notifMsg]
+//             );
+//             const notifId = notifResult.insertId;
+
+//             // Step 3: Get all admins and staff
+//             const receivers = db.queryAsync(
+//                 'SELECT id FROM tbl_users WHERE role="admin" OR role="staff"'
+//             );
+
+//             // Step 4: Insert one notification per receiver
+//             if (receivers.length > 0) {
+//                 const receiverValues = receivers.map(user => [notifId, user.id, false]); // false = unread
+//                 db.queryAsync(
+//                     'INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?',
+//                     [receiverValues]
+//                 );
+//             }
+//             req.io.emit('updateReports');
+
+//             res.json({ success: true, message: "Report sent back to manager", reason });
+//         });
+//     });
+// });
 
 router.post("/create", upload.single('image'), (req, res) => {
     const {
@@ -386,7 +505,7 @@ router.post("/create", upload.single('image'), (req, res) => {
             const maintenanceQuery = `
                 INSERT INTO tbl_maintenance_reports (report_id, category, priority, assigned_staff) 
                 VALUES (?, ?, ?, ?)`;
-            
+
             db.query(maintenanceQuery, [reportId, category, priority, assigned_staff], (err) => {
                 if (err) {
                     console.error("Error inserting into maintenance report:", err);
@@ -439,163 +558,6 @@ router.post("/create", upload.single('image'), (req, res) => {
     });
 });
 
-router.get('/reports-analytics', (req, res) => {
-    const query = `
-        SELECT r.*,
-        CASE 
-                WHEN r.is_anonymous = 1 THEN 'Anonymous'
-                ELSE u.name 
-            END AS reporter_name
-        FROM tbl_reports r 
-        JOIN tbl_users u ON r.user_id = u.id WHERE archived = 0 AND report_type = ''
-        ORDER BY r.created_at DESC`;
-    db.query(query, (err, rows) => {
-        if (err) {
-            console.error("Error fetching all reports:", err);
-            return res.status(500).json([]);
-        }
-        res.json(rows);
-    });
-});
 
-router.get('/incident-analytics', (req, res) => {
-    const query = `
-        SELECT r.id,r.user_id,r.location, r.description,r.image_path,r.status,r.is_anonymous,r.created_at,r.updated_at,r.archived ,ir.*,
-         CASE 
-                WHEN r.is_anonymous = 1 THEN 'Anonymous'
-                ELSE u.name 
-            END AS reporter_name
-
-        FROM tbl_reports r 
-        LEFT  JOIN tbl_users u ON r.user_id = u.id LEFT JOIN tbl_incident_reports ir ON r.id = ir.report_id WHERE report_type ='Incident Report' AND r.archived = 0;`;
-    db.query(query, (err, rows) => {
-        if (err) {
-            console.error("Error fetching all reports:", err);
-            return res.status(500).json([]);
-        }
-        res.json(rows);
-    });
-});
-
-router.get('/maintenance-analytics', (req, res) => {
-    const query = `
-        SELECT r.id,r.user_id,r.location, r.description,r.image_path,r.status,r.is_anonymous,r.created_at,r.updated_at,r.archived ,mr.*,
-                CASE 
-                WHEN r.is_anonymous = 1 THEN 'Anonymous'
-                ELSE u.name 
-            END AS reporter_name
-        FROM tbl_reports r 
-        LEFT  JOIN tbl_users u ON r.user_id = u.id
-        LEFT  JOIN tbl_maintenance_reports mr ON r.id = mr.report_id  WHERE report_type ='Maintenance Report' AND r.archived = 0;`;
-    db.query(query, (err, rows) => {
-        if (err) {
-            console.error("Error fetching all reports:", err);
-            return res.status(500).json([]);
-        }
-        res.json(rows);
-    });
-});
-
-router.get('/lost-and-found-analytics', async (req, res) => {
-    const itemsQuery = `
-        SELECT 
-            lf.*,
-            r.created_at,
-            CASE WHEN lf.is_anonymous = 1 THEN 'Anonymous' ELSE u.name END AS user_name,
-            COUNT(c.id) AS claim_count,
-            GROUP_CONCAT(c.status) AS claim_statuses
-        FROM tbl_lost_found lf
-        LEFT JOIN tbl_users u ON lf.user_id = u.id 
-        LEFT JOIN tbl_reports r ON lf.report_id = r.id
-        LEFT JOIN (SELECT * FROM tbl_claims WHERE status != 'rejected') c ON c.item_id = lf.id
-        WHERE lf.archived = 0
-            AND COALESCE(r.report_type, '') != '' 
-            AND lf.status = 'open' 
-            AND r.archived = 0
-        GROUP BY lf.id, u.name, r.created_at
-        ORDER BY lf.date_reported DESC
-    `;
-
-    const analyticsQuery = `
-        SELECT 'lost' AS type, COUNT(*) AS count FROM tbl_lost_found WHERE type = 'lost' AND archived = 0
-        UNION ALL
-        SELECT 'found' AS type, COUNT(*) AS count FROM tbl_lost_found WHERE type = 'found' AND archived = 0
-        UNION ALL
-        SELECT 'claimed' AS type, COUNT(*) AS count FROM tbl_lost_found WHERE status = 'claimed' AND archived = 0
-        UNION ALL
-        SELECT 'other' AS type, COUNT(*) AS count FROM tbl_lost_found WHERE status != 'claimed' AND archived = 0
-    `;
-
-    const claimedItemsQuery = `
-        SELECT 
-            lf.id AS item_id,
-            lf.item_name,
-            lf.type,
-            lf.category,
-            lf.description,
-            lf.report_id,
-            lf.location,
-            lf.status AS item_status,
-            lf.date_reported,
-            r.created_at,
-            CASE WHEN lf.is_anonymous = 1 THEN 'Anonymous' ELSE reporter.name END AS user_name,
-            c.id AS claim_id,
-            c.created_at AS claim_date,
-            claimer.name AS claimer_name,
-            holder.name AS holder_name,
-            c.remarks   
-        FROM tbl_claims c
-        LEFT JOIN tbl_lost_found lf ON c.item_id = lf.id
-        LEFT JOIN tbl_reports r ON lf.report_id = r.id
-        LEFT JOIN tbl_users reporter ON lf.user_id = reporter.id
-        LEFT JOIN tbl_users claimer ON c.claimer_id = claimer.id
-        LEFT JOIN tbl_users holder ON c.holder_id = holder.id
-        WHERE c.status = 'accepted' AND lf.archived = 0 
-        ORDER BY c.created_at DESC
-    `;
-
-    const claimsPerItemQuery = `
-        SELECT 
-            c.*, 
-            c.item_id,
-            claimer.name AS claimer_name,
-            holder.name AS holder_name
-        FROM tbl_claims c
-        LEFT JOIN tbl_users claimer ON c.claimer_id = claimer.id
-        LEFT JOIN tbl_users holder ON c.holder_id = holder.id
-        WHERE c.status != 'rejected'
-    `;
-
-    try {
-        const [items, analytics, claimedItems, allClaims] = await Promise.all([
-            fetchData(itemsQuery),
-            fetchData(analyticsQuery),
-            fetchData(claimedItemsQuery),
-            fetchData(claimsPerItemQuery)
-        ]);
-
-        // Organize claims by itemId
-        const claimsMap = {};
-        allClaims.forEach(claim => {
-            if (!claimsMap[claim.item_id]) {
-                claimsMap[claim.item_id] = [];
-            }
-            claimsMap[claim.item_id].push(claim);
-        });
-
-        res.json({
-            success: true,
-            data: {
-                items,
-                claims_by_item: claimsMap,
-                analytics_chart: analytics,
-                claimed_items: claimedItems
-            }
-        });
-    } catch (err) {
-        console.error('Error fetching all data:', err);
-        res.status(500).json({ success: false, message: 'Server Error', error: err });
-    }
-});
 
 module.exports = router;

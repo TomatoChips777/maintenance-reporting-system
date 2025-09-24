@@ -4,21 +4,15 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
 import Sidebar from './Navigations/Sidebar';
 import TopNavbar from './Navigations/TopNavbar';
-import BorrowingScreen from './Borrowing/BorrowingScreens';
-import EventManager from './Events/EventManager';
 import LoginScreen from '../LoginScreen';
 import { useAuth } from '../../AuthContext';
-import Inventory from './Inventory/Inventory';
 import Dashboard from './Dashboard/Dashboard';
 import Notifications from './Notifications/Notifications';
 import Reports from './Reports/Reports';
-import LandingPage from '../LandingPage';
-import Staff from './Staff Management/Staff';
-import ViewReportPage from './Reports/ViewReport';
-function MaintenanceApp() {
+import MaintenanceReports from './Maintenance Reports/Maintenance-Reports';
+function ReportsApproverApp() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeLink, setActiveLink] = useState(() => {
     return localStorage.getItem("activeLink") || "Dashboard";
@@ -31,13 +25,9 @@ function MaintenanceApp() {
 
     const routeMap = {
       '/': 'Dashboard',
-      '/inventory': 'Inventory',
-      '/users': 'Users',
-      '/borrowing': 'Borrowing',
       '/notifications': 'Notifications',
-      '/staff' : 'Staff',
       '/reports': 'Reports',
-      '/view-report': 'Reports',
+      '/maintenance-reports' : 'Maintenance Reports',
 
     };
     setActiveLink(routeMap[path] || 'Dashboard');
@@ -57,7 +47,7 @@ function MaintenanceApp() {
 
   return (
     <>
-      {isAuthenticated && role === 'Admin' ? (
+      {isAuthenticated && role === 'Report Approver' ? (
         <div className="layout">
           <Sidebar
             sidebarOpen={sidebarOpen}
@@ -70,11 +60,8 @@ function MaintenanceApp() {
               <Routes>
                 <>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path='/staff' element={<Staff/>} />
                   <Route path='/reports' element={<Reports />} />
-                  <Route path='/view-report' element={<ViewReportPage handleLinkClick={handleLinkClick}/>}/>
-                  <Route path="/inventory" element={<Inventory />} />
-                  <Route path="/borrowing" element={<BorrowingScreen />} />
+                  <Route  path='/maintenance-reports' element={<MaintenanceReports/>}/>
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="*" element={<Navigate to="/" />} />
                 </>
@@ -91,5 +78,4 @@ function MaintenanceApp() {
     </>
   );
 }
-export default MaintenanceApp;
- 
+export default ReportsApproverApp;

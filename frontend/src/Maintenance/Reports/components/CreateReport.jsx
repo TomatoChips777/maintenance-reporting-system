@@ -69,36 +69,6 @@ const CreateReport = ({ show, handleClose, staff }) => {
     }));
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-
-  //   const formDataObj = new FormData();
-  //   Object.entries({ ...formData, user_id: user?.id }).forEach(([key, value]) => {
-  //     if (value !== null && value !== undefined && value !== '') {
-  //       formDataObj.append(key, value);
-  //     }
-  //   });
-
-  //   try {
-  //     const response = await axios.post(
-  //       `${import.meta.env.VITE_CREATE_MAINTENANCE_REPORT}`,
-  //       formDataObj,
-  //       { headers: { 'Content-Type': 'multipart/form-data' } }
-  //     );
-
-  //     if (response.data.success) {
-  //       setShowSuccessModal(true);
-  //       handleClose();
-  //       resetForm();
-  //     }
-  //   } catch (error) {
-  //     console.log('Error creating report:', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -269,7 +239,7 @@ const CreateReport = ({ show, handleClose, staff }) => {
                           }));
                         }}
                         label={s.name}
-                        className="me-2"
+                        className="me-2 custom-checkbox"
                         style={{fontSize: '12px'}}
                       />
                       <small className='text-muted' style={{fontSize: '10px'}}>{s.role}</small>

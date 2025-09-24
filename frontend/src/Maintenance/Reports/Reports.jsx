@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Card, Col, Container, Row, Form, Button, Table } from 'react-bootstrap';
+import { Card, Col, Container, Row, Form, Button, Table, Alert, Spinner } from 'react-bootstrap';
 import PaginationControls from '../../extra/Paginations';
 import ViewReport from './components/ViewReport';
 import CreateReport from './components/CreateReport';
@@ -8,8 +8,10 @@ import axios from 'axios';
 import FormatDate from '../../extra/DateFormat';
 import TextTruncate from '../../extra/TextTruncate';
 import { io } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 function Reports() {
+    const navigate = useNavigate();
     const [reports, setReports] = useState([]);
     const [staff, setStaff] = useState([]);
     const [showViewModal, setShowViewModal] = useState(false);
@@ -22,28 +24,29 @@ function Reports() {
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [selectedReport, setSelectedReport] = useState('');
     const [reportToRemove, setReportToRemove] = useState('');
-
+    const [loading, setLoading] = useState(true);
     //fetch reports
     const fetchReports = async () => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_MAINTENANCE_REPORT}`);
-            setReports(response.data.reports);
+            setReports(response.data.reports || [] );
 
         } catch (error) {
+            setLoading(false);
             console.log("Error fetching reports:", error);
+        } finally {
+            setLoading(false);
         }
     }
 
-    const fetchStaff = async ()=>{
-        try{
+    const fetchStaff = async () => {
+        try {
             const response = await axios.get(`${import.meta.env.VITE_GET_MAINTENANCE_STAFF}`);
-            setStaff(response.data);
-        }catch(error){
+            setStaff(response.data || []);
+        } catch (error) {
 
         }
     }
-
-
     const filteredReports = useMemo(() => {
         return reports.filter(report => {
             const matchesSearch =
@@ -198,7 +201,21 @@ function Reports() {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentData.length > 0 ? (
+                        {loading ? (
+                            <tr>
+                                <td colSpan="8" className="text-center">
+                                    <Spinner animation='border' variant='primary'/>
+                                </td>
+                            </tr>
+                        ) : currentData.length === 0 ? (
+                            <tr>
+                                <td colSpan="8" className="text-center">
+                                    <Alert variant="light" className="mb-0">
+                                        No records found.
+                                    </Alert>
+                                </td>
+                            </tr>
+                        ) : (
                             currentData.map(report => (
                                 <tr key={report.id}>
                                     <td>{FormatDate(report.created_at)}</td>
@@ -206,38 +223,40 @@ function Reports() {
                                     <td><TextTruncate text={report.location} maxLength={30} /></td>
                                     <td><TextTruncate text={report.description} maxLength={50} /></td>
                                     <td>{report.category}</td>
-                                    <td>{report.priority}</td>
-                                    <td className='text-center'>
+                                    <td className="text-center">{report.priority}</td>
+                                    <td className="text-center">
                                         <span
                                             className={`badge rounded-0 ${report.status === "Pending"
-                                                ? "bg-warning text-dark"
-                                                : report.status === "In Progress"
-                                                    ? "bg-primary"
-                                                    : "bg-success"
+                                                    ? "bg-warning text-dark"
+                                                    : report.status === "In Progress"
+                                                        ? "bg-primary"
+                                                        : "bg-success"
                                                 }`}
                                         >
                                             {report.status}
                                         </span>
                                     </td>
-                                    <td className='text-center'>
-                                        <Button variant='info' size='sm' className='me-2' onClick={() => handleOpenViewModal(report)}>
-                                            <i className='bi bi-eye'></i>
+                                    <td className="text-center">
+                                        <Button
+                                            variant="info"
+                                            size="sm"
+                                            className="me-2"
+                                            onClick={() => handleOpenViewModal(report)}
+                                        >
+                                            <i className="bi bi-eye"></i>
                                         </Button>
-                                        <Button variant='danger' size='sm' onClick={() => handleShowAlert(report)}>
-                                            <i className='bi bi-trash'></i>
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            onClick={() => handleShowAlert(report)}
+                                        >
+                                            <i className="bi bi-trash"></i>
                                         </Button>
                                     </td>
                                 </tr>
                             ))
-
-                        ) : (
-                            <tr>
-                                <td colSpan="7" className="text-center">No records found.</td>
-                            </tr>
                         )}
-
                     </tbody>
-
                 </Table>
                 <Card.Footer>
                     <PaginationControls
@@ -249,7 +268,7 @@ function Reports() {
                     />
                 </Card.Footer>
             </Card>
-            
+
             {/* View Report Modal */}
             <ViewReport
                 show={showViewModal}

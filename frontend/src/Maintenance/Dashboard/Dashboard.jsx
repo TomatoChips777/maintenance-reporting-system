@@ -111,20 +111,22 @@ const Dashboard = () => {
             <Col>
               <Card className="mb-3">
                 <Card.Header className="fw-semibold d-flex justify-content-between">
-                  Borrowers Frequency
-                </Card.Header>
-                <Card.Body>
-                  <Charts type="borrowerRanking" data={null} />
-                </Card.Body>
-              </Card>
-              <Card className="mb-3">
-                <Card.Header className="fw-semibold d-flex justify-content-between">
                   Assigned Frequency
                 </Card.Header>
                 <Card.Body>
                   <Charts type="assignedStaffFrequency" data={assignedStaffFrequency} />
                 </Card.Body>
               </Card>
+              
+              <Card className="mb-3">
+                <Card.Header className="fw-semibold d-flex justify-content-between">
+                  Borrowers Frequency
+                </Card.Header>
+                <Card.Body>
+                  <Charts type="borrowerRanking" data={null} />
+                </Card.Body>
+              </Card>
+             
             </Col>
           </Row>
         </Col>

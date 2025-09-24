@@ -5,6 +5,7 @@ import ReportPage from "./ReportPage";
 import Notifications from "../Maintenance/Notifications/Notifications";
 import UserTopNavbar from "./UserTopNavbar"; 
 import UserReports from "./UserReports";
+import ViewReportPage from "./ViewReport";
 
 function UserDashboard() {
   return (
@@ -18,6 +19,7 @@ function UserDashboard() {
           <Route path="/user/report" element={<ReportPage />} />
           <Route path="/user/my-reports" element={<UserReports />} />
           <Route path="/user/notifications" element={<Notifications />} />
+          <Route path="/user/view-report" element={<ViewReportPage/>} />
           <Route path="*" element={<Navigate to="/user/report" replace />} />
         </Routes>
       </Container>

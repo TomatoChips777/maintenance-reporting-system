@@ -231,11 +231,10 @@ router.put('/update-staff/:staff_id', async (req, res) => {
             updates.push('role = ?');
             params.push(role);
         }
-        if (status !== undefined) {  
+        if (status !== undefined) {
             updates.push('status = ?');
             params.push(status);
         }
-
         if (updates.length === 0) {
             return res.status(400).json({ success: false, message: 'No fields to update' });
         }
@@ -284,7 +283,7 @@ router.post("/create-report", upload.single('image'), (req, res) => {
             console.error("Error inserting into tbl_reports:", err);
             return res.status(500).json({ success: false, message: "Failed to create base report" });
         }
-        
+
         const reportId = result.insertId;
 
         // Step 2: Insert into related table based on report_type
@@ -297,6 +296,25 @@ router.post("/create-report", upload.single('image'), (req, res) => {
                 if (err) {
                     console.error("Error inserting into maintenance report:", err);
                     return res.status(500).json({ success: false, message: "Failed to create maintenance report" });
+                }
+                const notifMsg = `A new report has been submitted about ${location}`;
+                const notifResult = db.queryAsync(
+                    'INSERT INTO notifications (message, title) VALUES (?, "New Report")',
+                    [notifMsg]
+                );
+                const notifId = notifResult.insertId;
+
+                const receivers = db.queryAsync(
+                    'SELECT id FROM tbl_users WHERE role="Admin" or role= "Maintenance Manager"'
+                );
+                if (receivers.length > 0) {
+                    const receiverValues = receivers.map(user => [notifId, user.id, false]);
+                    db.queryAsync(
+                        'INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?',
+                        [receiverValues]
+                    );
+                } else {
+                    console.log("Not executed");
                 }
                 req.io.emit('updateReports');
                 req.io.emit('update');
