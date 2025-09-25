@@ -20,6 +20,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+function logReportRemark(reportId, remark, action, updatedBy) {
+    const query = `
+        INSERT INTO tbl_report_remarks (report_id, remark, action, updated_by, created_at)
+        VALUES (?, ?, ?, ?, NOW())
+    `;
+    return db.queryAsync(query, [reportId, remark, action, updatedBy]);
+}
+
 router.post('/create-report', upload.single('image'), (req, res) => {
 
     if (!req.body.user_id || !req.body.location || !req.body.description) {
@@ -121,7 +129,8 @@ router.get('/get-user-reports/:userId', (req, res) => {
         tmr.id AS maintenance_id,
         tmr.category,
         tmr.priority,
-        tmr.assigned_staff
+        tmr.assigned_staff,
+        tmr.acknowledged_by
         FROM tbl_reports tr
         LEFT JOIN tbl_maintenance_reports tmr 
         ON tr.id = tmr.report_id
@@ -137,11 +146,177 @@ router.get('/get-user-reports/:userId', (req, res) => {
     });
 });
 
-router.put("/admin/edit-report-type/:reportId", (req, res) => {
-    const { report_type, priority, location, category } = req.body;
+
+router.get('/report/view-reports-by-id/:reportId', (req, res) => {
     const { reportId } = req.params;
+    const query = `SELECT 
+        tr.id,
+        tr.user_id,
+        tr.location,
+        tr.report_type,
+        tr.description,
+        tr.image_path,
+        tr.status,
+        tr.is_anonymous,
+        tr.created_at,
+        tr.updated_at,
+        tr.viewed,
+        tr.archived,
+        tmr.id AS maintenance_id,
+        tmr.category,
+        tmr.priority,
+        tmr.assigned_staff,
+        tmr.acknowledged_by
+        FROM tbl_reports tr
+        LEFT JOIN tbl_maintenance_reports tmr 
+        ON tr.id = tmr.report_id
+        WHERE tr.id = ?
+        AND tr.archived = 0
+        ORDER BY tr.created_at DESC;`
+    db.query(query, [reportId], (err, rows) => {
+        if (err) {
+            console.error("Error fetching user reports:", err);
+            return res.status(500).json({ success: false, message: "Failed to fetch reports" });
+        }
+        res.json({ success: true, reports: rows });
+    });
+});
+// router.put("/admin/edit-report-type/:reportId", (req, res) => {
+//     const { report_type, priority, location, category, acknowledged_by } = req.body;
+//     const { reportId } = req.params;
+//     const updateReportQuery = "UPDATE tbl_reports SET report_type = ? WHERE id = ?";
+//     db.query(updateReportQuery, [report_type, reportId], (err, result) => {
+//         if (err) {
+//             console.error("Error updating report type:", err);
+//             return res.status(500).json({ success: false, message: "Failed to update report type" });
+//         }
+
+//         if (report_type === "Maintenance") {
+//             const maintenanceQuery = `
+//                 INSERT INTO tbl_maintenance_reports (report_id, priority, category, acknowledged_by) 
+//                 VALUES (?, ?, ?, ?) 
+//                 ON DUPLICATE KEY UPDATE 
+//                 priority = ?, category = ?, acknowledged_by = ?`;
+
+
+//             db.query(
+//                 maintenanceQuery,
+//                 [reportId, priority, category, acknowledged_by, priority, category, acknowledged_by],
+//                 (err, maintenanceResult) => {
+//                     if (err) {
+//                         console.error("Error updating maintenance report:", err);
+//                         return res.status(500).json({ success: false, message: "Failed to update maintenance report" });
+//                     }
+
+//                     const notifMsg = `A new report has been submitted about ${location}.`;
+//                     const notifResult = db.queryAsync(
+//                         'INSERT INTO notifications (message, title) VALUES (?, "New Report")',
+//                         [notifMsg]
+//                     );
+//                     const notifId = notifResult.insertId;
+
+//                     // Step 3: Get all admins and staff
+//                     const receivers = db.queryAsync(
+//                         'SELECT id FROM tbl_users WHERE role="Maintenance Mananger"'
+//                     );
+
+//                     // Step 4: Insert one notification per receiver
+//                     if (receivers.length > 0) {
+//                         const receiverValues = receivers.map(user => [notifId, user.id, false]); // false = unread
+//                         db.queryAsync(
+//                             'INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?',
+//                             [receiverValues]
+//                         );
+//                     }
+//                     req.io.emit('updateReports');
+//                     req.io.emit('update');
+//                     res.json({ success: true, message: "Report updated successfully" });
+
+
+//                 }
+//             );
+//         } else if (report_type === "Lost And Found") {
+//             const lostFoundQuery = `
+//                 INSERT INTO tbl_lost_found (user_id, report_id, type, category, location, description, item_name, contact_info, is_anonymous) 
+//                 VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?) 
+//                 ON DUPLICATE KEY UPDATE 
+//                 type = ?, item_name = ?, contact_info = ?`;
+
+//             db.query(
+//                 lostFoundQuery,
+//                 [sender_id, reportId, type, category, location, description, item_name, contact_info, is_anonymous, type, item_name, contact_info],
+//                 (err, lostFoundResult) => {
+//                     if (err) {
+//                         console.error("Error updating lost and found report:", err);
+//                         return res.status(500).json({ success: false, message: "Failed to update lost and found report" });
+//                     }
+
+//                     const title = `${report_type}`;
+//                     const message = `New ${type.toLowerCase()} item reported: "${item_name}" at ${location}.`;
+
+//                     const notificationQuery = `
+//                         INSERT INTO tbl_admin_notifications (report_id, user_id, message, title) 
+//                         VALUES (?, ?, ?, ?)`;
+
+//                     db.query(notificationQuery, [reportId, sender_id, message, title], (err) => {
+//                         if (err) {
+//                             console.error("Error inserting notification:", err);
+//                         }
+//                     });
+
+//                     req.io.emit('update');
+//                     res.json({ success: true, message: "Report updated successfully" });
+//                 }
+//             );
+//         } else if (report_type === "Incident") {
+
+//             const incidentQuery = `
+//                 INSERT INTO tbl_incident_reports (report_id, category, priority, assigned_staff) 
+//                 VALUES (?, ?, ?, ?) 
+//                 ON DUPLICATE KEY UPDATE 
+//                 category = ?, priority = ?, assigned_staff = ?`;
+//             db.query(
+//                 incidentQuery,
+//                 [reportId, category, priority, assigned_staff, category, priority, assigned_staff],
+//                 (err, incidentResult) => {
+//                     if (err) {
+//                         console.error("Error updating incident report:", err);
+//                         return res.status(500).json({ success: false, message: "Failed to update incident report" });
+//                     }
+
+//                     const title = `${report_type}`;
+//                     const message = `New incident report: ${category} (${priority} priority) at ${location}.`;
+
+//                     const notificationQuery = `
+//                         INSERT INTO tbl_admin_notifications (report_id, user_id, message, title) 
+//                         VALUES (?, ?, ?, ?)`;
+
+//                     db.query(notificationQuery, [reportId, sender_id, message, title], (err) => {
+//                         if (err) {
+//                             console.error("Error inserting notification:", err);
+//                         }
+//                     });
+//                     req.io.emit('update'); // Notify frontend
+//                     res.json({ success: true, message: "Report updated successfully" });
+
+
+//                 }
+//             );
+//         } else {
+//             req.io.emit('update');
+//             res.json({ success: true, message: "Report type updated successfully" });
+//         }
+//     });
+//     req.io.emit('updateReports');
+//     req.io.emit('updateNotifications');
+// });
+
+router.put("/admin/edit-report-type/:reportId", (req, res) => {
+    const { report_type, priority, location, category, acknowledged_by, updated_by } = req.body;
+    const { reportId } = req.params;
+
     const updateReportQuery = "UPDATE tbl_reports SET report_type = ? WHERE id = ?";
-    db.query(updateReportQuery, [report_type, reportId], (err, result) => {
+    db.query(updateReportQuery, [report_type, reportId], (err) => {
         if (err) {
             console.error("Error updating report type:", err);
             return res.status(500).json({ success: false, message: "Failed to update report type" });
@@ -149,123 +324,39 @@ router.put("/admin/edit-report-type/:reportId", (req, res) => {
 
         if (report_type === "Maintenance") {
             const maintenanceQuery = `
-                INSERT INTO tbl_maintenance_reports (report_id, priority, category) 
-                VALUES (?, ?, ?) 
+                INSERT INTO tbl_maintenance_reports (report_id, priority, category, acknowledged_by) 
+                VALUES (?, ?, ?, ?) 
                 ON DUPLICATE KEY UPDATE 
-                priority = ?, category = ?`;
-
+                priority = ?, category = ?, acknowledged_by = ?
+            `;
 
             db.query(
                 maintenanceQuery,
-                [reportId, priority, category, priority, category],
-                (err, maintenanceResult) => {
+                [reportId, priority, category, acknowledged_by, priority, category, acknowledged_by],
+                async (err) => {
                     if (err) {
                         console.error("Error updating maintenance report:", err);
                         return res.status(500).json({ success: false, message: "Failed to update maintenance report" });
                     }
 
-                    const notifMsg = `A new report has been submitted about ${location}.`;
-                    const notifResult = db.queryAsync(
-                        'INSERT INTO notifications (message, title) VALUES (?, "New Report")',
-                        [notifMsg]
-                    );
-                    const notifId = notifResult.insertId;
-
-                    // Step 3: Get all admins and staff
-                    const receivers = db.queryAsync(
-                        'SELECT id FROM tbl_users WHERE role="Maintenance Mananger"'
-                    );
-
-                    // Step 4: Insert one notification per receiver
-                    if (receivers.length > 0) {
-                        const receiverValues = receivers.map(user => [notifId, user.id, false]); // false = unread
-                        db.queryAsync(
-                            'INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?',
-                            [receiverValues]
-                        );
+                    if (acknowledged_by) {
+                            await logReportRemark(
+                                reportId,
+                                `Report acknowledged`,
+                                "Acknowledged",
+                                acknowledged_by
+                            );
                     }
+                    req.io.emit('updateViewedReport');
                     req.io.emit('updateReports');
                     req.io.emit('update');
                     res.json({ success: true, message: "Report updated successfully" });
-
-
                 }
             );
-        } else if (report_type === "Lost And Found") {
-            const lostFoundQuery = `
-                INSERT INTO tbl_lost_found (user_id, report_id, type, category, location, description, item_name, contact_info, is_anonymous) 
-                VALUES (?, ?, ?, ?, ?, ? , ? , ?, ?) 
-                ON DUPLICATE KEY UPDATE 
-                type = ?, item_name = ?, contact_info = ?`;
-
-            db.query(
-                lostFoundQuery,
-                [sender_id, reportId, type, category, location, description, item_name, contact_info, is_anonymous, type, item_name, contact_info],
-                (err, lostFoundResult) => {
-                    if (err) {
-                        console.error("Error updating lost and found report:", err);
-                        return res.status(500).json({ success: false, message: "Failed to update lost and found report" });
-                    }
-
-                    const title = `${report_type}`;
-                    const message = `New ${type.toLowerCase()} item reported: "${item_name}" at ${location}.`;
-
-                    const notificationQuery = `
-                        INSERT INTO tbl_admin_notifications (report_id, user_id, message, title) 
-                        VALUES (?, ?, ?, ?)`;
-
-                    db.query(notificationQuery, [reportId, sender_id, message, title], (err) => {
-                        if (err) {
-                            console.error("Error inserting notification:", err);
-                        }
-                    });
-
-                    req.io.emit('update');
-                    res.json({ success: true, message: "Report updated successfully" });
-                }
-            );
-        } else if (report_type === "Incident") {
-
-            const incidentQuery = `
-                INSERT INTO tbl_incident_reports (report_id, category, priority, assigned_staff) 
-                VALUES (?, ?, ?, ?) 
-                ON DUPLICATE KEY UPDATE 
-                category = ?, priority = ?, assigned_staff = ?`;
-            db.query(
-                incidentQuery,
-                [reportId, category, priority, assigned_staff, category, priority, assigned_staff],
-                (err, incidentResult) => {
-                    if (err) {
-                        console.error("Error updating incident report:", err);
-                        return res.status(500).json({ success: false, message: "Failed to update incident report" });
-                    }
-
-                    const title = `${report_type}`;
-                    const message = `New incident report: ${category} (${priority} priority) at ${location}.`;
-
-                    const notificationQuery = `
-                        INSERT INTO tbl_admin_notifications (report_id, user_id, message, title) 
-                        VALUES (?, ?, ?, ?)`;
-
-                    db.query(notificationQuery, [reportId, sender_id, message, title], (err) => {
-                        if (err) {
-                            console.error("Error inserting notification:", err);
-                        }
-                    });
-                    req.io.emit('update'); // Notify frontend
-                    res.json({ success: true, message: "Report updated successfully" });
-
-
-                }
-            );
-        } else {
-            req.io.emit('update');
-            res.json({ success: true, message: "Report type updated successfully" });
         }
     });
-    req.io.emit('updateReports');
-    req.io.emit('updateNotifications');
 });
+
 router.put('/report/set-viewed-report/:id', (req, res) => {
     const { id } = req.params;
 
@@ -420,6 +511,72 @@ router.put('/report/send-back/:id', (req, res) => {
         });
     });
 });
+
+
+// Insert a remark for a report
+router.post('/report/add-progress-remarks/:id', (req, res) => {
+    const { id } = req.params; // report_id
+    const { action, remark, updated_by } = req.body;
+
+    if (!action || !updated_by) {
+        return res.status(400).json({
+            success: false,
+            message: "Action and updated_by are required."
+        });
+    }
+
+    const insertQuery = `
+        INSERT INTO tbl_report_remarks (report_id, action, remark, updated_by)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(insertQuery, [id, action, remark || null, updated_by], (err, result) => {
+        if (err) {
+            console.error("Error inserting remark:", err);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to insert remark"
+            });
+        }
+
+        // Emit socket for real-time update
+        // req.io.emit('updateRemarks', { reportId: id });
+        req.io.emit('updateViewedReport');
+        return res.json({
+            success: true,
+            message: "Remark added successfully",
+            remarkId: result.insertId
+        });
+    });
+});
+
+
+// Get all remarks for a report
+router.get('/report/get-report-remarks/:id', (req, res) => {
+    const { id } = req.params;
+
+    const query = `
+    SELECT 
+      rr.id,
+      rr.remark,
+      rr.action,
+      rr.created_at,
+      u.name AS updated_by
+    FROM tbl_report_remarks rr
+    LEFT JOIN tbl_users u ON rr.updated_by = u.id
+    WHERE rr.report_id = ?
+    ORDER BY rr.created_at DESC
+  `;
+
+    db.query(query, [id], (err, rows) => {
+        if (err) {
+            console.error("Error fetching remarks:", err);
+            return res.status(500).json({ success: false, message: "Server error" });
+        }
+        res.json({ success: true, remarks: rows });
+    });
+});
+
 
 // router.put('/report/send-back/:id', (req, res) => {
 //     const { id } = req.params;

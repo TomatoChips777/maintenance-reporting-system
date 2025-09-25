@@ -17,7 +17,7 @@ import Notifications from './Notifications/Notifications';
 import Reports from './Reports/Reports';
 import LandingPage from '../LandingPage';
 import Staff from './Staff Management/Staff';
-import ViewReportPage from './Reports/ViewReport';
+import ViewReportPage from './Reports/ViewReportPage';
 function MaintenanceApp() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeLink, setActiveLink] = useState(() => {
@@ -72,7 +72,7 @@ function MaintenanceApp() {
                   <Route path="/" element={<Dashboard />} />
                   <Route path='/staff' element={<Staff/>} />
                   <Route path='/reports' element={<Reports />} />
-                  <Route path='/view-report' element={<ViewReportPage handleLinkClick={handleLinkClick}/>}/>
+                  <Route path='/view-report' element={<ViewReportPage/>}/>
                   <Route path="/inventory" element={<Inventory />} />
                   <Route path="/borrowing" element={<BorrowingScreen />} />
                   <Route path="/notifications" element={<Notifications />} />

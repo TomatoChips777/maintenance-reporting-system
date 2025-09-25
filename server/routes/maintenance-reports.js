@@ -19,6 +19,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+function logReportRemark(reportId, remark, action, updatedBy) {
+    const query = `
+        INSERT INTO tbl_report_remarks (report_id, remark, action, updated_by, created_at)
+        VALUES (?, ?, ?, ?, NOW())
+    `;
+    return db.queryAsync(query, [reportId, remark, action, updatedBy]);
+}
+
 // Fetching all the maintenance-reports
 router.get('/', (req, res) => {
     const query = `
@@ -51,7 +59,7 @@ router.get('/', (req, res) => {
 
 router.put("/admin/edit/:reportId", async (req, res) => {
     try {
-        const { category, priority, status, assigned_staff } = req.body;
+        const { category, priority, status, assigned_staff, updated_by } = req.body;
         const { reportId } = req.params;
 
         // Step 1: Get current report with type
@@ -69,25 +77,88 @@ router.put("/admin/edit/:reportId", async (req, res) => {
         const { user_id: userId, location, status: oldStatus, report_type } = oldReportResult[0];
 
         // Step 2: Update status in tbl_reports
-        const updateReportQuery = `
-            UPDATE tbl_reports 
-            SET status = ?
-            WHERE id = ?
-        `;
-        await db.queryAsync(updateReportQuery, [status, reportId]);
+        await db.queryAsync(
+            `UPDATE tbl_reports SET status = ? WHERE id = ?`,
+            [status, reportId]
+        );
+
 
         // Step 3: If Maintenance, update tbl_maintenance_reports
         if (report_type === "Maintenance") {
-            const updateMaintenanceQuery = `
-                UPDATE tbl_maintenance_reports
-                SET category = ?, priority = ?, assigned_staff = ?
-                WHERE report_id = ?
-            `;
-            await db.queryAsync(updateMaintenanceQuery, [category, priority, assigned_staff ? assigned_staff : null, reportId]);
+            // Get old maintenance report data
+            const oldMaintResult = await db.queryAsync(
+                `SELECT category, priority, assigned_staff 
+         FROM tbl_maintenance_reports WHERE report_id = ?`,
+                [reportId]
+            );
+
+            let oldCategory = "", oldPriority = "", oldStaff = "";
+            if (oldMaintResult.length > 0) {
+                oldCategory = oldMaintResult[0].category || "";
+                oldPriority = oldMaintResult[0].priority || "";
+                oldStaff = oldMaintResult[0].assigned_staff || "";
+            }
+
+            // Update maintenance report
+            await db.queryAsync(
+                `UPDATE tbl_maintenance_reports
+         SET category = ?, priority = ?, assigned_staff = ?
+         WHERE report_id = ?`,
+                [category, priority, assigned_staff || null, reportId]
+            );
+
+            // Collect logs only for changes
+            if (oldCategory !== category) {
+                await logReportRemark(
+                    reportId,
+                    `Category changed from ${oldCategory || "None"} to ${category}`,
+                    "Update Category",
+                    updated_by
+                );
+            }
+
+            if (oldPriority !== priority) {
+                await logReportRemark(
+                    reportId,
+                    `Priority changed from ${oldPriority || "None"} to ${priority}`,
+                    "Update Priority",
+                    updated_by
+                );
+            }
+
+            if (oldStaff !== assigned_staff) {
+                // Resolve staff name(s)
+                let staffNames = "None";
+                if (assigned_staff) {
+                    const staffResult = await db.queryAsync(
+                        `SELECT GROUP_CONCAT(name SEPARATOR ', ') AS names 
+                 FROM tbl_maintenance_staff 
+                 WHERE FIND_IN_SET(id, ?)`,
+                        [assigned_staff]
+                    );
+                    staffNames = staffResult[0]?.names || "Unknown Staff";
+                }
+
+                await logReportRemark(
+                    reportId,
+                    `Assigned staff updated to ${staffNames}`,
+                    "Update Staff",
+                    updated_by
+                );
+            }
         }
 
-        // Step 4: Notifications only if status changed
+
+        // Step 4: Log status changes
         if (oldStatus !== status) {
+            await logReportRemark(
+                reportId,
+                `Status changed from ${oldStatus} to ${status}`,
+                "Updated Status",
+                updated_by
+            );
+
+            // Notifications only if status changed
             let notifMsg = "";
 
             switch (status) {
@@ -112,7 +183,6 @@ router.put("/admin/edit/:reportId", async (req, res) => {
                     notifMsg = `The status of your report about ${location} has been updated to ${status}.`;
             }
 
-            // Insert notification
             const notifInsert = await db.queryAsync(
                 'INSERT INTO notifications (message, title) VALUES (?, "Report Update")',
                 [notifMsg]
@@ -124,22 +194,113 @@ router.put("/admin/edit/:reportId", async (req, res) => {
                 [notifId, userId]
             );
 
-            // Emit socket events for notification
             req.io.emit('updateNotifications');
             req.io.emit('reportUpdatedNotification', { reportId, notifId, userId, message: notifMsg });
         }
 
-        // Always emit updateReports so UI refreshes
+        req.io.emit('updateViewedReport');
         req.io.emit('updateReports');
         req.io.emit('update');
+
         res.json({ success: true, message: "Report updated successfully" });
 
     } catch (err) {
         console.error("Error updating report:", err);
         res.status(500).json({ success: false, message: "Failed to update report" });
     }
-
 });
+
+// router.put("/admin/edit/:reportId", async (req, res) => {
+//     try {
+//         const { category, priority, status, assigned_staff } = req.body;
+//         const { reportId } = req.params;
+
+//         // Step 1: Get current report with type
+//         const oldReportResult = await db.queryAsync(
+//             `SELECT tr.user_id, tr.location, tr.status, tr.report_type
+//              FROM tbl_reports tr
+//              WHERE tr.id = ?`,
+//             [reportId]
+//         );
+
+//         if (oldReportResult.length === 0) {
+//             return res.status(404).json({ success: false, message: "Report not found" });
+//         }
+
+//         const { user_id: userId, location, status: oldStatus, report_type } = oldReportResult[0];
+
+//         // Step 2: Update status in tbl_reports
+//         const updateReportQuery = `
+//             UPDATE tbl_reports 
+//             SET status = ?
+//             WHERE id = ?
+//         `;
+//         await db.queryAsync(updateReportQuery, [status, reportId]);
+
+//         // Step 3: If Maintenance, update tbl_maintenance_reports
+//         if (report_type === "Maintenance") {
+//             const updateMaintenanceQuery = `
+//                 UPDATE tbl_maintenance_reports
+//                 SET category = ?, priority = ?, assigned_staff = ?
+//                 WHERE report_id = ?
+//             `;
+//             await db.queryAsync(updateMaintenanceQuery, [category, priority, assigned_staff ? assigned_staff : null, reportId]);
+//         }
+
+//         // Step 4: Notifications only if status changed
+//         if (oldStatus !== status) {
+//             let notifMsg = "";
+
+//             switch (status) {
+//                 case "In Progress":
+//                     if (oldStatus === "Resolved" || oldStatus === "Completed") {
+//                         notifMsg = `Your report about ${location} has been reopened and is back to In Progress.`;
+//                     } else {
+//                         notifMsg = `Your report about ${location} is now being worked on (In Progress).`;
+//                     }
+//                     break;
+
+//                 case "Resolved":
+//                 case "Completed":
+//                     notifMsg = `Your report about ${location} has been marked as ${status}.`;
+//                     break;
+
+//                 case "Pending":
+//                     notifMsg = `Your report about ${location} has been set back to Pending.`;
+//                     break;
+
+//                 default:
+//                     notifMsg = `The status of your report about ${location} has been updated to ${status}.`;
+//             }
+
+//             // Insert notification
+//             const notifInsert = await db.queryAsync(
+//                 'INSERT INTO notifications (message, title) VALUES (?, "Report Update")',
+//                 [notifMsg]
+//             );
+//             const notifId = notifInsert.insertId;
+
+//             await db.queryAsync(
+//                 'INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES (?, ?, false)',
+//                 [notifId, userId]
+//             );
+
+//             // Emit socket events for notification
+//             req.io.emit('updateNotifications');
+//             req.io.emit('reportUpdatedNotification', { reportId, notifId, userId, message: notifMsg });
+//         }
+
+//         // Always emit updateReports so UI refreshes
+//         req.io.emit('updateReports');
+//         req.io.emit('update');
+//         res.json({ success: true, message: "Report updated successfully" });
+
+//     } catch (err) {
+//         console.error("Error updating report:", err);
+//         res.status(500).json({ success: false, message: "Failed to update report" });
+//     }
+
+// });
 router.post('/add-staff', async (req, res) => {
     const { name, email, contact_number, role, status } = req.body;
     if (!email || !name) {

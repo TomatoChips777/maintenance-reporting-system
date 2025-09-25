@@ -2,14 +2,17 @@ import { Modal, Button, Row, Col, Form, Image } from 'react-bootstrap';
 import FormatDate from '../../../extra/DateFormat';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../../../AuthContext';
 
 const ViewReport = ({ show, handleClose, report }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     priority: '',
     status: '',
     report_type: '',
     location: '',
-    category: ''
+    category: '',
+    acknowledged_by: user?.id,
   });
   const [saving, setSaving] = useState(false);
 
@@ -29,6 +32,8 @@ const ViewReport = ({ show, handleClose, report }) => {
         report_type: report.report_type || '',
         location: report.location || '',
         category: formData.category || '',
+        acknowledged_by: user?.id,
+
       });
     }
   }, [report]);

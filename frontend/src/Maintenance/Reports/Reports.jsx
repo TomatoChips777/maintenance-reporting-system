@@ -73,6 +73,7 @@ function Reports() {
 
     useEffect(() => {
         fetchReports();
+        fetchStaff();
         const socket = io(`${import.meta.env.VITE_API_URL}`);
         socket.on('updateReports', () => {
             fetchReports();
@@ -96,6 +97,19 @@ function Reports() {
         setSelectedReport(report);
         setShowViewModal(true)
     };
+    const handleViewReportPage = async (report) =>{
+        if(report.viewed === 0){
+            try{
+                const response = await axios.put(`${import.meta.env.VITE_MARK_AS_VIEWED}/${report?.id}`);
+            }catch(error){
+
+            }
+        }
+        fetchStaff();
+        navigate('/view-report', {state: {report, staff}});
+        // console.log("Reports:", report, "Staff:", staff);
+        
+    }
     const handleCloseViewModal = () => {
         setShowViewModal(false);
     };
@@ -241,7 +255,9 @@ function Reports() {
                                             variant="info"
                                             size="sm"
                                             className="me-2"
-                                            onClick={() => handleOpenViewModal(report)}
+                                            // onClick={() => handleOpenViewModal(report)}
+                                            onClick={() => handleViewReportPage(report)}
+
                                         >
                                             <i className="bi bi-eye"></i>
                                         </Button>

@@ -22,7 +22,7 @@ function UserReports() {
   const fetchReports = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_GET_REPORTS_BY_ID}/${user?.id}`
+        `${import.meta.env.VITE_GET_REPORTS_BY_USER_ID}/${user?.id}`
       );
       setReports(response.data.reports);
     } catch (err) {
@@ -168,7 +168,7 @@ function UserReports() {
                 <button
                   className="btn btn-sm btn-outline-primary"
                   // onClick={() => setExpandedReport(report)}
-                    onClick={() => navigate('/user/view-report', { state: { report, user } })}
+                    onClick={() => navigate('/user/view-report', { state: { reportId: report.id, user } })}
 
                 >
                   View Details
