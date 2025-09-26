@@ -12,6 +12,9 @@ services:
     environment:
       - NODE_ENV=development
       - MYSQL_HOST=mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=rootpassword
+      - MYSQL_DATABASE=lc-maintenance-db
     depends_on:
       - mysql
 
@@ -31,10 +34,10 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: lc-its-db
+      MYSQL_DATABASE: lc-maintenance-db
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./lc-its-db.sql:/docker-entrypoint-initdb.d/lc-its-db.sql
+      - ./lc-maintenance-db.sql:/docker-entrypoint-initdb.d/lc-maintenance-db.sql
     networks:
       - app-network
     ports:
@@ -46,4 +49,3 @@ networks:
 
 volumes:
   mysql-data:
-

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 26, 2025 at 03:58 AM
+-- Generation Time: Sep 19, 2025 at 10:21 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -235,67 +235,7 @@ INSERT INTO `notifications` (`id`, `title`, `message`, `created_at`) VALUES
 (83, 'Report Update', 'Your report about test multiple staff has been marked as Resolved.', '2025-09-18 13:37:31'),
 (84, 'Report Update', 'Your report about  is now being worked on (In Progress).', '2025-09-19 10:54:06'),
 (85, 'Report Archived', 'Your report about  has been archived. Reason: No content', '2025-09-19 11:53:52'),
-(86, 'Report Archived', 'Your report about Test has been archived. Reason: Unknown content', '2025-09-19 12:47:33'),
-(87, 'New Report', 'A new report has been submitted about Test Notifications 2', '2025-09-24 09:15:50'),
-(88, 'New Report', 'A new report has been submitted about Test', '2025-09-24 09:21:36'),
-(89, 'New Report', 'A new report has been submitted about Test', '2025-09-24 09:24:19'),
-(90, 'New Report', 'A new report has been submitted about Test ', '2025-09-24 09:28:22'),
-(91, 'New Report', 'A new report has been submitted about Test Approver.', '2025-09-24 09:46:20'),
-(92, 'New Report', 'A new report has been submitted about Test Approver.', '2025-09-24 09:46:49'),
-(93, 'Report Archived', 'Your report about Test Approver has been archived. Reason: Test', '2025-09-24 09:53:52'),
-(94, 'Returned Report', 'Report about Test has been returned.', '2025-09-24 10:30:09'),
-(95, 'Returned Report', 'Report about Test notification has been returned.', '2025-09-24 10:30:36'),
-(96, 'Returned Report', 'A report aboutTest Location has been returned.', '2025-09-24 10:32:59'),
-(97, 'Returned Report', 'A report about test has been returned.', '2025-09-24 10:36:10'),
-(98, 'Returned Report', 'A report about Test Location has been returned.', '2025-09-24 10:38:38'),
-(99, 'Returned Report', 'A report about IT Services and Development Office has been returned.', '2025-09-24 10:38:46'),
-(100, 'Returned Report', 'A report about lcoalhost has been returned.', '2025-09-24 10:41:10'),
-(101, 'Returned Report', 'A report about aa a sdsa has been returned.', '2025-09-24 10:43:57'),
-(102, 'New Report', 'A new report has been submitted about Test .', '2025-09-24 11:29:50'),
-(103, 'New Report', 'A new report has been submitted about Test.', '2025-09-24 11:30:03'),
-(104, 'New Report', 'A new report has been submitted about Test.', '2025-09-24 11:30:12'),
-(105, 'Report Update', 'Your report about Test  is now being worked on (In Progress).', '2025-09-24 13:16:13'),
-(106, 'Report Update', 'Your report about Test  has been set back to Pending.', '2025-09-24 13:16:33'),
-(107, 'New Report', 'A new report has been submitted about Test Notifications 2.', '2025-09-24 13:20:18'),
-(108, 'Report Update', 'Your report about Test  is now being worked on (In Progress).', '2025-09-25 08:42:20'),
-(109, 'Report Update', 'Your report about Test is now being worked on (In Progress).', '2025-09-25 08:42:42'),
-(110, 'Report Update', 'Your report about   is now being worked on (In Progress).', '2025-09-25 09:00:28'),
-(111, 'Report Update', 'Your report about Test is now being worked on (In Progress).', '2025-09-25 09:05:51'),
-(112, 'Report Update', 'Your report about Test Notifications 2 is now being worked on (In Progress).', '2025-09-25 10:32:35'),
-(113, 'Report Update', 'Your report about   is now being worked on (In Progress).', '2025-09-25 10:32:48'),
-(114, 'Report Update', 'Your report about            has been marked as Resolved.', '2025-09-25 10:33:13'),
-(115, 'Report Update', 'Your report about asa is now being worked on (In Progress).', '2025-09-25 10:34:04'),
-(116, 'Report Update', 'Your report about  has been marked as Resolved.', '2025-09-25 10:34:49'),
-(117, 'Report Update', 'Your report about Library has been marked as Resolved.', '2025-09-25 10:35:44'),
-(118, 'Report Update', 'Your report about asdsadsa is now being worked on (In Progress).', '2025-09-25 10:37:37'),
-(119, 'Report Update', 'Your report about adsas is now being worked on (In Progress).', '2025-09-25 10:38:21'),
-(120, 'Report Update', 'Your report about test 1 is now being worked on (In Progress).', '2025-09-25 11:26:28'),
-(121, 'Report Update', 'Your report about wwwwwwwwwwwwwwww is now being worked on (In Progress).', '2025-09-25 11:26:43'),
-(122, 'Report Update', 'Your report about Test  is now being worked on (In Progress).', '2025-09-25 11:26:58'),
-(123, 'Report Update', 'Your report about test check box is now being worked on (In Progress).', '2025-09-25 11:27:08'),
-(124, 'Report Update', 'Your report about test multiple staff is now being worked on (In Progress).', '2025-09-25 11:27:25'),
-(125, 'Report Update', 'Your report about testasd is now being worked on (In Progress).', '2025-09-25 11:27:35'),
-(126, 'Report Update', 'Your report about Test  has been marked as Resolved.', '2025-09-25 13:20:10'),
-(127, 'Report Update', 'Your report about Test  has been reopened and is back to In Progress.', '2025-09-25 13:21:16'),
-(128, 'New Report', 'A new report has been submitted about Test notification.', '2025-09-25 13:37:08'),
-(129, 'New Report', 'A new report has been submitted about Test Location.', '2025-09-25 13:37:41'),
-(130, 'New Report', 'A new report has been submitted about test.', '2025-09-25 13:38:01'),
-(131, 'New Report', 'A new report has been submitted about Test Location.', '2025-09-25 13:38:20'),
-(132, 'New Report', 'A new report has been submitted about Test.', '2025-09-25 13:38:44'),
-(133, 'New Report', 'A new report has been submitted about IT Services and Development Office.', '2025-09-25 13:39:07'),
-(134, 'New Report', 'A new report has been submitted about lcoalhost.', '2025-09-25 14:02:20'),
-(135, 'New Report', 'A new report has been submitted about Test Status Progress.', '2025-09-25 15:17:46'),
-(136, 'Report Update', 'Your report about Test Status Progress is now being worked on (In Progress).', '2025-09-25 15:19:01'),
-(137, 'Report Update', 'Your report about Test Status Progress has been set back to Pending.', '2025-09-25 15:19:27'),
-(138, 'Report Update', 'Your report about Test Status Progress is now being worked on (In Progress).', '2025-09-26 08:19:15'),
-(139, 'Report Update', 'Your report about Test Status Progress has been set back to Pending.', '2025-09-26 08:20:42'),
-(140, 'Report Update', 'Your report about Test Status Progress has been marked as Resolved.', '2025-09-26 08:21:23'),
-(141, 'Report Update', 'Your report about Test  has been marked as Resolved.', '2025-09-26 08:23:00'),
-(142, 'Report Update', 'Your report about Test  has been reopened and is back to In Progress.', '2025-09-26 08:53:28'),
-(143, 'Report Update', 'Your report about Test Status Progress has been reopened and is back to In Progress.', '2025-09-26 09:04:31'),
-(144, 'Report Update', 'Your report about Test Status Progress has been marked as Resolved.', '2025-09-26 09:34:37'),
-(145, 'Report Update', 'Your report about lcoalhost is now being worked on (In Progress).', '2025-09-26 09:37:38'),
-(146, 'Report Update', 'Your report about test test teseter is now being worked on (In Progress).', '2025-09-26 09:41:24');
+(86, 'Report Archived', 'Your report about Test has been archived. Reason: Unknown content', '2025-09-19 12:47:33');
 
 -- --------------------------------------------------------
 
@@ -352,54 +292,10 @@ INSERT INTO `notification_receivers` (`id`, `notification_id`, `user_id`, `is_re
 (34, 80, 5, 0, NULL),
 (35, 81, 5, 0, NULL),
 (36, 82, 5, 0, NULL),
-(37, 83, 5, 1, NULL),
+(37, 83, 5, 0, NULL),
 (38, 84, 6, 0, NULL),
 (39, 85, 6, 0, NULL),
-(40, 86, 6, 0, NULL),
-(41, 93, 6, 0, NULL),
-(42, 97, 4, 0, NULL),
-(43, 97, 5, 0, NULL),
-(44, 98, 4, 0, NULL),
-(45, 98, 5, 0, NULL),
-(46, 99, 4, 0, NULL),
-(47, 99, 5, 0, NULL),
-(48, 100, 4, 0, NULL),
-(49, 100, 5, 0, NULL),
-(50, 101, 4, 0, NULL),
-(51, 101, 5, 0, NULL),
-(52, 105, 6, 0, NULL),
-(53, 106, 6, 0, NULL),
-(54, 108, 6, 0, NULL),
-(55, 109, 6, 0, NULL),
-(56, 110, 6, 0, NULL),
-(57, 111, 6, 0, NULL),
-(58, 112, 6, 0, NULL),
-(59, 113, 6, 0, NULL),
-(60, 114, 6, 0, NULL),
-(61, 115, 6, 0, NULL),
-(62, 116, 6, 0, NULL),
-(63, 117, 6, 0, NULL),
-(64, 118, 6, 0, NULL),
-(65, 119, 6, 1, NULL),
-(66, 120, 5, 0, NULL),
-(67, 121, 6, 0, NULL),
-(68, 122, 6, 0, NULL),
-(69, 123, 5, 0, NULL),
-(70, 124, 5, 0, NULL),
-(71, 125, 4, 0, NULL),
-(72, 126, 6, 0, NULL),
-(73, 127, 6, 0, NULL),
-(74, 136, 6, 0, NULL),
-(75, 137, 6, 0, NULL),
-(76, 138, 6, 0, NULL),
-(77, 139, 6, 0, NULL),
-(78, 140, 6, 0, NULL),
-(79, 141, 6, 1, NULL),
-(80, 142, 6, 1, NULL),
-(81, 143, 6, 1, NULL),
-(82, 144, 6, 0, NULL),
-(83, 145, 6, 0, NULL),
-(84, 146, 5, 0, NULL);
+(40, 86, 6, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -412,75 +308,62 @@ CREATE TABLE `tbl_maintenance_reports` (
   `report_id` int(11) NOT NULL,
   `category` enum('Electrical','Plumbing','Cleaning','General Repair','Others') DEFAULT 'Others',
   `priority` enum('Low','Medium','High','Urgent') DEFAULT 'Medium',
-  `assigned_staff` varchar(255) DEFAULT NULL,
-  `acknowledged_by` int(11) DEFAULT NULL
+  `assigned_staff` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tbl_maintenance_reports`
 --
 
-INSERT INTO `tbl_maintenance_reports` (`id`, `report_id`, `category`, `priority`, `assigned_staff`, `acknowledged_by`) VALUES
-(1, 17, 'Cleaning', 'Medium', '', 5),
-(10, 19, 'Cleaning', 'Urgent', '7', 5),
-(11, 18, 'General Repair', 'High', '', 5),
-(12, 15, 'Others', 'High', '12', 5),
-(13, 16, 'Electrical', 'Medium', NULL, 5),
-(14, 11, 'Cleaning', 'High', '', 5),
-(17, 22, 'Plumbing', 'Medium', '', 5),
-(18, 23, 'Cleaning', 'Medium', '', 5),
-(19, 24, 'Plumbing', 'High', '', 5),
-(20, 25, 'Plumbing', 'Medium', '', 5),
-(21, 26, 'General Repair', 'Medium', '2', 5),
-(22, 21, 'Plumbing', 'Low', NULL, 5),
-(23, 20, 'Cleaning', 'Medium', '', 5),
-(24, 27, 'Cleaning', 'Urgent', '', 5),
-(25, 14, 'Plumbing', 'Medium', '', 5),
-(26, 32, 'General Repair', 'Medium', '', 5),
-(27, 33, 'Plumbing', 'Medium', '', 5),
-(28, 34, 'Plumbing', 'Medium', NULL, 5),
-(29, 35, 'Electrical', 'High', '', 5),
-(30, 36, 'Cleaning', 'High', '', 5),
-(31, 37, 'Plumbing', 'High', '', 5),
-(32, 38, 'Electrical', 'Medium', '', 5),
-(33, 39, 'Plumbing', 'Medium', '', 5),
-(34, 40, 'Electrical', 'Low', '', 5),
-(35, 41, 'Cleaning', 'Low', '', 5),
-(36, 42, 'Plumbing', 'Medium', '', 5),
-(37, 43, 'Cleaning', 'Medium', '', 5),
-(38, 44, 'General Repair', 'Low', '1', 5),
-(39, 46, 'Electrical', 'Low', '1,2,3,4', 5),
-(40, 47, 'Electrical', 'Low', '2,3,1', 5),
-(41, 48, 'Electrical', 'Low', '1,2,3,4,7', 5),
-(42, 49, 'Plumbing', 'Low', '3', 5),
-(43, 50, 'Plumbing', 'Urgent', '1,2,3', 5),
-(44, 51, 'Cleaning', 'Medium', '1,2', 5),
-(45, 52, 'Cleaning', 'Medium', '1,,,4,,,5,2,3', 5),
-(46, 53, 'Cleaning', 'High', '4,6,7', 5),
-(47, 54, 'Plumbing', 'Low', '1,11,2,3,4,5,6,7,8,9,10', 5),
-(48, 55, 'Plumbing', 'Low', '1,2', 5),
-(49, 56, 'Plumbing', 'Medium', NULL, 5),
-(50, 57, 'Electrical', 'Low', '12', 5),
-(51, 58, 'Plumbing', 'High', '12', 5),
-(52, 59, 'Plumbing', 'Low', '1,2', 5),
-(53, 60, 'Electrical', 'Low', NULL, 5),
-(58, 65, NULL, NULL, NULL, 5),
-(67, 74, 'Electrical', 'Low', NULL, 5),
-(68, 73, 'General Repair', 'Urgent', '1,2,3', 5),
-(69, 72, 'General Repair', 'Urgent', NULL, 5),
-(70, 71, 'General Repair', 'Medium', '1,2', 5),
-(71, 70, 'General Repair', 'Medium', '1,2,3', 5),
-(72, 69, 'Plumbing', 'Medium', NULL, 5),
-(73, 68, 'Cleaning', 'Low', NULL, 5),
-(74, 67, 'General Repair', 'Medium', NULL, 5),
-(75, 66, 'Others', 'Low', NULL, 5),
-(76, 64, 'General Repair', 'Low', NULL, 5),
-(77, 63, 'General Repair', 'Medium', NULL, 5),
-(78, 62, 'Cleaning', 'Low', '1,2', 5),
-(79, 61, 'General Repair', 'Low', NULL, 5),
-(80, 31, 'General Repair', 'Medium', NULL, 5),
-(81, 30, 'General Repair', 'Medium', NULL, 5),
-(82, 75, 'Electrical', 'Low', '1,2', 5);
+INSERT INTO `tbl_maintenance_reports` (`id`, `report_id`, `category`, `priority`, `assigned_staff`) VALUES
+(1, 17, 'Cleaning', 'Medium', ''),
+(10, 19, 'Plumbing', 'Urgent', '7'),
+(11, 18, 'General Repair', 'High', ''),
+(12, 15, 'Others', 'High', '12'),
+(13, 16, 'Electrical', 'Medium', NULL),
+(14, 11, 'Cleaning', 'High', ''),
+(17, 22, 'Plumbing', 'Medium', ''),
+(18, 23, 'Cleaning', 'Medium', ''),
+(19, 24, 'Plumbing', 'High', ''),
+(20, 25, 'Plumbing', 'Medium', ''),
+(21, 26, 'General Repair', 'Medium', '2'),
+(22, 21, 'Plumbing', 'Low', ''),
+(23, 20, 'Cleaning', 'Medium', ''),
+(24, 27, 'Cleaning', 'Urgent', ''),
+(25, 14, 'Plumbing', 'Medium', ''),
+(26, 32, 'General Repair', 'Medium', ''),
+(27, 33, 'Plumbing', 'Medium', ''),
+(28, 34, 'Plumbing', 'Medium', ''),
+(29, 35, 'Electrical', 'High', ''),
+(30, 36, 'Cleaning', 'High', ''),
+(31, 37, 'Plumbing', 'High', ''),
+(32, 38, 'Electrical', 'Medium', ''),
+(33, 39, 'Plumbing', 'Medium', ''),
+(34, 40, 'Electrical', 'Low', ''),
+(35, 41, 'Cleaning', 'Low', ''),
+(36, 42, 'Plumbing', 'Medium', ''),
+(37, 43, 'Cleaning', 'Medium', ''),
+(38, 44, 'Plumbing', 'Low', '1'),
+(39, 46, 'Electrical', 'Low', '1,2,3,4'),
+(40, 47, 'Electrical', 'Low', '2'),
+(41, 48, 'Electrical', 'Low', '1,2,3,4,7'),
+(42, 49, 'Plumbing', 'Low', '3'),
+(43, 50, 'Plumbing', 'Low', '1,3'),
+(44, 51, 'Electrical', 'Low', '1'),
+(45, 52, 'Cleaning', 'Medium', '1,4,5'),
+(46, 53, 'Plumbing', 'Low', '4,6,7'),
+(47, 54, 'Plumbing', 'Low', '1,11,2,3,4,5,6,7,8,9,10'),
+(48, 55, 'Plumbing', 'Low', '1,2'),
+(49, 56, NULL, NULL, NULL),
+(50, 57, 'Electrical', 'Low', '12'),
+(51, 58, 'Electrical', 'Low', '12'),
+(52, 59, NULL, NULL, NULL),
+(53, 60, NULL, NULL, NULL),
+(54, 61, NULL, NULL, NULL),
+(55, 62, 'Electrical', 'Low', '12,1'),
+(56, 63, NULL, NULL, NULL),
+(57, 64, NULL, NULL, NULL),
+(58, 65, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -531,7 +414,7 @@ CREATE TABLE `tbl_reports` (
   `report_type` varchar(100) NOT NULL,
   `description` text NOT NULL,
   `image_path` varchar(255) DEFAULT NULL,
-  `status` enum('Pending','Acknowledged','In Progress','Resolved') DEFAULT 'Pending',
+  `status` enum('Pending','In Progress','Resolved') DEFAULT 'Pending',
   `is_anonymous` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -557,11 +440,11 @@ INSERT INTO `tbl_reports` (`id`, `user_id`, `location`, `report_type`, `descript
 (14, 6, 'test', 'Maintenance', 'test', '1757491981194.jpg', 'Pending', 0, '2025-09-10 08:13:01', '2025-09-16 01:54:26', 1, 0),
 (15, 5, 'La Union', 'Maintenance', 'Test Report Form', NULL, 'Resolved', 0, '2025-09-11 00:47:02', '2025-09-17 01:29:20', 1, 0),
 (16, 5, 'test', 'Maintenance', 'test', NULL, 'Pending', 0, '2025-09-11 00:49:27', '2025-09-17 03:31:54', 1, 0),
-(17, 5, 'test', 'Maintenance', 'test', NULL, 'In Progress', 0, '2025-09-11 00:49:47', '2025-09-25 01:29:37', 1, 0),
+(17, 5, 'test', 'Maintenance', 'test', NULL, 'In Progress', 0, '2025-09-11 00:49:47', '2025-09-12 02:28:55', 0, 0),
 (18, 6, 'Test Empty Category', 'Maintenance', 'Test Empty Category', '1757554457172.jpg', 'In Progress', 1, '2025-09-11 01:34:17', '2025-09-17 01:29:27', 1, 0),
 (19, 6, 'Test', 'Maintenance', '{expandedReport && (\r\n  <Modal show onHide={() => setExpandedReport(null)} size=\"lg\" centered>\r\n    <Modal.Header closeButton>\r\n      <Modal.Title className=\"fw-bold\">Report Details</Modal.Title>\r\n    </Modal.Header>\r\n    <Modal.Body>\r\n      <Row>\r\n        {/* Image Section */}\r\n        <Col md={5} className=\"mb-3\">\r\n          {expandedReport.image_path ? (\r\n            <Image\r\n              src={`${import.meta.env.VITE_IMAGES}/${expandedReport.image_path}`}\r\n              alt=\"Report\"\r\n              fluid\r\n              rounded\r\n              className=\"border\"\r\n              style={{ maxHeight: \"300px\", objectFit: \"cover\", width: \"100%\" }}\r\n            />\r\n          ) : (\r\n            <div className=\"d-flex align-items-center justify-content-center border rounded bg-light\" style={{ height: \"300px\" }}>\r\n              <span className=\"text-muted\">No Image Available</span>\r\n            </div>\r\n          )}\r\n        </Col>\r\n\r\n        {/* Details Section */}\r\n        <Col md={7}>\r\n          <h5 className=\"fw-bold mb-2\">{expandedReport.location}</h5>\r\n          <span\r\n            className={`badge px-3 py-2 fs-6 mb-3 ${\r\n              expandedReport.status === \"Pending\"\r\n                ? \"bg-warning text-dark\"\r\n                : expandedReport.status === \"In Progress\"\r\n                ? \"bg-primary\"\r\n                : \"bg-success\"\r\n            }`}\r\n          >\r\n            {expandedReport.status}\r\n          </span>\r\n\r\n          <p className=\"text-muted mb-1\">\r\n            <strong>Reported on:</strong> {FormatDate(expandedReport.created_at)}\r\n          </p>\r\n\r\n          <hr />\r\n\r\n          <p>\r\n            <strong>Description:</strong>\r\n            <br />\r\n            {expandedReport.description}\r\n          </p>\r\n        </Col>\r\n      </Row>\r\n    </Modal.Body>\r\n    <Modal.Footer>\r\n      <button\r\n        className=\"btn btn-secondary\"\r\n        onClick={() => setExpandedReport(null)}\r\n      >\r\n        Close\r\n      </button>\r\n    </Modal.Footer>\r\n  </Modal>\r\n)}\r\n', '1757559178366.jpg', 'Resolved', 0, '2025-09-11 02:52:58', '2025-09-17 01:29:23', 1, 0),
 (20, 6, 'Location', 'Maintenance', 'Location', '1757644886830.jpg', 'Pending', 1, '2025-09-12 02:41:26', '2025-09-15 07:08:09', 1, 0),
-(21, 6, 'Test ', 'Maintenance', 'Test Description', NULL, 'In Progress', 1, '2025-09-12 07:34:28', '2025-09-25 03:26:58', 1, 0),
+(21, 6, 'Test ', 'Maintenance', 'Test Description', NULL, 'Pending', 1, '2025-09-12 07:34:28', '2025-09-15 08:15:38', 1, 0),
 (22, 4, 'Test', 'Maintenance', 'Sample', NULL, 'In Progress', 0, '2025-09-12 08:01:32', '2025-09-18 05:39:43', 1, 0),
 (23, 4, 'Test', 'Maintenance', 'Sampole', NULL, 'In Progress', 0, '2025-09-12 08:02:27', '2025-09-16 05:31:46', 1, 0),
 (24, 4, 'test', 'Maintenance', 'Sample', NULL, 'In Progress', 0, '2025-09-12 08:03:15', '2025-09-18 05:39:45', 1, 0),
@@ -570,172 +453,42 @@ INSERT INTO `tbl_reports` (`id`, `user_id`, `location`, `report_type`, `descript
 (27, 6, 'Test Multiple Forms', 'Maintenance', 'Testing Multiple Forms', '1757900825003.jpg', 'In Progress', 0, '2025-09-15 01:47:05', '2025-09-16 01:03:57', 1, 0),
 (28, 6, 'Test', '', 'Test', NULL, 'Pending', 1, '2025-09-16 01:14:06', '2025-09-16 01:14:06', 0, 0),
 (29, 6, 'Test 09-16-2025', '', 'Test 09-16-2025', NULL, 'Pending', 0, '2025-09-16 03:32:18', '2025-09-16 03:32:18', 0, 0),
-(30, 6, 'Test 09-16-2025', 'Maintenance', 'Test 09-16-2025', '1757993699754.jpg', 'Pending', 0, '2025-09-16 03:34:59', '2025-09-25 06:23:26', 1, 0),
-(31, 6, 'Test 09-16-2025', 'Maintenance', 'Test 09-16-2025', '1757993807494.jpg', 'Pending', 1, '2025-09-16 03:36:47', '2025-09-25 06:20:56', 1, 0),
+(30, 6, 'Test 09-16-2025', '', 'Test 09-16-2025', '1757993699754.jpg', 'Pending', 0, '2025-09-16 03:34:59', '2025-09-16 03:34:59', 0, 0),
+(31, 6, 'Test 09-16-2025', '', 'Test 09-16-2025', '1757993807494.jpg', 'Pending', 1, '2025-09-16 03:36:47', '2025-09-16 03:36:47', 0, 0),
 (32, 6, 'report_type', 'Maintenance', 'report_type', '1757993938915.jpg', 'In Progress', 0, '2025-09-16 03:38:58', '2025-09-16 03:57:11', 1, 0),
 (33, 4, 'aasdsa', 'Maintenance', 'aasddasassad', '1758001183243.jpg', 'Pending', 0, '2025-09-16 05:39:43', '2025-09-16 05:39:53', 1, 0),
-(34, 4, 'testasd', 'Maintenance', 'asdasdsadsadasasadasd', NULL, 'In Progress', 0, '2025-09-16 07:23:13', '2025-09-25 03:27:35', 1, 0),
+(34, 4, 'testasd', 'Maintenance', 'asdasdsadsadasasadasd', NULL, 'Pending', 0, '2025-09-16 07:23:13', '2025-09-16 07:37:56', 1, 0),
 (35, 4, 'asdsad', 'Maintenance', 'asdsadsadasd', NULL, 'In Progress', 0, '2025-09-16 07:32:24', '2025-09-16 07:32:24', 0, 0),
-(36, 4, 'sadsa', 'Maintenance', 'asdsadsa', NULL, 'In Progress', 0, '2025-09-16 07:33:36', '2025-09-25 01:29:21', 1, 0),
+(36, 4, 'sadsa', 'Maintenance', 'asdsadsa', NULL, 'In Progress', 0, '2025-09-16 07:33:36', '2025-09-16 07:33:36', 0, 0),
 (37, 4, 'aa', 'Maintenance', 'aaaaa', NULL, 'In Progress', 0, '2025-09-16 07:36:17', '2025-09-17 01:17:33', 1, 0),
 (38, 4, 'asdas', 'Maintenance', 'asdasasdads', NULL, 'In Progress', 0, '2025-09-16 07:37:18', '2025-09-17 01:16:28', 1, 0),
 (39, 4, 'asdas', 'Maintenance', 'asdsadasd', NULL, 'In Progress', 0, '2025-09-16 07:48:34', '2025-09-17 01:16:27', 1, 0),
 (40, 5, 'sadasdas', 'Maintenance', 'asdasadasda', NULL, 'In Progress', 0, '2025-09-17 01:21:41', '2025-09-17 01:21:41', 0, 0),
 (41, 5, 'Test', 'Maintenance', 'asdasdasdasdas', NULL, 'In Progress', 0, '2025-09-17 01:23:57', '2025-09-17 01:23:57', 0, 0),
-(42, 5, 'tester', 'Maintenance', 'asdsadasdasdasd tester', NULL, 'In Progress', 0, '2025-09-17 01:25:08', '2025-09-25 03:03:55', 1, 0),
+(42, 5, 'tester', 'Maintenance', 'asdsadasdasdasd tester', NULL, 'In Progress', 0, '2025-09-17 01:25:08', '2025-09-17 01:25:08', 0, 0),
 (43, 5, 'asdsada', 'Maintenance', 'test tester', NULL, 'Pending', 0, '2025-09-17 01:27:19', '2025-09-17 01:27:33', 1, 0),
-(44, 5, 'test test teseter', 'Maintenance', 'test test teseter', NULL, 'In Progress', 0, '2025-09-17 01:32:34', '2025-09-26 01:41:24', 1, 0),
+(44, 5, 'test test teseter', 'Maintenance', 'test test teseter', NULL, 'Pending', 0, '2025-09-17 01:32:34', '2025-09-17 01:32:37', 1, 0),
 (45, 5, 'test multiple staff', 'Maintenance', 'test multiple staff', NULL, 'Resolved', 0, '2025-09-17 01:37:17', '2025-09-18 05:37:31', 1, 0),
-(46, 5, 'test multiple staff', 'Maintenance', 'test multiple staff', NULL, 'In Progress', 0, '2025-09-17 01:39:47', '2025-09-25 03:27:25', 1, 0),
-(47, 5, 'test 1', 'Maintenance', 'test 1', NULL, 'In Progress', 0, '2025-09-17 01:40:35', '2025-09-25 03:26:28', 1, 0),
-(48, 5, 'test check box', 'Maintenance', 'test', '1758073974926.jpg', 'In Progress', 0, '2025-09-17 01:52:54', '2025-09-25 03:27:08', 1, 0),
+(46, 5, 'test multiple staff', 'Maintenance', 'test multiple staff', NULL, 'Pending', 0, '2025-09-17 01:39:47', '2025-09-17 01:40:41', 1, 0),
+(47, 5, 'test 1', 'Maintenance', 'test 1', NULL, 'Pending', 0, '2025-09-17 01:40:35', '2025-09-17 01:40:38', 1, 0),
+(48, 5, 'test check box', 'Maintenance', 'test', '1758073974926.jpg', 'Pending', 0, '2025-09-17 01:52:54', '2025-09-17 03:33:00', 1, 0),
 (49, 6, 'Demo location', 'Maintenance', 'Demo Description', NULL, 'In Progress', 0, '2025-09-17 02:22:23', '2025-09-17 03:31:39', 1, 0),
-(50, 6, 'wwwwwwwwwwwwwwww', 'Maintenance', 'wwwwwwwwww', NULL, 'In Progress', 0, '2025-09-17 07:14:58', '2025-09-25 03:26:43', 1, 0),
-(51, 6, 'adsas', 'Maintenance', 'asdsadasdasdas', NULL, 'In Progress', 0, '2025-09-17 07:16:22', '2025-09-25 02:38:21', 1, 0),
-(52, 6, 'asdsadsa', 'Maintenance', 'asdasdsa', NULL, 'In Progress', 0, '2025-09-17 07:16:29', '2025-09-25 02:37:37', 1, 0),
-(53, 6, 'asa', 'Maintenance', 'asdasdsas', NULL, 'In Progress', 1, '2025-09-17 07:18:09', '2025-09-25 02:34:04', 1, 0),
+(50, 6, 'wwwwwwwwwwwwwwww', 'Maintenance', 'wwwwwwwwww', NULL, 'Pending', 0, '2025-09-17 07:14:58', '2025-09-18 02:47:26', 1, 0),
+(51, 6, 'adsas', 'Maintenance', 'asdsadasdasdas', NULL, 'Pending', 0, '2025-09-17 07:16:22', '2025-09-18 03:43:37', 1, 0),
+(52, 6, 'asdsadsa', 'Maintenance', 'asdasdsa', NULL, 'Pending', 0, '2025-09-17 07:16:29', '2025-09-17 08:08:27', 1, 0),
+(53, 6, 'asa', 'Maintenance', 'asdasdsas', NULL, 'Pending', 1, '2025-09-17 07:18:09', '2025-09-17 08:06:55', 1, 0),
 (54, 5, 'Test', 'Maintenance', 'Test', NULL, 'In Progress', 0, '2025-09-18 03:26:11', '2025-09-18 03:42:16', 1, 0),
-(55, 6, 'Library', 'Maintenance', 'Test Report', NULL, 'Resolved', 0, '2025-09-18 05:00:33', '2025-09-25 02:35:44', 1, 0),
-(56, 6, '          ', 'Maintenance', '           ', NULL, 'Resolved', 0, '2025-09-18 06:58:59', '2025-09-25 02:33:13', 1, 0),
+(55, 6, 'Library', 'Maintenance', 'Test Report', NULL, 'Pending', 0, '2025-09-18 05:00:33', '2025-09-18 05:00:39', 1, 0),
+(56, 6, '          ', 'Maintenance', '           ', NULL, 'Pending', 0, '2025-09-18 06:58:59', '2025-09-18 06:58:59', 0, 0),
 (57, 6, '', 'Maintenance', '', NULL, 'In Progress', 0, '2025-09-18 07:01:38', '2025-09-19 03:53:52', 1, 1),
-(58, 6, '', 'Maintenance', '', NULL, 'Resolved', 0, '2025-09-18 07:02:53', '2025-09-25 02:34:49', 1, 0),
-(59, 6, ' ', 'Maintenance', '    ', NULL, 'In Progress', 0, '2025-09-18 07:19:38', '2025-09-25 01:00:28', 1, 0),
-(60, 6, ' ', 'Maintenance', '     ', NULL, 'In Progress', 0, '2025-09-18 07:19:55', '2025-09-25 02:32:48', 1, 0),
-(61, 6, 'aa a sdsa', 'Maintenance', 'asdasd     sdd          dasdasdsadadsadsada          dsadsadasdasdsadasdsaasdasdasdasdasdsaasds', NULL, 'Pending', 0, '2025-09-18 07:33:08', '2025-09-25 06:14:27', 1, 0),
-(62, 6, 'lcoalhost', 'Maintenance', 'Test.        test         TEST', NULL, 'In Progress', 1, '2025-09-19 00:51:02', '2025-09-26 01:37:38', 1, 0),
-(63, 6, 'IT Services and Development Office', 'Maintenance', 'IT Services And Development Office', NULL, 'Pending', 1, '2025-09-19 03:44:46', '2025-09-25 05:51:44', 1, 0),
-(64, 6, 'Test', 'Maintenance', '|               |\r\n|               |\r\n|               |\r\n----------\r\n', NULL, 'Pending', 1, '2025-09-19 03:49:26', '2025-09-25 05:51:44', 1, 0),
-(65, 6, 'Test', 'Maintenance', '_________________\r\n|                              |\r\n|                              |\r\n|                              |\r\n|                              |\r\n|                              |\r\n--------------------', NULL, 'Pending', 0, '2025-09-19 03:50:53', '2025-09-19 04:47:33', 1, 1),
-(66, 6, 'Test Location', 'Maintenance', 'Test Description', NULL, 'Pending', 1, '2025-09-22 01:23:56', '2025-09-25 05:51:44', 1, 0),
-(67, 6, 'test', 'Maintenance', 'test', NULL, 'Pending', 0, '2025-09-22 03:45:07', '2025-09-25 05:51:44', 1, 0),
-(68, 5, 'Test Location', 'Maintenance', 'Test Description', NULL, 'Pending', 0, '2025-09-24 00:52:31', '2025-09-25 05:51:44', 1, 0),
-(69, 6, 'Test notification', 'Maintenance', 'Test Notification', NULL, 'Pending', 0, '2025-09-24 01:04:06', '2025-09-25 05:51:44', 1, 0),
-(70, 6, 'Test Notifications 2', 'Maintenance', 'Test Notifications 2', NULL, 'In Progress', 0, '2025-09-24 01:15:50', '2025-09-25 02:32:35', 1, 0),
-(71, 6, 'Test', 'Maintenance', 'Test', NULL, 'In Progress', 0, '2025-09-24 01:21:36', '2025-09-25 01:05:51', 1, 0),
-(72, 6, 'Test', 'Maintenance', 'Test', NULL, 'In Progress', 0, '2025-09-24 01:24:19', '2025-09-25 00:42:42', 1, 0),
-(73, 6, 'Test ', 'Maintenance', 'Test', NULL, 'In Progress', 0, '2025-09-24 01:28:22', '2025-09-26 00:53:28', 1, 0),
-(74, 6, 'Test Approver', 'Maintenance', 'Test Approver', NULL, 'Pending', 0, '2025-09-24 01:46:20', '2025-09-24 01:53:52', 1, 1),
-(75, 6, 'Test Status Progress', 'Maintenance', 'Test Status Progress', NULL, 'Resolved', 0, '2025-09-25 07:17:46', '2025-09-26 01:34:37', 1, 0);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tbl_report_remarks`
---
-
-CREATE TABLE `tbl_report_remarks` (
-  `id` int(11) NOT NULL,
-  `report_id` int(11) NOT NULL,
-  `action` varchar(100) NOT NULL,
-  `remark` text DEFAULT NULL,
-  `updated_by` int(11) DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tbl_report_remarks`
---
-
-INSERT INTO `tbl_report_remarks` (`id`, `report_id`, `action`, `remark`, `updated_by`, `created_at`) VALUES
-(1, 70, 'Pending', 'test', 4, '2025-09-25 09:54:35'),
-(2, 17, 'In Progress', 'test', 4, '2025-09-25 09:59:43'),
-(3, 60, 'Pending', 'Testing', 4, '2025-09-25 10:03:08'),
-(4, 70, 'update_maintenance', 'Updated category to Cleaning, priority to Medium, assigned staff to 1,2', 4, '2025-09-25 10:11:43'),
-(5, 70, 'Update Maintenance', 'Updated category to Cleaning, priority to Medium, assigned staff to Staff 00', 4, '2025-09-25 10:14:19'),
-(6, 70, 'Pending', 'Test Progress Remarks', 4, '2025-09-25 10:15:04'),
-(7, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00', 4, '2025-09-25 10:16:36'),
-(8, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00', 4, '2025-09-25 10:16:59'),
-(9, 70, 'Pending', 'test', 4, '2025-09-25 10:18:07'),
-(10, 70, 'Pending', 'test', 4, '2025-09-25 10:23:35'),
-(11, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00', 4, '2025-09-25 10:23:47'),
-(12, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00', 4, '2025-09-25 10:24:08'),
-(13, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 10:26:32'),
-(14, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 10:27:22'),
-(15, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00, Staff 01, Staff 02, Staff 03', 4, '2025-09-25 10:29:07'),
-(16, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00, Staff 01, Staff 02, Staff 03, Staff 04', 4, '2025-09-25 10:29:14'),
-(17, 70, 'Pending', 'test', 4, '2025-09-25 10:29:29'),
-(18, 70, 'Pending', 'test', 4, '2025-09-25 10:29:33'),
-(19, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00, Staff 01, Staff 02, Staff 03', 4, '2025-09-25 10:30:10'),
-(20, 70, 'Update Maintenance', 'Updated category to General Repair, priority to High, assigned staff to Staff 00', 4, '2025-09-25 10:31:07'),
-(21, 70, 'Update Maintenance', 'Updated category to General Repair, priority to High, assigned staff to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 10:31:20'),
-(22, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Urgent, assigned staff to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 10:32:03'),
-(23, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 10:32:35'),
-(24, 70, 'update_status', 'Status changed from Pending to In Progress', 4, '2025-09-25 10:32:35'),
-(25, 70, 'Update Maintenance', 'Updated category to General Repair, priority to Medium, assigned staff to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 10:32:40'),
-(26, 60, 'Update Maintenance', 'Updated category to Electrical, priority to Low, assigned staff to None', 4, '2025-09-25 10:32:48'),
-(27, 60, 'update_status', 'Status changed from Pending to In Progress', 4, '2025-09-25 10:32:48'),
-(28, 56, 'Update Maintenance', 'Updated category to Plumbing, priority to Medium, assigned staff to None', 4, '2025-09-25 10:33:13'),
-(29, 56, 'update_status', 'Status changed from Pending to Resolved', 4, '2025-09-25 10:33:13'),
-(30, 53, 'Update Maintenance', 'Updated category to Plumbing, priority to High, assigned staff to Staff 03, Staff 05, Staff 06', 4, '2025-09-25 10:33:55'),
-(31, 53, 'Update Maintenance', 'Updated category to Plumbing, priority to High, assigned staff to Staff 03, Staff 05, Staff 06', 4, '2025-09-25 10:34:04'),
-(32, 53, 'update_status', 'Status changed from Pending to In Progress', 4, '2025-09-25 10:34:04'),
-(33, 53, 'Update Maintenance', 'Updated category to Cleaning, priority to High, assigned staff to Staff 03, Staff 05, Staff 06', 4, '2025-09-25 10:34:22'),
-(34, 58, 'Update Maintenance', 'Updated category to Plumbing, priority to High, assigned staff to Staff 11', 4, '2025-09-25 10:34:49'),
-(35, 58, 'update_status', 'Status changed from Pending to Resolved', 4, '2025-09-25 10:34:49'),
-(36, 55, 'Update Maintenance', 'Updated category to Plumbing, priority to Low, assigned staff to Staff 00, Staff 01', 4, '2025-09-25 10:35:44'),
-(37, 55, 'Updated Status', 'Status changed from Pending to Resolved', 4, '2025-09-25 10:35:44'),
-(38, 52, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-25 10:37:37'),
-(39, 52, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01, Staff 02, Staff 03, Staff 04', 4, '2025-09-25 10:37:59'),
-(40, 51, 'Update Category', 'Category changed from Electrical to Cleaning', 4, '2025-09-25 10:38:21'),
-(41, 51, 'Update Priority', 'Priority changed from Low to Medium', 4, '2025-09-25 10:38:21'),
-(42, 51, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01', 4, '2025-09-25 10:38:21'),
-(43, 51, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-25 10:38:21'),
-(44, 50, 'Update Priority', 'Priority changed from Low to High', 4, '2025-09-25 10:41:33'),
-(45, 50, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 10:41:33'),
-(46, 50, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01', 4, '2025-09-25 10:41:39'),
-(47, 50, 'Update Staff', 'Assigned staff updated to Staff 00', 4, '2025-09-25 10:41:54'),
-(48, 50, 'Update Category', 'Category changed from Plumbing to Cleaning', 4, '2025-09-25 10:44:01'),
-(49, 73, 'Update Category', 'Category changed from Electrical to Plumbing', 4, '2025-09-25 10:55:24'),
-(50, 73, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01', 4, '2025-09-25 10:55:24'),
-(51, 19, 'Update Category', 'Category changed from Plumbing to Cleaning', 4, '2025-09-25 11:16:39'),
-(52, 47, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 11:17:29'),
-(53, 50, 'Pending', 'Hello World\n', 4, '2025-09-25 11:25:10'),
-(54, 50, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01', 4, '2025-09-25 11:25:30'),
-(55, 50, 'Update Category', 'Category changed from Cleaning to Plumbing', 4, '2025-09-25 11:25:40'),
-(56, 50, 'Update Priority', 'Priority changed from High to Urgent', 4, '2025-09-25 11:25:40'),
-(57, 50, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 11:25:40'),
-(58, 47, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-25 11:26:28'),
-(59, 50, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-25 11:26:43'),
-(60, 21, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-25 11:26:58'),
-(61, 48, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-25 11:27:08'),
-(62, 46, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-25 11:27:25'),
-(63, 34, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-25 11:27:35'),
-(64, 44, 'Update Category', 'Category changed from Plumbing to General Repair', 4, '2025-09-25 12:58:52'),
-(65, 73, 'Updated Status', 'Status changed from In Progress to Resolved', 4, '2025-09-25 13:20:10'),
-(66, 73, 'Updated Status', 'Status changed from Resolved to In Progress', 4, '2025-09-25 13:21:16'),
-(67, 73, 'In Progress', 'Hello world', 4, '2025-09-25 13:21:58'),
-(68, 73, 'In Progress', 'Test', 4, '2025-09-25 13:25:34'),
-(69, 73, 'Update Priority', 'Priority changed from Medium to Urgent', 4, '2025-09-25 13:25:40'),
-(70, 73, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01, Staff 02', 4, '2025-09-25 13:26:33'),
-(71, 73, 'Update Category', 'Category changed from Plumbing to General Repair', 4, '2025-09-25 13:26:43'),
-(72, 61, 'Acknowledged', 'Report acknowledged by angelo cabase', NULL, '2025-09-25 14:17:47'),
-(73, 61, 'Update', 'Priority set to Low, category set to General Repair', NULL, '2025-09-25 14:17:47'),
-(74, 31, 'Acknowledged', 'Report acknowledged by angelo cabase', NULL, '2025-09-25 14:20:49'),
-(75, 30, 'Acknowledged', 'Report acknowledged', 5, '2025-09-25 14:23:08'),
-(76, 75, 'Acknowledged', 'Report acknowledged', 5, '2025-09-25 15:18:19'),
-(77, 75, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-25 15:19:01'),
-(78, 75, 'Updated Status', 'Status changed from In Progress to Pending', 4, '2025-09-25 15:19:27'),
-(79, 75, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-26 08:19:15'),
-(80, 75, 'Updated Status', 'Status changed from In Progress to Pending', 4, '2025-09-26 08:20:42'),
-(81, 75, 'Resolved', 'This is Remarks to Resolved', 4, '2025-09-26 08:21:18'),
-(82, 75, 'Update Priority', 'Priority changed from Low to Medium', 4, '2025-09-26 08:21:23'),
-(83, 75, 'Updated Status', 'Status changed from Pending to Resolved', 4, '2025-09-26 08:21:23'),
-(84, 73, 'Resolved', 'This is the progress remarks', 4, '2025-09-26 08:22:48'),
-(85, 73, 'Updated Status', 'Status changed from In Progress to Resolved', 4, '2025-09-26 08:23:00'),
-(86, 73, 'Updated Status', 'Status changed from Resolved to In Progress', 4, '2025-09-26 08:53:28'),
-(87, 75, 'Update Priority', 'Priority changed from Medium to High', 4, '2025-09-26 08:54:52'),
-(88, 75, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01', 4, '2025-09-26 08:54:52'),
-(89, 75, 'Updated Status', 'Status changed from Resolved to In Progress', 4, '2025-09-26 09:04:31'),
-(90, 75, 'Update Priority', 'Priority changed from High to Low', 4, '2025-09-26 09:20:18'),
-(91, 75, 'Update Category', 'Category changed from Others to Electrical', 4, '2025-09-26 09:20:39'),
-(92, 75, 'In Progress', 'Hello this is not coverage of the maintenance', 4, '2025-09-26 09:21:12'),
-(93, 75, 'In Progress', 'This is test  log\n', 4, '2025-09-26 09:24:26'),
-(94, 75, 'Updated Status', 'Status changed from In Progress to Resolved', 4, '2025-09-26 09:34:37'),
-(95, 62, 'Update Staff', 'Assigned staff updated to Staff 00, Staff 01', 4, '2025-09-26 09:37:38'),
-(96, 62, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-26 09:37:38'),
-(97, 44, 'Pending', 'Test \n', 4, '2025-09-26 09:41:06'),
-(98, 44, 'Updated Status', 'Status changed from Pending to In Progress', 4, '2025-09-26 09:41:24'),
-(99, 44, 'In Progress', 'Test in progress', 4, '2025-09-26 09:41:27');
+(58, 6, '', 'Maintenance', '', NULL, 'Pending', 0, '2025-09-18 07:02:53', '2025-09-19 02:53:35', 1, 0),
+(59, 6, ' ', 'Maintenance', '    ', NULL, 'Pending', 0, '2025-09-18 07:19:38', '2025-09-19 06:03:05', 1, 0),
+(60, 6, ' ', 'Maintenance', '     ', NULL, 'Pending', 0, '2025-09-18 07:19:55', '2025-09-18 07:33:19', 1, 0),
+(61, 6, 'aa a sdsa', 'Maintenance', 'asdasd     sdd          dasdasdsadadsadsada          dsadsadasdasdsadasdsaasdasdasdasdasdsaasds', NULL, 'Pending', 0, '2025-09-18 07:33:08', '2025-09-18 07:33:32', 1, 0),
+(62, 6, 'lcoalhost', 'Maintenance', 'Test.        test         TEST', NULL, 'Pending', 1, '2025-09-19 00:51:02', '2025-09-19 01:18:40', 1, 0),
+(63, 6, 'IT Services and Development Office', 'Maintenance', 'IT Services And Development Office', NULL, 'Pending', 1, '2025-09-19 03:44:46', '2025-09-19 03:45:20', 1, 0),
+(64, 6, 'Test', 'Maintenance', '|               |\r\n|               |\r\n|               |\r\n----------\r\n', NULL, 'Pending', 1, '2025-09-19 03:49:26', '2025-09-19 03:49:43', 1, 0),
+(65, 6, 'Test', 'Maintenance', '_________________\r\n|                              |\r\n|                              |\r\n|                              |\r\n|                              |\r\n|                              |\r\n--------------------', NULL, 'Pending', 0, '2025-09-19 03:50:53', '2025-09-19 04:47:33', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -748,7 +501,7 @@ CREATE TABLE `tbl_users` (
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `role` enum('Super Admin','Admin','Report Approver','Maintenance Manager','Lost & Found Manager','Incident Manager','User') NOT NULL DEFAULT 'User',
+  `role` enum('Super Admin','Admin','Report Manager','Maintenance Manager','Lost & Found Manager','Incident Manager','User') NOT NULL DEFAULT 'User',
   `image_url` text DEFAULT NULL,
   `token` text DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 1,
@@ -761,7 +514,7 @@ CREATE TABLE `tbl_users` (
 
 INSERT INTO `tbl_users` (`id`, `name`, `email`, `password`, `role`, `image_url`, `token`, `status`, `created_at`) VALUES
 (4, 'Angelo Cabase', 'gelocabase1324@gmail.com', '$2b$10$S0ASQo2Zr61T4bMiY1KNauEszEtJVH7hOOrMX2QSgNIeGJ2NcWNKy', 'Admin', 'profile/1757466065021.jpg', '117007367720928788994', 1, '2025-09-10 01:01:05'),
-(5, 'angelo cabase', 'goldengrape777@gmail.com', '$2b$10$/Des5DS6YyWQx4gGyXRj0egG3wIbj4VfxzjwienlVNB1QgHmmeLta', 'Report Approver', 'profile/1757466665920.jpg', '111521943834505403428', 1, '2025-09-10 01:11:05'),
+(5, 'angelo cabase', 'goldengrape777@gmail.com', '$2b$10$/Des5DS6YyWQx4gGyXRj0egG3wIbj4VfxzjwienlVNB1QgHmmeLta', 'Admin', 'profile/1757466665920.jpg', '111521943834505403428', 1, '2025-09-10 01:11:05'),
 (6, 'Unknown User', 'cabase.1324@gmail.com', '$2b$10$/Des5DS6YyWQx4gGyXRj0egG3wIbj4VfxzjwienlVNB1QgHmmeLta', 'User', 'profile/1757487445945.jpg', '118115940971893247297', 1, '2025-09-10 06:57:25');
 
 --
@@ -840,12 +593,6 @@ ALTER TABLE `tbl_reports`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_report_remarks`
---
-ALTER TABLE `tbl_report_remarks`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
@@ -896,19 +643,19 @@ ALTER TABLE `inventory_items`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=147;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `notification_receivers`
 --
 ALTER TABLE `notification_receivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `tbl_maintenance_reports`
 --
 ALTER TABLE `tbl_maintenance_reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT for table `tbl_maintenance_staff`
@@ -920,13 +667,7 @@ ALTER TABLE `tbl_maintenance_staff`
 -- AUTO_INCREMENT for table `tbl_reports`
 --
 ALTER TABLE `tbl_reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
-
---
--- AUTO_INCREMENT for table `tbl_report_remarks`
---
-ALTER TABLE `tbl_report_remarks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`

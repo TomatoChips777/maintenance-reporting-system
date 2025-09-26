@@ -11,7 +11,7 @@ RUN npm install
 COPY . .
 
 # Expose your API port
-EXPOSE 5000
+EXPOSE 3000
 
 # Start in dev mode (with nodemon, if configured)
 CMD ["npm", "run", "dev"]

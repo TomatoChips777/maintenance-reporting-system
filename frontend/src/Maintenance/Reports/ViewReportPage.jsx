@@ -189,7 +189,7 @@ function ViewReportPage() {
           updated_by: user?.id,
         });
       }
-
+      
       // Also refresh remarks after update
       fetchRemarks(report.id);
 
@@ -449,7 +449,7 @@ if (!report) {
             </Form>
 
             {/* Remarks history with Accordion */}
-            <div style={{ maxHeight: "500px", overflowY: "auto" }} className="mt-3">
+            <div style={{ maxHeight: "400px", overflowY: "auto" }} className="mt-3">
               {remarks.length > 0 ? (
                 <Accordion alwaysOpen>
                   {remarks.map((r, idx) => (
@@ -473,8 +473,6 @@ if (!report) {
             </div>
           </Card>
         </Col>
-
-
       </Row>
     </Container>
   );

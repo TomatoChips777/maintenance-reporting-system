@@ -30,7 +30,8 @@ function Staff() {
   const fetchStaff = async () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_GET_MAINTENANCE_STAFF}`);
-      setStaff(res.data);
+      setStaff(res.data || []);
+      console.log(res);
     } catch (err) {
       console.log(err);
     } finally {
