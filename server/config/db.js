@@ -27,14 +27,14 @@ const mysql = require('mysql2');
 
 // Create a pool to manage connections
 const pool = mysql.createPool({
-    // host: process.env.MYSQL_HOST || 'localhost',
-    // user: "root",
-    // password: "",
-    // database: "lc-maintenance-db",
-  host: process.env.MYSQL_HOST || 'mysql',
-  user: 'root',
-  password: 'rootpassword',
-  database: 'lc-maintenance-db',
+    host: process.env.MYSQL_HOST || 'localhost',
+    user: "root",
+    password: "",
+    database: "lc-maintenance-db",
+//     host: process.env.MYSQL_HOST || 'mysql',
+//     user: 'root',
+//     password: 'rootpassword',
+//   database: 'lc-maintenance-db',
     waitForConnections: true,  // Wait for available connection if all connections are busy
     connectionLimit: 10,       // Max number of connections to create
     queueLimit: 0              // Set to 0 for unlimited queue

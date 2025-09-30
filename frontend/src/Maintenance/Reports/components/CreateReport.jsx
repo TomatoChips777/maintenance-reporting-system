@@ -3,7 +3,7 @@ import { Modal, Form, Button, Spinner, Row, Col } from 'react-bootstrap';
 import { useAuth } from '../../../../AuthContext';
 import axios from 'axios';
 
-const CreateReport = ({ show, handleClose, staff }) => {
+const CreateReport = ({ show, handleClose, staff}) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [successModal, setShowSuccessModal] = useState(false);

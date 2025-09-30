@@ -12,6 +12,7 @@ import Dashboard from './Dashboard/Dashboard';
 import Notifications from './Notifications/Notifications';
 import Reports from './Reports/Reports';
 import MaintenanceReports from './Maintenance Reports/Maintenance-Reports';
+import ViewReportPage from './Reports/ViewReport';
 function ReportsApproverApp() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeLink, setActiveLink] = useState(() => {
@@ -28,6 +29,7 @@ function ReportsApproverApp() {
       '/notifications': 'Notifications',
       '/reports': 'Reports',
       '/maintenance-reports' : 'Maintenance Reports',
+      '/view-report' : 'Reports'
 
     };
     setActiveLink(routeMap[path] || 'Dashboard');
@@ -61,6 +63,7 @@ function ReportsApproverApp() {
                 <>
                   <Route path="/" element={<Dashboard />} />
                   <Route path='/reports' element={<Reports />} />
+                  <Route path='/view-report' element={<ViewReportPage />} />
                   <Route  path='/maintenance-reports' element={<MaintenanceReports/>}/>
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="*" element={<Navigate to="/" />} />

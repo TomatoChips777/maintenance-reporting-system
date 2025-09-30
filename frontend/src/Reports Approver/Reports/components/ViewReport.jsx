@@ -1,4 +1,4 @@
-import { Modal, Button, Row, Col, Form, Image } from 'react-bootstrap';
+import { Modal, Button, Row, Col, Form, Image, Card } from 'react-bootstrap';
 import FormatDate from '../../../extra/DateFormat';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -135,32 +135,30 @@ const ViewReport = ({ show, handleClose, report }) => {
               </div>
             )}
             <Col sm={3}><strong>Date:</strong></Col>
-            <Col>{FormatDate(report?.created_at)}</Col>
+            <Col><u>{FormatDate(report?.created_at)}</u></Col>
           </Row>
           <Row className="mb-3">
             <Col sm={3}><strong>Reported By:</strong></Col>
-            <Col>{report?.reporter_name || "—"}</Col>
+            <Col><u>{report?.reporter_name || "—"}</u></Col>
           </Row>
           <Row className="mb-3">
             <Col sm={3}><strong>Location:</strong></Col>
-            <Col>{report?.location || "—"}</Col>
+            <Col><u>{report?.location || "—"}</u></Col>
           </Row>
           <Row className="mb-3">
             <Col sm={3}><strong>Description:</strong></Col>
             <Col>
-              <div
-                style={{
-                  maxHeight: "300px",
-                  overflowY: "auto",
-                  whiteSpace: "pre-wrap",
-                  padding: "8px",
-                  border: "1px solid #dee2e6",
-                  borderRadius: "0.25rem",
-                  backgroundColor: "#f8f9fa"
-                }}
-              >
-                {report?.description || "—"}
-              </div>
+              <Card className='p-2'>
+                {report?.description ? (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: report.description }}
+                    style={{ wordBreak: "break-word" }}
+                  />
+                ) : (
+                  <p className="mb-0 text-muted">No description provided.</p>
+                )}
+              </Card>
+
             </Col>
           </Row>
 
@@ -264,7 +262,6 @@ const ViewReport = ({ show, handleClose, report }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
       {/* Validation/Error Modal */}
       <Modal show={showError} onHide={() => setShowError(false)} centered animation={false}>
         <Modal.Header closeButton>

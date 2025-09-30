@@ -423,6 +423,7 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      
       {/* Validation/Error Modal */}
       <Modal show={showError} onHide={() => setShowError(false)} centered animation={false}>
         <Modal.Header closeButton>

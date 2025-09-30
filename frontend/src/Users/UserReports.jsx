@@ -6,6 +6,7 @@ import FormatDate from "../extra/DateFormat";
 import PaginationControls from "../extra/Paginations";
 import { io } from "socket.io-client";
 import { useLocation, useNavigate } from "react-router-dom";
+import TextTruncate from "../extra/TextTruncate";
 
 function UserReports() {
   const navigate = useNavigate();
@@ -31,15 +32,12 @@ function UserReports() {
       setLoading(false);
     }
   };
-
-
   useEffect(() => {
     fetchReports();
     const socket = io(`${import.meta.env.VITE_API_URL}`);
     socket.on('updateReports', () => {
       fetchReports();
     });
-
     return () => {
       socket.disconnect();
     };
@@ -151,10 +149,17 @@ function UserReports() {
               </div>
 
               {/* Short Description */}
-              <p className="mt-2 text-truncate" style={{ maxWidth: "80%" }}>
-                {report.description}
-              </p>
-
+              <TextTruncate
+                text={
+                  report?.description
+                    ? report.description
+                      .replace(/<[^>]+>/g, " ")   // strip HTML tags from Quill
+                      .replace(/\s+/g, " ")       // collapse whitespace
+                      .trim()
+                    : "No description provided."
+                }
+                maxLength={50}
+              />
               {/* View More Button */}
               <div
                 className={`d-flex ${report.viewed === 0 ? "justify-content-end" : "justify-content-between"
@@ -168,7 +173,7 @@ function UserReports() {
                 <button
                   className="btn btn-sm btn-outline-primary"
                   // onClick={() => setExpandedReport(report)}
-                    onClick={() => navigate('/user/view-report', { state: { reportId: report.id, user } })}
+                  onClick={() => navigate('/user/view-report', { state: { reportId: report.id, user } })}
 
                 >
                   View Details
@@ -205,16 +210,16 @@ function UserReports() {
 
               {/* Details Section */}
               <Col md={7}>
-              <div className="d-flex justify-content-between">
-                <h5 className="fw-bold mb-2">{expandedReport.location} </h5>
-                <p style={{fontWeight: 'lighter'}} className="text-muted">{expandedReport.viewed === 1 ? 'Viewed' : ''}</p>
-              </div>
+                <div className="d-flex justify-content-between">
+                  <h5 className="fw-bold mb-2">{expandedReport.location} </h5>
+                  <p style={{ fontWeight: 'lighter' }} className="text-muted">{expandedReport.viewed === 1 ? 'Viewed' : ''}</p>
+                </div>
                 <span
                   className={`badge px-3 py-2 fs-6 mb-3 rounded-0 ${expandedReport.status === "Pending"
-                      ? "bg-warning text-dark"
-                      : expandedReport.status === "In Progress"
-                        ? "bg-primary"
-                        : "bg-success"
+                    ? "bg-warning text-dark"
+                    : expandedReport.status === "In Progress"
+                      ? "bg-primary"
+                      : "bg-success"
                     }`}
                 >
                   {expandedReport.status}

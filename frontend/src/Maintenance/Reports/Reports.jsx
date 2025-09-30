@@ -29,7 +29,7 @@ function Reports() {
     const fetchReports = async () => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_MAINTENANCE_REPORT}`);
-            setReports(response.data.reports || [] );
+            setReports(response.data.reports || []);
 
         } catch (error) {
             setLoading(false);
@@ -97,18 +97,18 @@ function Reports() {
         setSelectedReport(report);
         setShowViewModal(true)
     };
-    const handleViewReportPage = async (report) =>{
-        if(report.viewed === 0){
-            try{
+    const handleViewReportPage = async (report) => {
+        if (report.viewed === 0) {
+            try {
                 const response = await axios.put(`${import.meta.env.VITE_MARK_AS_VIEWED}/${report?.id}`);
-            }catch(error){
+            } catch (error) {
 
             }
         }
         fetchStaff();
-        navigate('/view-report', {state: {report, staff}});
+        navigate('/view-report', { state: { reportId: report.id, staff } });
         // console.log("Reports:", report, "Staff:", staff);
-        
+
     }
     const handleCloseViewModal = () => {
         setShowViewModal(false);
@@ -218,7 +218,7 @@ function Reports() {
                         {loading ? (
                             <tr>
                                 <td colSpan="8" className="text-center">
-                                    <Spinner animation='border' variant='primary'/>
+                                    <Spinner animation='border' variant='primary' />
                                 </td>
                             </tr>
                         ) : currentData.length === 0 ? (
@@ -235,16 +235,27 @@ function Reports() {
                                     <td>{FormatDate(report.created_at)}</td>
                                     <td>{report.reporter_name}</td>
                                     <td><TextTruncate text={report.location} maxLength={30} /></td>
-                                    <td><TextTruncate text={report.description} maxLength={50} /></td>
+                                    {/* <td><TextTruncate text={report.description} maxLength={50} /></td> */}
+                                    <td><TextTruncate
+                                        text={
+                                            report?.description
+                                                ? report.description
+                                                    .replace(/<[^>]+>/g, " ")   // strip HTML tags from Quill
+                                                    .replace(/\s+/g, " ")       // collapse whitespace
+                                                    .trim()
+                                                : "No description provided."
+                                        }
+                                        maxLength={50}
+                                    /></td>
                                     <td>{report.category}</td>
                                     <td className="text-center">{report.priority}</td>
                                     <td className="text-center">
                                         <span
                                             className={`badge rounded-0 ${report.status === "Pending"
-                                                    ? "bg-warning text-dark"
-                                                    : report.status === "In Progress"
-                                                        ? "bg-primary"
-                                                        : "bg-success"
+                                                ? "bg-warning text-dark"
+                                                : report.status === "In Progress"
+                                                    ? "bg-primary"
+                                                    : "bg-success"
                                                 }`}
                                         >
                                             {report.status}

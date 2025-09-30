@@ -4,6 +4,42 @@ import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../AuthContext";
 import axios from "axios";
+// import ReactQuill from "react-quill-new";
+// import "react-quill-new/dist/quill.snow.css";
+
+import ReactQuill, { Quill } from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+
+//  Define allowed formats
+const formats = [
+  'background', 'bold', 'color', 'font', 'code', 'italic', 'link', 'size',
+  'strike', 'script', 'underline', 'blockquote', 'header', 'indent',
+  'list', 'align', 'direction', 'code-block', 'formula'
+];
+
+//  Extend Quill clipboard to block images only
+const Clipboard = Quill.import("modules/clipboard");
+
+class CustomClipboard extends Clipboard {
+  onPaste(e) {
+    if (!e.clipboardData || !this.quill) return;
+
+    const items = e.clipboardData.items;
+    if (items) {
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf("image") !== -1) {
+          e.preventDefault(); // block images
+          return;
+        }
+      }
+    }
+
+    // Allow normal paste for text / formatting
+    super.onPaste(e);
+  }
+}
+
+Quill.register("modules/clipboard", CustomClipboard, true);
 
 function ReportPage() {
   const { user, signIn } = useAuth();
@@ -83,39 +119,89 @@ function ReportPage() {
     handleFormSubmission();
   };
 
-  const handleFormSubmission = async () => {
-    setLoading(true);
-    if (!formData.location.trim() || !formData.description.trim()) {
-      setErrorMessage("Location and description are required.");
-      setLoading(false);
-      return;
-    }
-    try {
-      const submissionData = new FormData();
-      submissionData.append("user_id", formData.user_id);
-      submissionData.append("location", formData.location);
-      submissionData.append("description", formData.description);
-      submissionData.append("urgency", formData.urgency);
-      submissionData.append("issue_type", formData.issue_type);
-      submissionData.append("is_anonymous", formData.is_anonymous ? 1 : 0);
-      submissionData.append("report_type", formData.report_type);
-      if (formData.image) {
-        submissionData.append("image", formData.image);
-      }
+  // const handleFormSubmission = async () => {
+  //   setLoading(true);
+  //   if (!formData.location.trim() || !formData.description.trim()) {
+  //     setErrorMessage("Location and description are required.");
+  //     setLoading(false);
+  //     return;
+  //   }
+  //   try {
+  //     const submissionData = new FormData();
+  //     submissionData.append("user_id", formData.user_id);
+  //     submissionData.append("location", formData.location);
+  //     submissionData.append("description", formData.description);
+  //     submissionData.append("urgency", formData.urgency);
+  //     submissionData.append("issue_type", formData.issue_type);
+  //     submissionData.append("is_anonymous", formData.is_anonymous ? 1 : 0);
+  //     submissionData.append("report_type", formData.report_type);
+  //     if (formData.image) {
+  //       submissionData.append("image", formData.image);
+  //     }
 
-      await axios.post(`${import.meta.env.VITE_USER_CREATE_REPORT}`, submissionData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+  //     await axios.post(`${import.meta.env.VITE_USER_CREATE_REPORT}`, submissionData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
 
-      resetForm();
-      setError("");
-      setShowSuccessModal(true);
-    } catch {
-      setError("Failed to submit the report");
-    } finally {
-      setLoading(false);
+  //     resetForm();
+  //     setError("");
+  //     setShowSuccessModal(true);
+  //   } catch {
+  //     setError("Failed to submit the report");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Utility: strip HTML + whitespace
+const sanitizeQuillContent = (html) => {
+  return html.replace(/<[^>]+>/g, "").replace(/\s+/g, "").trim();
+};
+
+const handleFormSubmission = async () => {
+  setLoading(true);
+
+  // Validate location
+  if (!formData.location.trim()) {
+    setErrorMessage("Location and description are required.");
+    setLoading(false);
+    return;
+  }
+
+  // Validate Quill description
+  const plainDesc = sanitizeQuillContent(formData.description);
+  if (!plainDesc) {
+    setErrorMessage("Description cannot be empty.");
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const submissionData = new FormData();
+    submissionData.append("user_id", formData.user_id);
+    submissionData.append("location", formData.location);
+    submissionData.append("description", formData.description); // keep HTML for formatting
+    submissionData.append("urgency", formData.urgency);
+    submissionData.append("issue_type", formData.issue_type);
+    submissionData.append("is_anonymous", formData.is_anonymous ? 1 : 0);
+    submissionData.append("report_type", formData.report_type);
+    if (formData.image) {
+      submissionData.append("image", formData.image);
     }
-  };
+
+    await axios.post(`${import.meta.env.VITE_USER_CREATE_REPORT}`, submissionData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    resetForm();
+    setError("");
+    setShowSuccessModal(true);
+  } catch {
+    setError("Failed to submit the report");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Container className="mt-4">
@@ -147,7 +233,7 @@ function ReportPage() {
         </Form.Group>
 
         {/* Description */}
-        <Form.Group className="mb-2">
+        {/* <Form.Group className="mb-2">
           <Form.Label>Issue Description</Form.Label>
           <Form.Control
             as="textarea"
@@ -158,7 +244,47 @@ function ReportPage() {
             onChange={(e) => { setFormData({ ...formData, description: e.target.value.trimStart() }); setErrorMessage(""); }
             }
           />
-        </Form.Group>
+        </Form.Group> */}
+        {/* <Form.Group className="mb-2">
+          <Form.Label>Issue Description</Form.Label>
+          <ReactQuill
+            theme="snow"
+            value={formData.description}
+            onChange={(val) => {
+              setFormData({ ...formData, description: val });
+              setErrorMessage("");
+            }}
+            placeholder="Describe the issue..."
+            style={{ height: "200px", marginBottom: "50px" }}
+          />
+          {errorMessage && (
+            <div className="text-danger small mt-1">{errorMessage}</div>
+          )}
+        </Form.Group> */}
+
+<ReactQuill
+  theme="snow"
+  value={formData.description}
+  onChange={val => { setFormData({ ...formData, description: val }); setErrorMessage(""); }}
+  placeholder="Describe the issue..."
+  style={{ height: "200px", marginBottom: "50px" }}
+  formats={formats}
+  modules={{
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],          // Headers H1, H2, H3
+      ['bold', 'italic', 'underline', 'strike'], // Text styling
+      [{ list: 'ordered' }, { list: 'bullet' }], // Lists
+      // ['blockquote', 'code-block'],            // Blockquote & code
+      ['link'],                                // Links
+      [{ align: [] }],                         // Text alignment
+      [{ color: [] }],     // Color options
+      ['clean']                                // Remove formatting
+    ],
+    clipboard: {
+      matchVisual: false
+    }
+  }}
+/>
 
         {/* Upload Image */}
         <Form.Group className="mb-2">
@@ -172,7 +298,6 @@ function ReportPage() {
             }
           />
         </Form.Group>
-
         {/* Anonymous Checkbox */}
         <Form.Group className="mb-2">
           <Form.Check

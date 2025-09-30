@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Card, Col, Container, Row, Form, Button, Spinner } from 'react-bootstrap';
+import { Card, Col, Container, Row, Form, Button, Spinner} from 'react-bootstrap';
 import PaginationControls from '../../extra/Paginations';
 import ViewReport from './components/ViewReport';
 import CreateReport from './components/CreateReport';
@@ -8,9 +8,11 @@ import axios from 'axios';
 import FormatDate from '../../extra/DateFormat';
 import TextTruncate from '../../extra/TextTruncate';
 import { io } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 function Reports() {
     const [reports, setReports] = useState([]);
+    const navigate = useNavigate();
     const [showViewModal, setShowViewModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
@@ -85,6 +87,10 @@ function Reports() {
         setItemsPerPage(Number(e.target.value));
         setCurrentPage(1);
     };
+    const handleViewReport = (report) => {
+        navigate('/view-report', { state: { reportId: report?.id } });
+    }
+
     const getTimeAgo = (timestamp) => {
         const units = [
             { name: 'year', seconds: 31536000 },
@@ -148,14 +154,14 @@ function Reports() {
                                         <div className="d-flex justify-content-between align-items-start mb-2">
                                             <span className="fw-bold">{FormatDate(report.created_at)}</span>
                                             <span
-                                                className={`badge rounded-0 ${report.status === "Pending"
-                                                        ? "bg-warning text-dark"
-                                                        : report.status === "In Progress"
-                                                            ? "bg-primary"
-                                                            : "bg-success"
-                                                    }`}
+                                                // className={`badge rounded-0 ${report.status === "Pending"
+                                                //     ? "bg-warning text-dark"
+                                                //     : report.status === "In Progress"
+                                                //         ? "bg-primary"
+                                                //         : "bg-success"
+                                                //     }`}
                                             >
-                                                {report.status}
+                                               <u>{report.status}</u> 
                                             </span>
                                         </div>
 
@@ -168,25 +174,38 @@ function Reports() {
                                             <i className="bi bi-geo-alt-fill me-2"></i>
                                             <TextTruncate text={report.location} maxLength={30} />
                                         </p>
-                                        <p className="mb-2">
+                                        {/* <p className="mb-2">
                                             <TextTruncate text={report.description} maxLength={50} />
+                                        </p> */}
+                                        <p className="mb-2">
+                                            <TextTruncate
+                                                text={
+                                                    report?.description
+                                                        ? report.description
+                                                            .replace(/<[^>]+>/g, " ")   // strip HTML tags from Quill
+                                                            .replace(/\s+/g, " ")       // collapse whitespace
+                                                            .trim()
+                                                        : "No description provided."
+                                                }
+                                                maxLength={50}
+                                            />
                                         </p>
 
                                         <div className="d-flex justify-content-between align-items-center">
-                                            <span className="badge bg-secondary">
-                                                {getTimeAgo(report.created_at)}
+                                            <span className="text-muted"><i>{getTimeAgo(report.created_at)}</i>
                                             </span>
                                             <div>
                                                 <Button
                                                     variant="info"
                                                     size="sm"
                                                     className="me-2"
-                                                    onClick={() => handleOpenViewModal(report)}
+                                                    // onClick={() => handleOpenViewModal(report)}
+                                                   onClick={() => handleViewReport(report)}
                                                 >
                                                     <i className="bi bi-eye"></i>
                                                 </Button>
                                                 <Button
-                                                    variant="danger"
+                                                    variant="dark"
                                                     size="sm"
                                                     onClick={() => handleShowAlert(report)}
                                                 >

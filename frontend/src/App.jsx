@@ -1,9 +1,6 @@
 // App.jsx
 import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import LoginScreen from './LoginScreen';
 import { useAuth } from '../AuthContext';

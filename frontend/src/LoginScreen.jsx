@@ -72,8 +72,8 @@ const LoginScreen = () => {
           style={{ width: "500px", borderRadius: "20px" }}
         >
           <Card.Body>
-            <Card.Title className="mb-4 fs-3 fw-bold text-success">
-              Welcome To Maintenance Reporting System
+            <Card.Title className="mb-4 fs-3 fw-bold text-dark">
+              Welcome To Ticketing System
             </Card.Title>
             <Card.Text className="mb-4 text-muted">
               Sign in with Google or use your account credentials
@@ -102,12 +102,11 @@ const LoginScreen = () => {
                 width="350"
               />
             </div>
-
             <div className="my-3">
               <span className="text-muted">or</span>
             </div>
             {/* Error Message */}
-
+            
             {/* Manual Login */}
             <Form onSubmit={handleManualLogin}>
               <Form.Group controlId="email" className="mb-3">
