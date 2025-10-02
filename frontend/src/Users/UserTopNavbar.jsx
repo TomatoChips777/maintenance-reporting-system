@@ -27,7 +27,7 @@ function UserTopNavbar() {
 
   // Sync active link with current route
   useEffect(() => {
-    if (location.pathname.includes("my-reports")) {
+    if (location.pathname.includes("my-reports") || location.pathname.includes('view-report')) {
       setActiveLink("My Reports");
     } else if (location.pathname.includes("notifications")) {
       setActiveLink("Notifications");
@@ -88,13 +88,12 @@ function UserTopNavbar() {
           onClick={() => handleNavClick("Report")}
           className="fw-bold fs-5 fs-md-4 fs-lg-3"
         >
-          Maintenance Reporting
+        Ticketing
         </Navbar.Brand>
 
         {/* Toggle button on the right */}
         {/* Toggle button with notification count (small screens only) */}
         <div className="position-relative d-lg-none">
-          {/* <Navbar.Toggle aria-controls="user-navbar-nav" className="bg-dark"/> */}
           <Navbar.Toggle aria-controls="top-navbar-nav"
             as={Button}
             variant="outline-dark"

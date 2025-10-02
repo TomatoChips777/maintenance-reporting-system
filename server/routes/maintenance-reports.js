@@ -42,6 +42,7 @@ router.get('/', async (req, res) => {
             tmr.category, 
             tmr.priority, 
             tmr.assigned_staff, 
+            tmr.id as maintenance_id,
             mr.status
         FROM tbl_reports mr
         JOIN tbl_users u ON mr.user_id = u.id
@@ -104,9 +105,9 @@ router.put("/admin/edit/:reportId", async (req, res) => {
             // Update maintenance report
             await db.queryAsync(
                 `UPDATE tbl_maintenance_reports
-         SET category = ?, priority = ?, assigned_staff = ?
-         WHERE report_id = ?`,
-                [category, priority, assigned_staff || null, reportId]
+            SET category = ?, priority = ?, assigned_staff = ?
+            WHERE report_id = ?`,
+                    [category, priority, assigned_staff || null, reportId]
             );
 
             // Collect logs only for changes
@@ -440,5 +441,52 @@ router.post("/create-report", upload.single('image'), async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error creating report" });
   }
 });
+
+
+router.get('/view-reports-by-id/:reportId', async (req, res) => {
+  const { reportId } = req.params;
+
+  try {
+    const query = `
+      SELECT 
+        tr.id,
+        tr.user_id,
+        tr.location,
+        tr.report_type,
+        tr.description,
+        tr.image_path,
+        tr.status,
+        tr.is_anonymous,
+        tr.created_at,
+        tr.updated_at,
+        tr.viewed,
+        tr.archived,
+        tmr.id AS maintenance_id,
+        tmr.category,
+        tmr.priority,
+        tmr.assigned_staff,
+        tmr.acknowledged_by,
+        CASE 
+          WHEN tr.is_anonymous = 1 THEN 'Anonymous'
+          ELSE u.name 
+        END AS reporter_name
+      FROM tbl_reports tr
+      LEFT JOIN tbl_maintenance_reports tmr 
+        ON tr.id = tmr.report_id
+      JOIN tbl_users u 
+        ON tr.user_id = u.id
+      WHERE tmr.id = ?
+      AND tr.archived = 0
+      ORDER BY tr.created_at DESC;
+    `;
+
+    const rows = await db.queryAsync(query, [reportId]);
+    return res.json({ success: true, reports: rows });
+  } catch (err) {
+    console.error("Error fetching report by ID:", err);
+    return res.status(500).json({ success: false, message: "Failed to fetch reports" });
+  }
+});
+
 
 module.exports = router;

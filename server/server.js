@@ -42,37 +42,41 @@ app.use('/api/notifications', notifications);
 app.use('/api/dashboard', dashboard);
 app.use('/api/reports', reports);
 app.use('/api/maintenance-reports', maintenanceReports);
-// app.post('/send-email', async (req, res) => {
-//   const { to, subject, message } = req.body;
 
-//   try {
-//     const transporter = nodemailer.createTransport({
-//         host: 'smtp.gmail.com',
-//         name: 'example.com',
-//         port: 465,
-//         secure: true,
-//         auth: {
-//           user: 'goldenpaper777@gmail.com',
-//           pass: 'zqyw sufs jjdu euno',
-//         },
-//         tls: {
-//           rejectUnauthorized: false,
-//         },
-//       });
+app.post('/send-email', async (req, res) => {
+  const { to, subject, message, html } = req.body;
+
+  try {
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        name: 'example.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: 'goldenpaper777@gmail.com',
+          pass: 'zqyw sufs jjdu euno',
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
       
-//     await transporter.sendMail({
-//       from: "goldenpaper777@gmail.com",
-//       to: to,
-//       subject: subject,
-//       text: message,
-//     });
+    await transporter.sendMail({
+      from: '"Ticketing System"<goldenpaper777@gmail.com>',
+      to: to,
+      subject: subject,
+      text: message || (message ? message.replace(/<[^>]+>/g, '') : ''), // fallback
+      html: html || message || '', // prefer html if provided
+    });
 
-//     res.status(200).json({ message: 'Email sent successfully!' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Email failed to send.' });
-//   }
-// });
+    res.status(200).json({ message: 'Email sent successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Email failed to send.' });
+  }
+});
+
+
 
 const { checkUpcomingEvents } = require('./utils/checkEvent');
 // setInterval(() => checkUpcomingEvents(io), 60 * 60 * 1000);

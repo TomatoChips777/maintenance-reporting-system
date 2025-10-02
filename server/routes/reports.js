@@ -20,6 +20,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// handler for logs/remarks
 function logReportRemark(reportId, remark, action, updatedBy) {
     const query = `
         INSERT INTO tbl_report_remarks (report_id, remark, action, updated_by, created_at)
@@ -103,7 +104,8 @@ function logReportRemark(reportId, remark, action, updatedBy) {
 // });
 
 
-router.post('/create-report', upload.single('image'), async (req, res) => {
+//
+router.post('/create-report', upload.single('image'), async (req, res) => { // route for creating reports
     try {
         if (!req.body.user_id || !req.body.location || !req.body.description) {
             return res.status(400).json({ success: false, message: "Missing required fields" });
@@ -115,10 +117,10 @@ router.post('/create-report', upload.single('image'), async (req, res) => {
 
         // Step 1: Insert into tbl_reports
         const query = `
-      INSERT INTO tbl_reports 
+        INSERT INTO tbl_reports 
         (user_id, location, description, image_path, is_anonymous, report_type) 
-      VALUES (?, ?, ?, ?, ?, ?)
-    `;
+        VALUES (?, ?, ?, ?, ?, ?)
+        `;
 
         const result = await db.queryAsync(query, [
             user_id,
@@ -140,9 +142,7 @@ router.post('/create-report', upload.single('image'), async (req, res) => {
 
         // Step 2: Create a notification
         const notifMsg = `A new report has been submitted about ${location}.`;
-        const notifResult = await db.queryAsync(
-            'INSERT INTO notifications (message, title) VALUES (?, "New Report")',
-            [notifMsg]
+        const notifResult = await db.queryAsync('INSERT INTO notifications (message, title) VALUES (?, "New Report")', [notifMsg]
         );
         const notifId = notifResult.insertId;
 
@@ -154,9 +154,7 @@ router.post('/create-report', upload.single('image'), async (req, res) => {
         // Step 4: Insert one notification per receiver
         if (receivers.length > 0) {
             const receiverValues = receivers.map(user => [notifId, user.id, false]);
-            await db.queryAsync(
-                'INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?',
-                [receiverValues]
+            await db.queryAsync('INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?', [receiverValues]
             );
         }
 
@@ -177,7 +175,7 @@ router.post('/create-report', upload.single('image'), async (req, res) => {
     }
 });
 
-
+// route for fetching all the reports
 router.get('/', async (req, res) => {
     try {
         const query = `
@@ -201,7 +199,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-
+// route for fetching specific reports rquired userId
 router.get('/get-user-reports/:userId', async (req, res) => {
     const { userId } = req.params;
 
@@ -232,25 +230,19 @@ router.get('/get-user-reports/:userId', async (req, res) => {
         ORDER BY tr.created_at DESC;`
 
         const row = await db.queryAsync(query, [userId]);
-        return res.json({success: true, reports: row});
+        return res.json({ success: true, reports: row });
 
     } catch (err) {
         return res.status(500).json({ success: false, message: 'Failed to fetch reports' })
     }
-    // db.query(query, [userId], (err, rows) => {
-    //     if (err) {
-    //         console.error("Error fetching user reports:", err);
-    //         return res.status(500).json({ success: false, message: "Failed to fetch reports" });
-    //     }
-    //     res.json({ success: true, reports: rows });
-    // });
 });
 
+// routes for fetching and returning selected reports need reportId params
 router.get('/report/view-reports-by-id/:reportId', async (req, res) => {
-  const { reportId } = req.params;
+    const { reportId } = req.params;
 
-  try {
-    const query = `
+    try {
+        const query = `
       SELECT 
         tr.id,
         tr.user_id,
@@ -283,17 +275,17 @@ router.get('/report/view-reports-by-id/:reportId', async (req, res) => {
       ORDER BY tr.created_at DESC;
     `;
 
-    const rows = await db.queryAsync(query, [reportId]);
-    return res.json({ success: true, reports: rows });
-  } catch (err) {
-    console.error("Error fetching report by ID:", err);
-    return res.status(500).json({ success: false, message: "Failed to fetch reports" });
-  }
+        const rows = await db.queryAsync(query, [reportId]);
+        return res.json({ success: true, reports: rows });
+    } catch (err) {
+        console.error("Error fetching report by ID:", err);
+        return res.status(500).json({ success: false, message: "Failed to fetch reports" });
+    }
 });
 
 // router.get('/report/view-reports-by-id/:reportId', async (req, res) => {
 //     const { reportId } = req.params;
-    
+
 //     try{
 //         const query = `SELECT 
 //         tr.id,
@@ -325,7 +317,7 @@ router.get('/report/view-reports-by-id/:reportId', async (req, res) => {
 //     }catch(err){
 //         return res.status(500).json({success: false, message: "Failed to fetch reports"});
 //     }
-    
+
 //     // db.query(query, [reportId], (err, rows) => {
 //     //     if (err) {
 //     //         console.error("Error fetching user reports:", err);
@@ -334,43 +326,443 @@ router.get('/report/view-reports-by-id/:reportId', async (req, res) => {
 //     //     res.json({ success: true, reports: rows });
 //     // });
 // });
+// router.put("/admin/edit-report-type/:reportId", async (req, res) => {
+//     const { report_type, priority, category, acknowledged_by, updated_by } = req.body;
+//     const { reportId } = req.params;
 
-router.put("/admin/edit-report-type/:reportId", async (req, res) => {
+//     try {
+//         // Update main report type
+//         const updateReportQuery = `
+//             UPDATE tbl_reports 
+//             SET report_type = ?
+//             WHERE id = ?
+//         `;
+//         await db.queryAsync(updateReportQuery, [report_type, reportId]);
+
+//         if (report_type === "Maintenance") {
+//             // Insert or update maintenance report
+//             const maintenanceQuery = `
+//                 INSERT INTO tbl_maintenance_reports (report_id, priority, category, acknowledged_by) 
+//                 VALUES (?, ?, ?, ?)
+//                 ON DUPLICATE KEY UPDATE 
+//                     priority = VALUES(priority), 
+//                     category = VALUES(category), 
+//                     acknowledged_by = VALUES(acknowledged_by)
+//             `;
+//             await db.queryAsync(maintenanceQuery, [reportId, priority, category, acknowledged_by]);
+
+//             console.log("Executed");
+//             // Log remark if acknowledged
+//             if (acknowledged_by) {
+//                 await logReportRemark(
+//                     reportId,
+//                     `Report acknowledged`,
+//                     "Acknowledged",
+//                     acknowledged_by
+//                 );
+//             }
+//         } else {
+//             console.log("Executed 2");
+//             // Delete maintenance record if report type was changed away from Maintenance
+//             const deleteMaintenanceQuery = `
+//                 DELETE FROM tbl_maintenance_reports 
+//                 WHERE report_id = ?
+//             `;
+//             await db.queryAsync(deleteMaintenanceQuery, [reportId]);
+
+//             // Later you can add similar logic for other report types,:
+//             // if (report_type === "Incident") { ... tbl_incident_reports logic ... }
+//             // if (report_type === "LostAndFound") { ... tbl_lostfound_reports logic ... }
+//         }
+
+//         // Emit real-time updates
+//         req.io.emit("updateViewedReport");
+//         req.io.emit("updateReports");
+//         req.io.emit("update");
+
+//         res.json({ success: true, message: "Report updated successfully" });
+//     } catch (err) {
+//         console.error("Error updating report:", err);
+//         res.status(500).json({ success: false, message: "Failed to update report" });
+//     }
+// });
+
+// router.put("/admin/edit-report-type/:reportId", async (req, res) => {
+//     const { report_type, priority, category, acknowledged_by, updated_by } = req.body;
+//     const { reportId } = req.params;
+
+//     try {
+//         // Get the current report_type
+//         const [currentReport] = await db.queryAsync(
+//             "SELECT report_type FROM tbl_reports WHERE id = ?",
+//             [reportId]
+//         );
+
+//         if (!currentReport) {
+//             return res.status(404).json({ success: false, message: "Report not found" });
+//         }
+
+//         const currentType = currentReport.report_type;
+
+//         // Case 1: Report type actually changed
+//         if (currentType !== report_type) {
+//             // Update main report type
+//             const updateReportQuery = `
+//                 UPDATE tbl_reports 
+//                 SET report_type = ?
+//                 WHERE id = ?
+//             `;
+//             await db.queryAsync(updateReportQuery, [report_type, reportId]);
+
+//             if (report_type === "Maintenance") {
+//                 // Insert fresh maintenance row
+//                 const maintenanceQuery = `
+//                     INSERT INTO tbl_maintenance_reports (report_id, priority, category, acknowledged_by) 
+//                     VALUES (?, ?, ?, ?)
+//                     ON DUPLICATE KEY UPDATE 
+//                         priority = VALUES(priority), 
+//                         category = VALUES(category), 
+//                         acknowledged_by = VALUES(acknowledged_by)
+//                 `;
+//                 await db.queryAsync(maintenanceQuery, [reportId, priority, category, acknowledged_by]);
+//             } else {
+//                 // Delete maintenance record if moved away
+//                 await db.queryAsync("DELETE FROM tbl_maintenance_reports WHERE report_id = ?", [reportId]);
+
+
+//             }
+//         } 
+//         // Case 2: Report type is the same (only update sub-table details)
+//         else {
+//             if (report_type === "Maintenance") {
+//                 const maintenanceUpdateQuery = `
+//                     UPDATE tbl_maintenance_reports
+//                     SET priority = ?, category = ?, acknowledged_by = ?
+//                     WHERE report_id = ?
+//                 `;
+//                 await db.queryAsync(maintenanceUpdateQuery, [priority, category, acknowledged_by, reportId]);
+//             }
+//             // Add similar else-if for Incident / LostAndFound in the future
+//         }
+
+//         // Log remark if acknowledged
+//         if (acknowledged_by) {
+//             await logReportRemark(
+//                 reportId,
+//                 `Report acknowledged`,
+//                 "Acknowledged",
+//                 acknowledged_by
+//             );
+//         }
+
+//         // Emit real-time updates
+//         req.io.emit("updateViewedReport");
+//         req.io.emit("updateReports");
+//         req.io.emit("update");
+
+//         res.json({ success: true, message: "Report updated successfully" });
+//     } catch (err) {
+//         console.error("Error updating report:", err);
+//         res.status(500).json({ success: false, message: "Failed to update report" });
+//     }
+// });
+
+// router.put("/admin/edit-report-type/:reportId", async (req, res) => {
+//     const { report_type, priority, category, acknowledged_by, updated_by } = req.body;
+//     const { reportId } = req.params;
+
+//     try {
+//         // Get the current report_type
+//         const [currentReport] = await db.queryAsync(
+//             "SELECT report_type FROM tbl_reports WHERE id = ?",
+//             [reportId]
+//         );
+
+//         if (!currentReport) {
+//             return res.status(404).json({ success: false, message: "Report not found" });
+//         }
+
+//         const currentType = currentReport.report_type;
+
+//         // Case 1: Report type actually changed
+//         if (currentType !== report_type) {
+//             // Update main report type
+//             const updateReportQuery = `
+//                 UPDATE tbl_reports 
+//                 SET report_type = ?
+//                 WHERE id = ?
+//             `;
+//             await db.queryAsync(updateReportQuery, [report_type, reportId]);
+
+//             // Handle Maintenance type
+//             if (report_type === "Maintenance") {
+//                 const maintenanceQuery = `
+//                     INSERT INTO tbl_maintenance_reports (report_id, priority, category, acknowledged_by) 
+//                     VALUES (?, ?, ?, ?)
+//                     ON DUPLICATE KEY UPDATE 
+//                         priority = VALUES(priority), 
+//                         category = VALUES(category), 
+//                         acknowledged_by = VALUES(acknowledged_by)
+//                 `;
+//                 await db.queryAsync(maintenanceQuery, [reportId, priority, category, acknowledged_by]);
+//             } else {
+//                 await db.queryAsync("DELETE FROM tbl_maintenance_reports WHERE report_id = ?", [reportId]);
+//             }
+
+//             // Handle Incident type
+//             if (report_type === "Incident") {
+//                 console.log('Change to Incident');
+//                 // const incidentQuery = `
+//                 //     INSERT INTO tbl_incident_reports (report_id, priority, category, acknowledged_by) 
+//                 //     VALUES (?, ?, ?, ?)
+//                 //     ON DUPLICATE KEY UPDATE 
+//                 //         priority = VALUES(priority), 
+//                 //         category = VALUES(category), 
+//                 //         acknowledged_by = VALUES(acknowledged_by)
+//                 // `;
+//                 // await db.queryAsync(incidentQuery, [reportId, priority, category, acknowledged_by]);
+//             } else {
+//                 // await db.queryAsync("DELETE FROM tbl_incident_reports WHERE report_id = ?", [reportId]);
+//                 console.log('Delete from incident');
+
+//             }
+
+//             // Handle Lost & Found type
+//             if (report_type === "LostAndFound") {
+//                 console.log("Change to lost and found")
+//                 // const lostFoundQuery = `
+//                 //     INSERT INTO tbl_lost_and_found (report_id, priority, category, acknowledged_by) 
+//                 //     VALUES (?, ?, ?, ?)
+//                 //     ON DUPLICATE KEY UPDATE 
+//                 //         priority = VALUES(priority), 
+//                 //         category = VALUES(category), 
+//                 //         acknowledged_by = VALUES(acknowledged_by)
+//                 // `;
+//                 // await db.queryAsync(lostFoundQuery, [reportId, priority, category, acknowledged_by]);
+//             } else {
+//                 // await db.queryAsync("DELETE FROM tbl_lost_and_found WHERE report_id = ?", [reportId]);
+//                 console.log("Delete from lost and found")
+//             }
+//         } 
+//         // Case 2: Report type is the same (only update sub-table details)
+//         else {
+//             if (report_type === "Maintenance") {
+//                 const maintenanceUpdateQuery = `
+//                     UPDATE tbl_maintenance_reports
+//                     SET priority = ?, category = ?, acknowledged_by = ?
+//                     WHERE report_id = ?
+//                 `;
+//                 await db.queryAsync(maintenanceUpdateQuery, [priority, category, acknowledged_by, reportId]);
+//             } else if (report_type === "Incident") {
+//                console.log('Updated data from incident');
+//                 // const incidentUpdateQuery = `
+//                 //     UPDATE tbl_incident_reports
+//                 //     SET priority = ?, category = ?, acknowledged_by = ?
+//                 //     WHERE report_id = ?
+//                 // `;
+//                 // await db.queryAsync(incidentUpdateQuery, [priority, category, acknowledged_by, reportId]);
+//             } else if (report_type === "LostAndFound") {
+//                 console.log('Updated data from lost and found')
+//                 // const lostFoundUpdateQuery = `
+//                 //     UPDATE tbl_lost_and_found
+//                 //     SET priority = ?, category = ?, acknowledged_by = ?
+//                 //     WHERE report_id = ?
+//                 // `;
+//                 // await db.queryAsync(lostFoundUpdateQuery, [priority, category, acknowledged_by, reportId]);
+//             }
+//         }
+
+//         // Log remark if acknowledged
+//         if (acknowledged_by) {
+//             await logReportRemark(
+//                 reportId,
+//                 `Report acknowledged`,
+//                 "Acknowledged",
+//                 acknowledged_by
+//             );
+//         }
+
+//         // Emit real-time updates
+//         req.io.emit("updateViewedReport");
+//         req.io.emit("updateReports");
+//         req.io.emit("update");
+
+//         res.json({ success: true, message: "Report updated successfully" });
+//     } catch (err) {
+//         console.error("Error updating report:", err);
+//         res.status(500).json({ success: false, message: "Failed to update report" });
+//     }
+// });
+
+
+
+
+// router.put("/admin/edit-report-type/:reportId", async (req, res) => {
+//     const { report_type, priority, category, acknowledged_by, updated_by } = req.body;
+//     const { reportId } = req.params;
+
+//     try {
+//         // Update report type
+//         const updateReportQuery = "UPDATE tbl_reports SET report_type = ? WHERE id = ?";
+//         await db.queryAsync(updateReportQuery, [report_type, reportId]);
+
+//         if (report_type === "Maintenance") {
+//             // Insert or update maintenance report
+//             const maintenanceQuery = `
+//                 INSERT INTO tbl_maintenance_reports (report_id, priority, category, acknowledged_by) 
+//                 VALUES (?, ?, ?, ?)
+//                 ON DUPLICATE KEY UPDATE 
+//                     priority = VALUES(priority), 
+//                     category = VALUES(category), 
+//                     acknowledged_by = VALUES(acknowledged_by)
+//             `;
+//             await db.queryAsync(maintenanceQuery, [reportId, priority, category, acknowledged_by]);
+
+//             // Log remark if acknowledged
+//             if (acknowledged_by) {
+//                 await logReportRemark(
+//                     reportId,
+//                     `Report acknowledged`,
+//                     "Acknowledged",
+//                     acknowledged_by
+//                 );
+//             }
+//         }
+
+//         // Emit real-time updates
+//         req.io.emit('updateViewedReport');
+//         req.io.emit('updateReports');
+//         req.io.emit('update');
+
+//         res.json({ success: true, message: "Report updated successfully" });
+//     } catch (err) {
+//         console.error("Error updating report:", err);
+//         res.status(500).json({ success: false, message: "Failed to update report" });
+//     }
+// });
+
+// Mark report as viewed
+// router.put('/report/set-viewed-report/:id', async (req, res) => {
+//     const { id } = req.params;
+
+//     try {
+//         const query = 'UPDATE tbl_reports SET viewed = 1 WHERE id = ?';
+//         const result = await db.queryAsync(query, [id]);
+
+//         if (result.affectedRows > 0) {
+//             req.io.emit('updateReports');
+//             return res.json({ success: true, message: "Report has been marked as viewed." });
+//         } else {
+//             return res.status(404).json({ success: false, message: "Report not found." });
+//         }
+//     } catch (err) {
+//         console.error('Error setting as viewed:', err);
+//         return res.status(500).json({ success: false, message: 'Error setting as viewed' });
+//     }
+// });
+
+
+//  Archive report
+
+//
+router.put("/admin/edit-report-type/:reportId", async (req, res) => { // route for editing report type it requires reportId
     const { report_type, priority, category, acknowledged_by, updated_by } = req.body;
     const { reportId } = req.params;
 
+
     try {
-        // Update report type
-        const updateReportQuery = "UPDATE tbl_reports SET report_type = ? WHERE id = ?";
-        await db.queryAsync(updateReportQuery, [report_type, reportId]);
+        // Get the current report_type
+        const [currentReport] = await db.queryAsync(
+            "SELECT report_type FROM tbl_reports WHERE id = ?",
+            [reportId]
+        );
 
-        if (report_type === "Maintenance") {
-            // Insert or update maintenance report
-            const maintenanceQuery = `
-                INSERT INTO tbl_maintenance_reports (report_id, priority, category, acknowledged_by) 
-                VALUES (?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE 
-                    priority = VALUES(priority), 
-                    category = VALUES(category), 
-                    acknowledged_by = VALUES(acknowledged_by)
+        if (!currentReport) {
+            return res.status(404).json({ success: false, message: "Report not found" });
+        }
+
+        const currentType = currentReport.report_type;
+
+        // Case 1: Report type actually changed
+        if (currentType !== report_type) {
+            // Update main report type
+            const updateReportQuery = `
+                UPDATE tbl_reports 
+                SET report_type = ?
+                WHERE id = ?
             `;
-            await db.queryAsync(maintenanceQuery, [reportId, priority, category, acknowledged_by]);
+            await db.queryAsync(updateReportQuery, [report_type, reportId]);
 
-            // Log remark if acknowledged
-            if (acknowledged_by) {
-                await logReportRemark(
-                    reportId,
-                    `Report acknowledged`,
-                    "Acknowledged",
-                    acknowledged_by
-                );
+            // Handle Maintenance type
+            if (report_type === "Maintenance") {
+                const maintenanceQuery = `
+                    INSERT INTO tbl_maintenance_reports (report_id, priority, category, acknowledged_by) 
+                    VALUES (?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE 
+                        priority = VALUES(priority), 
+                        category = VALUES(category), 
+                        acknowledged_by = COALESCE(tbl_maintenance_reports.acknowledged_by, VALUES(acknowledged_by))
+                `;
+                await db.queryAsync(maintenanceQuery, [reportId, priority, category, acknowledged_by]);
+            } else {
+                await db.queryAsync("DELETE FROM tbl_maintenance_reports WHERE report_id = ?", [reportId]);
+            }
+
+            // Handle Incident type
+            if (report_type === "Incident") {
+                console.log('Change to Incident');
+                // same pattern as maintenance if needed
+            } else {
+                console.log('Delete from incident');
+            }
+
+            // Handle Lost & Found type
+            if (report_type === "LostAndFound") {
+                console.log("Change to lost and found");
+                // same pattern as maintenance if needed
+            } else {
+                console.log("Delete from lost and found");
+            }
+        }
+        // Case 2: Report type is the same (only update sub-table details)
+        else {
+            if (report_type === "Maintenance") {
+                // First fetch current data
+                const oldMaintResult = await db.queryAsync(`SELECT category, acknowledged_by, priority FROM tbl_maintenance_reports WHERE report_id = ?`, [reportId]);
+
+                let oldAck = null, oldCategory = "", oldPriority = "";
+
+                if (oldMaintResult.length > 0) {
+                    oldAck = oldMaintResult[0]?.acknowledged_by || null;
+                    oldCategory = oldMaintResult[0]?.category || "";
+                    oldPriority = oldMaintResult[0]?.priority || "";
+                }
+                await db.queryAsync(`UPDATE tbl_maintenance_reports SET 
+                    priority = ?, category = ?, acknowledged_by = COALESCE(acknowledged_by, ?) 
+                    WHERE report_id = ?`, [priority, category, acknowledged_by, reportId]);
+
+                if (oldCategory !== category) {
+                    await logReportRemark(reportId, `Category changed from ${oldCategory || "None"} to ${category}`, "Update Category", acknowledged_by);
+                }
+
+                if (oldPriority !== priority) {
+                    await logReportRemark(reportId, `Priority changed from ${oldPriority || "None"} to ${priority}`, "Update Priority", acknowledged_by);
+                }
+                // // Log acknowledgment only if it was empty before and now has value
+                if (!oldAck && acknowledged_by) {
+                    await logReportRemark(reportId, `Report acknowledged`, "Acknowledged", acknowledged_by);
+                }
+            } else if (report_type === "Incident") {
+                console.log('Updated data from incident');
+            } else if (report_type === "LostAndFound") {
+                console.log('Updated data from lost and found');
             }
         }
 
         // Emit real-time updates
-        req.io.emit('updateViewedReport');
-        req.io.emit('updateReports');
-        req.io.emit('update');
+        req.io.emit("updateViewedReport");
+        req.io.emit("updateReports");
+        req.io.emit("update");
 
         res.json({ success: true, message: "Report updated successfully" });
     } catch (err) {
@@ -379,28 +771,8 @@ router.put("/admin/edit-report-type/:reportId", async (req, res) => {
     }
 });
 
-// Mark report as viewed
-router.put('/report/set-viewed-report/:id', async (req, res) => {
-    const { id } = req.params;
 
-    try {
-        const query = 'UPDATE tbl_reports SET viewed = 1 WHERE id = ?';
-        const result = await db.queryAsync(query, [id]);
-
-        if (result.affectedRows > 0) {
-            req.io.emit('updateReports');
-            return res.json({ success: true, message: "Report has been marked as viewed." });
-        } else {
-            return res.status(404).json({ success: false, message: "Report not found." });
-        }
-    } catch (err) {
-        console.error('Error setting as viewed:', err);
-        return res.status(500).json({ success: false, message: 'Error setting as viewed' });
-    }
-});
-
-
-// ✅ Archive report
+// route for achiving report requires id or reportId
 router.put('/report/archive-report/:id', async (req, res) => {
     const { id } = req.params;
     const { reason } = req.body;
@@ -430,10 +802,8 @@ router.put('/report/archive-report/:id', async (req, res) => {
 
         // Create notification
         const notifMsg = `Your report about ${location} has been archived. Reason: ${reason}`;
-        const notifInsert = await db.queryAsync(
-            'INSERT INTO notifications (message, title) VALUES (?, "Report Archived")',
-            [notifMsg]
-        );
+        const notifInsert = await db.queryAsync('INSERT INTO notifications (message, title) VALUES (?, "Report Archived")', [notifMsg]);
+
         const notifId = notifInsert.insertId;
 
         await db.queryAsync(
@@ -446,23 +816,18 @@ router.put('/report/archive-report/:id', async (req, res) => {
         req.io.emit('updateNotifications');
         req.io.emit('reportArchivedNotification', { reportId: id, notifId, userId: user_id, message: notifMsg });
 
-        return res.json({
-            success: true,
-            message: "Report archived successfully and user notified",
-            affectedRow: report
-        });
+        return res.json({ success: true, message: "Report archived successfully and user notified", affectedRow: report });
+
     } catch (err) {
-        console.error("Error archiving report:", err);
         return res.status(500).json({ success: false, message: "Error archiving report" });
     }
 });
 
 
-// ✅ Send back report
+//  route for send back report it requires reportId
 router.put('/report/send-back/:id', async (req, res) => {
     const { id } = req.params;
     const { reason, location } = req.body;
-
     try {
         // Reset report type
         await db.queryAsync(`UPDATE tbl_reports SET report_type = '' WHERE id = ?`, [id]);
@@ -472,10 +837,7 @@ router.put('/report/send-back/:id', async (req, res) => {
 
         // Create a new notification
         const notifMsg = `A report about ${location} has been returned.`;
-        const notifInsert = await db.queryAsync(
-            `INSERT INTO notifications (message, title) VALUES (?, "Returned Report")`,
-            [notifMsg]
-        );
+        const notifInsert = await db.queryAsync(`INSERT INTO notifications (message, title) VALUES (?, "Returned Report")`, [notifMsg]);
         const notifId = notifInsert.insertId;
 
         // Get all admins and staff
@@ -483,12 +845,8 @@ router.put('/report/send-back/:id', async (req, res) => {
 
         if (receivers.length > 0) {
             const receiverValues = receivers.map(user => [notifId, user.id, false]); // false = unread
-            await db.queryAsync(
-                `INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?`,
-                [receiverValues]
-            );
+            await db.queryAsync(`INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?`, [receiverValues]);
         }
-
         // Emit socket update
         req.io.emit('updateReports');
         req.io.emit('updateNotifications');
@@ -500,55 +858,49 @@ router.put('/report/send-back/:id', async (req, res) => {
     }
 });
 
-
+// route for adding progress rearks on selected report it requires reportId
 router.post('/report/add-progress-remarks/:id', async (req, res) => {
-  const { id } = req.params; // report_id
-  const { action, remark, updated_by } = req.body;
+    const { id } = req.params; // report_id
+    const { action, remark, updated_by } = req.body;
 
-  if (!action || !updated_by) {
-    return res.status(400).json({
-      success: false,
-      message: "Action and updated_by are required."
-    });
-  }
+    if (!action || !updated_by) {
+        return res.status(400).json({ success: false, message: "Action and updated_by are required." });
+    }
 
-  try {
-    const insertQuery = `
-      INSERT INTO tbl_report_remarks (report_id, action, remark, updated_by)
-      VALUES (?, ?, ?, ?)
-    `;
+    try {
+        const insertQuery = `INSERT INTO tbl_report_remarks (report_id, action, remark, updated_by) VALUES (?, ?, ?, ?)`;
 
-    // Destructure so we can access insertId
-    const result = await db.queryAsync(insertQuery, [
-      id,
-      action,
-      remark || null,
-      updated_by
-    ]);
+        // Destructure so we can access insertId
+        const result = await db.queryAsync(insertQuery, [
+            id,
+            action,
+            remark || null,
+            updated_by
+        ]);
 
-    req.io.emit('updateViewedReport');
+        req.io.emit('updateViewedReport');
 
-    return res.json({
-      success: true,
-      message: "Remark added successfully",
-      remarkId: result.insertId
-    });
+        return res.json({
+            success: true,
+            message: "Remark added successfully",
+            remarkId: result.insertId
+        });
 
-  } catch (err) {
-    console.error("Error inserting remark:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to insert remark"
-    });
-  }
+    } catch (err) {
+        console.error("Error inserting remark:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to insert remark"
+        });
+    }
 });
 
 
-// Get all remarks for a report
+// route for fetching all remarks for a report it requires reportId
 router.get('/report/get-report-remarks/:id', async (req, res) => {
     const { id } = req.params;
 
-    try{
+    try {
         const query = `
             SELECT 
             rr.id,
@@ -562,11 +914,12 @@ router.get('/report/get-report-remarks/:id', async (req, res) => {
             ORDER BY rr.created_at DESC
         `;
         const rows = await db.queryAsync(query, [id]);
-        return res.json({success: true, remarks: rows});
-    }catch(err){
-        return res.status(500).json({success: false, message: "Server error"});
-    }    
+        return res.json({ success: true, remarks: rows });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
 });
+// this route used by maintenance report creation
 router.post("/create", upload.single('image'), async (req, res) => {
     const {
         report_type,

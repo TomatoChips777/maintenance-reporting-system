@@ -48,41 +48,29 @@ function BorrowingScreen() {
     status: 'Pending'
   });
 
-
-
-
+  // Fetch data
   const fetchData = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_GET_BORROW_ITEMS}`);
       setBorrowData(response.data);
     } catch (error) {
-
+      console.error("Error fetching borrow data:", error);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
   useEffect(() => {
-
     fetchData();
-
     const socket = io(`${import.meta.env.VITE_API_URL}`);
-    socket.on('updateBorrowing', () => {
-      fetchData();
-    });
-    return () => {
-      socket.disconnect();
-    };
-
+    socket.on('updateBorrowing', fetchData);
+    return () => socket.disconnect();
   }, []);
 
+  // Helpers
   const isOverdue = (returnedDate, status) => {
     if (!returnedDate || status === 'Returned') return false;
-
-    const now = new Date();
-    const due = new Date(returnedDate);
-
-    // We only care if it's PAST the due date
-    return now > due;
+    return new Date() > new Date(returnedDate);
   };
 
   const filteredData = useMemo(() => {
@@ -95,20 +83,18 @@ function BorrowingScreen() {
         entry.description.toLowerCase().includes(search.toLowerCase());
 
       const matchesStatus = statusFilter === 'All' || entry.status === statusFilter;
-
       const matchesOverdue = !overdueFilter || isOverdue(entry.returned_date, entry.status);
 
       return matchesSearch && matchesStatus && matchesOverdue;
     });
   }, [borrowData, search, statusFilter, overdueFilter]);
 
-
   const currentData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredData.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredData, currentPage, itemsPerPage]);
 
-  // Inside Parent Component
+  // Edit modal state
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentBorrower, setCurrentBorrower] = useState(null);
 
@@ -121,10 +107,8 @@ function BorrowingScreen() {
     setSentLoading(false);
     try {
       const response = await axios.put(`${import.meta.env.VITE_UPDATE_ITEM}/${updatedBorrower.id}`, updatedBorrower);
-
       if (response.data.success) {
         setShowEditModal(false);
-        setCurrentPage(currentPage);
       } else {
         alert('Failed to update borrow record.');
       }
@@ -147,7 +131,7 @@ function BorrowingScreen() {
     setShowViewModal(true);
   };
 
-
+  // Email sending
   const sendEmail = async (e) => {
     e.preventDefault();
     setSentLoading(true);
@@ -155,18 +139,13 @@ function BorrowingScreen() {
       const response = await fetch(`${import.meta.env.VITE_SEND_EMAIL}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: selectedBorrower.email,
-          subject,
-          message
-        }),
+        body: JSON.stringify({ to: selectedBorrower.email, subject, message }),
       });
 
       if (response.ok) {
         alert('Email sent successfully!');
         setShowEmailModal(false);
         setSelectedBorrower(null);
-
       } else {
         throw new Error('Failed to send email');
       }
@@ -176,6 +155,7 @@ function BorrowingScreen() {
     }
     setSentLoading(false);
   };
+
   const handleAddChange = (e) => {
     const { name, value } = e.target;
     setNewBorrow((prev) => ({ ...prev, [name]: value }));
@@ -195,20 +175,8 @@ function BorrowingScreen() {
       });
 
       if (response.data.success) {
-        setCurrentPage(currentPage);
-        console.log('Borrow added:', response.data.message);
-        setNewBorrow({
-          borrower_name: '',
-          email: '',
-          department: '',
-          item: '',
-          description: '',
-          borrow_date: '',
-          returned_date: '',
-          assist_by: ''
-        });
-
         setShowAddModal(false);
+        setNewBorrow({ borrower_name: '', email: '', department: '', item: '', description: '', borrow_date: '', returned_date: '', assist_by: '' });
       } else {
         console.error('Failed to add:', response.data.message);
       }
@@ -220,27 +188,14 @@ function BorrowingScreen() {
 
   const handleStatusChange = (e, entry) => {
     const newStatus = e.target.value;
-
-
     if (entry.status === 'Returned' && newStatus !== 'Returned') {
-      // const confirmChange = window.confirm('This item has already been returned. Do you want to change its status?');
-      // if (!confirmChange) {
-      //   return;
-      // }
       setPendingStatusChange({ entry, newStatus });
       setShowConfirmModal(true);
       return;
     }
-
     applyStatusChange(entry, newStatus);
-    // try {
-    //   const updatedBorrower = { ...entry, status: newStatus, assist_by: user.name };
-    //   const response = await axios.put(`${import.meta.env.VITE_UPDATE_BORROW_ITEM_STATUS}/${entry.id}`, updatedBorrower);
-    // } catch (error) {
-    //   console.error('Error updating status:', error);
-    //   alert('An error occurred while updating the status.');
-    // }
   };
+
   const applyStatusChange = async (entry, newStatus) => {
     try {
       const updatedBorrower = { ...entry, status: newStatus, assist_by: user.name };
@@ -253,29 +208,29 @@ function BorrowingScreen() {
 
   const handlePageSizeChange = (e) => {
     setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to page 1 when page size changes
+    setCurrentPage(1);
   };
 
   return (
-    <Container className="p-0 y-0" fluid>
-      <Card className='p-1'>
-        <h1 className="mb-4 text-center">Borrowing Records</h1>
-        {/* Filters */}
-        <Row className="mb-3 p-3">
+    <Container className="p-0" fluid>
+      <Card className='p-2'>
+        <h2 className="mb-4 text-center fw-bold">Borrowing Records</h2>
 
+        {/* Filters */}
+        <Row className="mb-3 px-3">
           <Col md={5}>
             <Form.Control
               type="text"
               placeholder="Search borrower, item, email, department..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              className="small-text"
             />
           </Col>
           <Col md={2}>
-            <Form.Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <Form.Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="small-text">
               <option value="All">All Statuses</option>
               <option value="Pending">Pending</option>
-              {/* <option value="Approved">Approved</option> */}
               <option value="Returned">Returned</option>
             </Form.Select>
           </Col>
@@ -285,24 +240,25 @@ function BorrowingScreen() {
               label="Overdue Only"
               checked={overdueFilter}
               onChange={(e) => setOverdueFilter(e.target.checked)}
+              className="small-text"
             />
           </Col>
           <Col md={3} className="d-flex justify-content-end align-items-center">
-            <Button size="" variant='dark' onClick={() => setShowAddModal(true)}>
+            <Button size="sm" variant='dark' onClick={() => setShowAddModal(true)}>
               <i className="bi bi-plus-circle me-2"></i> Add New
             </Button>
-
-            <Button size="" variant='outline-danger' className='ms-2' onClick={() => generatePDF(borrowData)}>
-              <i className="bi bi-file-earmark-pdf me-2"></i> Download PDF
+            <Button size="sm" variant='outline-danger' className='ms-2' onClick={() => generatePDF(borrowData)}>
+              <i className="bi bi-file-earmark-pdf me-2"></i> PDF
             </Button>
           </Col>
         </Row>
+
         {loading ? (
           <div className="text-center py-5">
             <span className="spinner-border text-dark" role="status" />
           </div>
         ) : (
-          <Table striped bordered hover responsive className='mb-0'>
+          <Table striped bordered hover responsive className='mb-0 small-text'>
             <thead className='table-dark'>
               <tr>
                 <th>#ID</th>
@@ -331,23 +287,22 @@ function BorrowingScreen() {
                     <td>{FormatDate(entry?.borrow_date)}</td>
                     <td>{entry.returned_date ? FormatDate(entry.returned_date) : 'N/A'}</td>
                     <td>{entry.assisted_by}</td>
-                    {/* <td>{entry.status}</td> */}
                     <td className="text-center">
                       <Form.Select
+                        size="sm"
                         value={entry.status}
                         onChange={(e) => handleStatusChange(e, entry)}
+                        className="small-text"
                       >
                         <option value="Pending">Pending</option>
                         <option value="Returned">Returned</option>
                       </Form.Select>
                     </td>
-
                     <td className="text-center">
                       <Button variant="info" size="sm" className="me-2 mb-1" onClick={() => openViewModal(entry)}>
                         <i className="bi bi-eye"></i>
                       </Button>
-
-                      <Button variant="warning" size="sm " className="me-2 mb-1" onClick={() => handleEdit(entry)}>
+                      <Button variant="warning" size="sm" className="me-2 mb-1" onClick={() => handleEdit(entry)}>
                         <i className="bi bi-pencil"></i>
                       </Button>
                     </td>
@@ -355,12 +310,13 @@ function BorrowingScreen() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="9" className="text-center">No records found.</td>
+                  <td colSpan="11" className="text-center">No records found.</td>
                 </tr>
               )}
             </tbody>
           </Table>
         )}
+
         <Card.Footer>
           <PaginationControls
             filteredReports={filteredData}
@@ -372,52 +328,23 @@ function BorrowingScreen() {
         </Card.Footer>
       </Card>
 
-      {/* Email Modal */}
-      <EmailModal
-        show={showEmailModal}
-        onHide={() => setShowEmailModal(false)}
-        onSubmit={sendEmail}
-        subject={subject}
-        setSubject={setSubject}
-        message={message}
-        setMessage={setMessage}
-        isLoading={sentLoading}
-      />
-
-      <AddBorrowerModal
-        show={showAddModal}
-        onHide={() => setShowAddModal(false)}
-        onSubmit={handleAddSubmit}
-        newBorrow={newBorrow}
-        handleAddChange={handleAddChange}
-        isLoading={sentLoading}
-      />
-
-      <ViewBorrowModal
-        show={showViewModal}
-        onHide={() => setShowViewModal(false)}
-        borrower={selectedBorrower}
-      />
-      <EditBorrowModal
-        show={showEditModal}
-        onHide={() => setShowEditModal(false)}
-        borrower={currentBorrower}
-        onSave={handleSave}
-        isLoading={sentLoading}
-      />
+      {/* Modals */}
+      <EmailModal {...{ show: showEmailModal, onHide: () => setShowEmailModal(false), onSubmit: sendEmail, subject, setSubject, message, setMessage, isLoading: sentLoading }} />
+      <AddBorrowerModal {...{ show: showAddModal, onHide: () => setShowAddModal(false), onSubmit: handleAddSubmit, newBorrow, handleAddChange, isLoading: sentLoading }} />
+      <ViewBorrowModal show={showViewModal} onHide={() => setShowViewModal(false)} borrower={selectedBorrower} />
+      <EditBorrowModal show={showEditModal} onHide={() => setShowEditModal(false)} borrower={currentBorrower} onSave={handleSave} isLoading={sentLoading} />
 
       <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Status Change</Modal.Title>
+          <Modal.Title className="fs-6">Confirm Status Change</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="small-text">
           This item has already been returned. Are you sure you want to set it back to <strong>Pending</strong>?
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>
-            Cancel
-          </Button>
+          <Button size="sm" variant="secondary" onClick={() => setShowConfirmModal(false)}>Cancel</Button>
           <Button
+            size="sm"
             variant="danger"
             onClick={() => {
               applyStatusChange(pendingStatusChange.entry, pendingStatusChange.newStatus);

@@ -154,54 +154,54 @@ function ReportPage() {
   // };
 
   // Utility: strip HTML + whitespace
-const sanitizeQuillContent = (html) => {
-  return html.replace(/<[^>]+>/g, "").replace(/\s+/g, "").trim();
-};
+  const sanitizeQuillContent = (html) => {
+    return html.replace(/<[^>]+>/g, "").replace(/\s+/g, "").trim();
+  };
 
-const handleFormSubmission = async () => {
-  setLoading(true);
+  const handleFormSubmission = async () => {
+    setLoading(true);
 
-  // Validate location
-  if (!formData.location.trim()) {
-    setErrorMessage("Location and description are required.");
-    setLoading(false);
-    return;
-  }
-
-  // Validate Quill description
-  const plainDesc = sanitizeQuillContent(formData.description);
-  if (!plainDesc) {
-    setErrorMessage("Description cannot be empty.");
-    setLoading(false);
-    return;
-  }
-
-  try {
-    const submissionData = new FormData();
-    submissionData.append("user_id", formData.user_id);
-    submissionData.append("location", formData.location);
-    submissionData.append("description", formData.description); // keep HTML for formatting
-    submissionData.append("urgency", formData.urgency);
-    submissionData.append("issue_type", formData.issue_type);
-    submissionData.append("is_anonymous", formData.is_anonymous ? 1 : 0);
-    submissionData.append("report_type", formData.report_type);
-    if (formData.image) {
-      submissionData.append("image", formData.image);
+    // Validate location
+    if (!formData.location.trim()) {
+      setErrorMessage("Location and description are required.");
+      setLoading(false);
+      return;
     }
 
-    await axios.post(`${import.meta.env.VITE_USER_CREATE_REPORT}`, submissionData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    // Validate Quill description
+    const plainDesc = sanitizeQuillContent(formData.description);
+    if (!plainDesc) {
+      setErrorMessage("Description cannot be empty.");
+      setLoading(false);
+      return;
+    }
 
-    resetForm();
-    setError("");
-    setShowSuccessModal(true);
-  } catch {
-    setError("Failed to submit the report");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const submissionData = new FormData();
+      submissionData.append("user_id", formData.user_id);
+      submissionData.append("location", formData.location);
+      submissionData.append("description", formData.description); // keep HTML for formatting
+      submissionData.append("urgency", formData.urgency);
+      submissionData.append("issue_type", formData.issue_type);
+      submissionData.append("is_anonymous", formData.is_anonymous ? 1 : 0);
+      submissionData.append("report_type", formData.report_type);
+      if (formData.image) {
+        submissionData.append("image", formData.image);
+      }
+
+      await axios.post(`${import.meta.env.VITE_USER_CREATE_REPORT}`, submissionData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      resetForm();
+      setError("");
+      setShowSuccessModal(true);
+    } catch {
+      setError("Failed to submit the report");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Container className="mt-4">
@@ -262,29 +262,29 @@ const handleFormSubmission = async () => {
           )}
         </Form.Group> */}
 
-<ReactQuill
-  theme="snow"
-  value={formData.description}
-  onChange={val => { setFormData({ ...formData, description: val }); setErrorMessage(""); }}
-  placeholder="Describe the issue..."
-  style={{ height: "200px", marginBottom: "50px" }}
-  formats={formats}
-  modules={{
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],          // Headers H1, H2, H3
-      ['bold', 'italic', 'underline', 'strike'], // Text styling
-      [{ list: 'ordered' }, { list: 'bullet' }], // Lists
-      // ['blockquote', 'code-block'],            // Blockquote & code
-      ['link'],                                // Links
-      [{ align: [] }],                         // Text alignment
-      [{ color: [] }],     // Color options
-      ['clean']                                // Remove formatting
-    ],
-    clipboard: {
-      matchVisual: false
-    }
-  }}
-/>
+        <ReactQuill
+          theme="snow"
+          value={formData.description}
+          onChange={val => { setFormData({ ...formData, description: val }); setErrorMessage(""); }}
+          placeholder="Describe the issue..."
+          style={{ height: "200px", marginBottom: "50px" }}
+          formats={formats}
+          modules={{
+            toolbar: [
+              [{ header: [1, 2, 3, false] }],          // Headers H1, H2, H3
+              ['bold', 'italic', 'underline', 'strike'], // Text styling
+              [{ list: 'ordered' }, { list: 'bullet' }], // Lists
+              // ['blockquote', 'code-block'],            // Blockquote & code
+              ['link'],                                // Links
+              [{ align: [] }],                         // Text alignment
+              [{ color: [] }],     // Color options
+              ['clean']                                // Remove formatting
+            ],
+            clipboard: {
+              matchVisual: false
+            }
+          }}
+        />
 
         {/* Upload Image */}
         <Form.Group className="mb-2">
@@ -338,14 +338,15 @@ const handleFormSubmission = async () => {
       {/* Success Modal */}
       <Modal show={successModal} onHide={() => setShowSuccessModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Report Submitted</Modal.Title>
+          <Modal.Title className="fw-bold fs-6">Report Submitted</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Your report has been submitted successfully.</p>
+          <p className="small">Your report has been submitted successfully.</p>
         </Modal.Body>
         <Modal.Footer>
           <Button
             variant="secondary"
+            size="sm"
             onClick={() => setShowSuccessModal(false)}
           >
             Close
