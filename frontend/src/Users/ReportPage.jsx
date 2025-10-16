@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Container, Form, Button, Alert, Modal } from "react-bootstrap";
+import { Container, Form, Button, Alert, Modal, Card} from "react-bootstrap";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../AuthContext";
@@ -33,7 +33,6 @@ class CustomClipboard extends Clipboard {
         }
       }
     }
-
     // Allow normal paste for text / formatting
     super.onPaste(e);
   }
@@ -75,6 +74,7 @@ function ReportPage() {
   const [showGoogleLogin, setShowGoogleLogin] = useState(false);
   const [successModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedForm, setSelectedForm] = useState("Maintenance");
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -189,11 +189,13 @@ function ReportPage() {
         submissionData.append("image", formData.image);
       }
 
-      await axios.post(`${import.meta.env.VITE_USER_CREATE_REPORT}`, submissionData, {
+      const res = await axios.post(`${import.meta.env.VITE_USER_CREATE_REPORT}`, submissionData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+      
+      // if(res.success){
       resetForm();
+      // }
       setError("");
       setShowSuccessModal(true);
     } catch {
@@ -203,14 +205,21 @@ function ReportPage() {
     }
   };
 
-  return (
-    <Container className="mt-4">
-      <h3 className="bg-dark text-white p-2">Report Form</h3>
 
-      <Form onSubmit={handleSubmit} className="border p-3 bg-light">
-        <p className="text-muted">
-          Please fill out the details below to report any broken equipment,
-          facility issue, or maintenance concern within the campus.
+  return (
+    <Container className="mt-4 px-0 py-0 ">
+      <Card>
+        <Card.Header className="bg-dark text-white">
+          <Card.Title>
+           {/* <h3 className="bg-dark text-white p-2">Report Form</h3> */}
+            Ticketing Form
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>
+
+      <Form onSubmit={handleSubmit} className="">
+        <p className="text-muted" style={{fontSize: '13px'}}>
+          Please fill out the details below to report any of your concerns
         </p>
 
         {/* Location */}
@@ -267,7 +276,7 @@ function ReportPage() {
           value={formData.description}
           onChange={val => { setFormData({ ...formData, description: val }); setErrorMessage(""); }}
           placeholder="Describe the issue..."
-          style={{ height: "200px", marginBottom: "50px" }}
+          style={{ height: "200px", marginBottom: "80px" }}
           formats={formats}
           modules={{
             toolbar: [
@@ -299,7 +308,7 @@ function ReportPage() {
           />
         </Form.Group>
         {/* Anonymous Checkbox */}
-        <Form.Group className="mb-2">
+        <Form.Group className="mb-2 d-flex justify-content-end">
           <Form.Check
             type="checkbox"
             label="Submit Anonymously"
@@ -318,7 +327,9 @@ function ReportPage() {
         </div>
 
       </Form>
-
+        </Card.Body>
+      </Card>
+     
       {/* Google Login Modal */}
       <Modal show={showGoogleLogin} onHide={() => setShowGoogleLogin(false)}>
         <Modal.Header closeButton>

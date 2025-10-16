@@ -3,3 +3,5 @@ Folder hierarchy
        [] src -> holds   
         -> .env
         -> Authcontext
+Test Edit Txt using terminal
+

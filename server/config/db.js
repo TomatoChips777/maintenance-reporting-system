@@ -1,43 +1,16 @@
-/*
-// server/config/db.js
 const mysql = require('mysql2');
-const db = mysql.createConnection({
-   host: process.env.MYSQL_HOST || 'localhost',
-    user: "root",
-    password: "",
-    database: "lc-maintenance-db",
-});
-db.connect((err) => {
-    if (err) console.error("Database connection failed:", err);
-    else console.log("Connected to MySQL");
-});
-// Wrapper for async/await
-db.queryAsync = (query, params) => {
-    return new Promise((resolve, reject) => {
-        db.query(query, params, (err, results) => {
-            if (err) return reject(err);
-            resolve(results);
-        });
-    });
-};
-module.exports = db;
-*/
+const dotenv = require('dotenv');
 
-const mysql = require('mysql2');
+dotenv.config();
 
-// Create a pool to manage connections
 const pool = mysql.createPool({
-    host: process.env.MYSQL_HOST || 'localhost',
-    user: "root",
-    password: "",
-    database: "lc-maintenance-db",
-//     host: process.env.MYSQL_HOST || 'mysql',
-//     user: 'root',
-//     password: 'rootpassword',
-//   database: 'lc-maintenance-db',
-    waitForConnections: true,  // Wait for available connection if all connections are busy
-    connectionLimit: 10,       // Max number of connections to create
-    queueLimit: 0              // Set to 0 for unlimited queue
+    host: process.env.MYSQL_HOST || 'mysql',
+    user: process.env.MYSQL_USER || "root",
+    password: process.env.MYSQL_PASSWORD || "",
+    database: process.env.MYSQL_DATABASE || "lc-maintenance-db",
+    waitForConnections: true,  
+    connectionLimit: 10,
+    queueLimit: 0              
 });
 
 // Create a promise pool (returns promises for queries)

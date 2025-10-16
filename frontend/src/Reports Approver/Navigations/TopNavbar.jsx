@@ -148,9 +148,9 @@ function TopNavbar({ toggleSidebar }) {
               {/* User */}
               <Dropdown as={Nav.Item} align="end">
                 <Dropdown.Toggle as={Nav.Link} className="d-flex align-items-center">
-                  {user.image_url ? (
+                  {user?.image_url ? (
                     <Image
-                      src={`${import.meta.env.VITE_IMAGES}/${user.image_url}`}
+                      src={`${import.meta.env.VITE_IMAGES}/${user?.image_url}`}
                       roundedCircle
                       className="me-2"
                       width={30}

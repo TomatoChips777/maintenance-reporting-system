@@ -13,7 +13,7 @@ services:
       - NODE_ENV=development
       - MYSQL_HOST=mysql
       - MYSQL_USER=root
-      - MYSQL_PASSWORD=rootpassword
+      - MYSQL_PASSWORD=
       - MYSQL_DATABASE=lc-maintenance-db
     depends_on:
       - mysql
@@ -33,7 +33,8 @@ services:
     image: mysql:8
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      # MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
       MYSQL_DATABASE: lc-maintenance-db
     volumes:
       - mysql-data:/var/lib/mysql
@@ -41,7 +42,7 @@ services:
     networks:
       - app-network
     ports:
-      - "3307:3306"
+      - "3310:3306"
 
 networks:
   app-network:

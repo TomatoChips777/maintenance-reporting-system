@@ -538,7 +538,7 @@
 //       fetchRemarks(report.id);
 //     }
 //   }, [report, user]);
-  
+
 //   // Check input if change to enable the save changes button
 //   const isChanged = useMemo(() => {
 //     if (!formData || !initialData) return false;
@@ -966,7 +966,7 @@ function ViewReportPage() {
     try {
       const response = await axios.get(`${import.meta.env.VITE_VIEW_MAINTENANCE_REPORT_BY_ID}/${maintenance_id}`);
       setReport(response.data.reports[0]);
-    } catch {}
+    } catch { }
   };
 
   useEffect(() => {
@@ -1009,7 +1009,7 @@ function ViewReportPage() {
       const res = await axios.get(`${import.meta.env.VITE_GET_REPORT_REMARKS}/${reportId}`);
       if (res.data.success) setRemarks(res.data.remarks || []);
     } catch (err) {
-      console.error("Failed to fetch remarks:", err);
+      console.error("Failed to fetch remamrks:", err);
     }
   };
 
@@ -1084,11 +1084,14 @@ function ViewReportPage() {
   }
 
   return (
-    <Container fluid className="p-3">
-      <Button variant="secondary" className="mb-3" onClick={() => navigate("/reports")}>
-        ← Back to Reports
-      </Button>
-
+    <Container fluid className="p-0">
+      <Card>
+        <Card.Header className="d-flex justify-content-end bg-light ">
+          <Button variant="secondary" className="" onClick={() => navigate("/reports")}>
+            ← Back to Reports
+          </Button>
+        </Card.Header>
+      </Card>
       <Row>
         {/* LEFT COLUMN */}
         <Col md={7}>

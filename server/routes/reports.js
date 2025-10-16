@@ -130,7 +130,6 @@ router.post('/create-report', upload.single('image'), async (req, res) => { // r
             is_anonymous,
             report_type
         ]);
-
         const newReport = {
             id: result.insertId,
             user_id,
@@ -704,6 +703,29 @@ router.put("/admin/edit-report-type/:reportId", async (req, res) => { // route f
                         acknowledged_by = COALESCE(tbl_maintenance_reports.acknowledged_by, VALUES(acknowledged_by))
                 `;
                 await db.queryAsync(maintenanceQuery, [reportId, priority, category, acknowledged_by]);
+                const notifMsg = `A new report has been submitted`;
+                const notifResult = await db.queryAsync(
+                    'INSERT INTO notifications (message, title) VALUES (?, "New Report")',
+                    [notifMsg]
+                );
+                const notifId = notifResult.insertId;
+
+                const receiver = await db.queryAsync(
+                    'SELECT id FROM tbl_users WHERE role="Admin" OR role="Maintenance Manager"',
+                );
+
+                if(receiver.length > 0){
+                    const receiverValues = receiver.map(user => [notifId, user.id, false]);
+                    await db.queryAsync('INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?',
+                        [receiverValues]
+                    );
+                    req.io.emit('updateNotifications');
+                }else{
+                    console.log('No receivers found for notifications');
+                }
+                if(acknowledged_by) {
+                    await logReportRemark(reportId, `Report acknowledged`, "Acknowledged", acknowledged_by);
+                }
             } else {
                 await db.queryAsync("DELETE FROM tbl_maintenance_reports WHERE report_id = ?", [reportId]);
             }
@@ -749,8 +771,11 @@ router.put("/admin/edit-report-type/:reportId", async (req, res) => { // route f
                     await logReportRemark(reportId, `Priority changed from ${oldPriority || "None"} to ${priority}`, "Update Priority", acknowledged_by);
                 }
                 // // Log acknowledgment only if it was empty before and now has value
-                if (!oldAck && acknowledged_by) {
-                    await logReportRemark(reportId, `Report acknowledged`, "Acknowledged", acknowledged_by);
+                // if (!oldAck && acknowledged_by) {
+                //     await logReportRemark(reportId, `Report acknowledged`, "Acknowledged", acknowledged_by);
+                // }
+                if((oldAck === null && acknowledged_by) || (!oldAck && acknowledged_by)){
+                    await logReportRemark(reportId, `Report acknowledged`, "Acknowledge", acknowledged_by);
                 }
             } else if (report_type === "Incident") {
                 console.log('Updated data from incident');
