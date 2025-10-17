@@ -1084,18 +1084,19 @@ function ViewReportPage() {
   }
 
   return (
-    <Container fluid className="p-0">
+    <Container fluid className="p-0 ">
       <Card>
         <Card.Header className="d-flex justify-content-end bg-light ">
           <Button variant="secondary" className="" onClick={() => navigate("/reports")}>
             ← Back to Reports
           </Button>
         </Card.Header>
-      </Card>
-      <Row>
+      <Card.Body className="p-0 bg-success">
+
+       <Row>
         {/* LEFT COLUMN */}
         <Col md={7}>
-          <Card className="p-3 shadow-sm">
+          <Card className="p-3 shadow-sm rounded-0">
             <h5 className="fw-bold mb-3">Report Details</h5>
 
             {report?.image_path && (
@@ -1155,6 +1156,7 @@ function ViewReportPage() {
                     <option value="Plumbing">Plumbing</option>
                     <option value="Cleaning">Cleaning</option>
                     <option value="General Repair">General Repair</option>
+                    <option value="Others">Others</option>
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -1210,7 +1212,7 @@ function ViewReportPage() {
                           }));
                         }}
                         label={s.name}
-                        className="me-2"
+                        className="me-2 custom-checkbox"
                       />
                       <small className="text-muted">{s.role}</small>
                     </div>
@@ -1231,7 +1233,7 @@ function ViewReportPage() {
 
         {/* RIGHT COLUMN */}
         <Col md={5}>
-          <Card className="p-3 shadow-sm h-100">
+          <Card className="p-3 shadow-sm h-100 rounded-0">
             <h6 className="fw-bold mb-3">Progress & Remarks</h6>
 
             {/* Add Remark */}
@@ -1281,6 +1283,11 @@ function ViewReportPage() {
         </Col>
       </Row>
 
+      </Card.Body>
+
+      </Card>
+     
+
       {/* Success Modal */}
       <Modal show={successModal} onHide={() => setSuccessModal(false)} centered>
         <Modal.Header closeButton>
@@ -1292,6 +1299,7 @@ function ViewReportPage() {
         </Modal.Footer>
       </Modal>
     </Container>
+
   );
 }
 

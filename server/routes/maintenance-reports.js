@@ -115,7 +115,7 @@ router.put("/admin/edit/:reportId", async (req, res) => {
                 await logReportRemark(
                     reportId,
                     `Category changed from ${oldCategory || "None"} to ${category}`,
-                    "Update Category",
+                    "Updated Category",
                     updated_by
                 );
             }
@@ -124,7 +124,7 @@ router.put("/admin/edit/:reportId", async (req, res) => {
                 await logReportRemark(
                     reportId,
                     `Priority changed from ${oldPriority || "None"} to ${priority}`,
-                    "Update Priority",
+                    "Updated Priority",
                     updated_by
                 );
             }
@@ -145,7 +145,7 @@ router.put("/admin/edit/:reportId", async (req, res) => {
                 await logReportRemark(
                     reportId,
                     `Assigned staff updated to ${staffNames}`,
-                    "Update Staff",
+                    "Updated Staff",
                     updated_by
                 );
             }
@@ -238,7 +238,7 @@ router.post('/add-staff', async (req, res) => {
 
 router.get('/get-staff', async (req, res) => {
     try {
-        const rows = await db.queryAsync('SELECT * FROM tbl_maintenance_staff');
+        const rows = await db.queryAsync('SELECT * FROM tbl_maintenance_staff ORDER BY created_at DESC');
         return res.json(rows);
     } catch (err) {
         console.error('Get all users error:', err);
@@ -396,7 +396,7 @@ router.post("/create-report", upload.single('image'), async (req, res) => {
       } else {
         console.log("No receivers found for notification.");
       }
-
+      console.log("Yes Here");
       req.io.emit('updateReports');
       req.io.emit('update');
       return res.json({ success: true, message: "Maintenance report created successfully" });
@@ -435,7 +435,7 @@ router.post("/create-report", upload.single('image'), async (req, res) => {
     } else {
       return res.json({ success: true, message: "Report created, but no specific report type handled." });
     }
-
+    // console.log('Yes Here');
   } catch (err) {
     console.error("Error creating report:", err);
     return res.status(500).json({ success: false, message: "Server error creating report" });

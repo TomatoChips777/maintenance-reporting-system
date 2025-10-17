@@ -306,7 +306,7 @@ const ViewReport = ({ show, handleClose, report, staff }) => {
               {/* Search Staff */}
               <Form.Control
                 type="text"
-                placeholder="🔍 Search staff..."
+                placeholder="Search staff..."
                 value={searchStaff}
                 onChange={(e) => setSearchStaff(e.target.value)}
                 className="mb-2"

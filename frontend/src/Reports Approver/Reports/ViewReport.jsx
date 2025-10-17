@@ -454,7 +454,6 @@ function ViewReportPage() {
                                     <div><strong>BCC:</strong> {bccRecipients.map((r) => <Badge bg="dark" key={r.id} className="me-1">{r.name}</Badge>)}</div>
                                 )}
                             </Card.Header> */}
-
                         <Card.Body>
                             <Form.Group className="mb-2">
                                 <Form.Label className="small fw-semibold">Email Subject</Form.Label>
@@ -550,20 +549,30 @@ function ViewReportPage() {
                         <ListGroup variant="flush" style={{ maxHeight: "500px", overflowY: "auto" }}>
                             {filteredRecipients.length > 0 ? (
                                 filteredRecipients.map((r) => {
-                                    const active =
-                                        (recipientType === "to" && toRecipients.some((sr) => sr.id === r.id)) ||
-                                        (recipientType === "cc" && ccRecipients.some((sr) => sr.id === r.id)) ||
-                                        (recipientType === "bcc" && bccRecipients.some((sr) => sr.id === r.id));
+                                    const isTo = (recipientType === "to" && toRecipients.some((sr) => sr.id === r.id));
+                                    const  isCc = (recipientType === 'cc' &&  ccRecipients.some((sr)=> sr.id === r.id));
+                                    const isBcc =  (recipientType === 'bcc' && bccRecipients.some((sr) => sr.id === r.id));
 
+                                    const active = isTo || isCc || isBcc;
+                                    let activeClass = ""
+                                    let textMutedOrNot = "";
+                                    if(isTo) activeClass = "bg-info text-white", textMutedOrNot = "text-white";
+                                    else if(isCc) activeClass = "bg-secondary text-white" ,textMutedOrNot = "text-white";
+                                    else if(isBcc) activeClass = "bg-dark text-white", textMutedOrNot = "text-white";
+                                    // const active =
+                                    //     (recipientType === "to" && toRecipients.some((sr) => sr.id === r.id)) ||
+                                    //     (recipientType === "cc" && ccRecipients.some((sr) => sr.id === r.id)) ||
+                                    //     (recipientType === "bcc" && bccRecipients.some((sr) => sr.id === r.id));
                                     return (
                                         <ListGroup.Item
                                             key={r.id}
                                             action
-                                            className={`py-1 px-2 small ${active ? "bg-info text-white" : ""}`}
+                                            className={`py-1 px-2 small ${active ? activeClass : ""}`}
                                             onClick={() => handleSelectRecipient(r)}
                                         >
                                             <strong>{r.name}</strong>
-                                            <div className="text-muted small">{r.email}</div>
+                                            {/* <div className="text-muted small">{r.email}</div> */}
+                                            <div className={`small ${active ? textMutedOrNot : 'text-muted'}`}>{r.email}</div>
                                         </ListGroup.Item>
                                     );
                                 })

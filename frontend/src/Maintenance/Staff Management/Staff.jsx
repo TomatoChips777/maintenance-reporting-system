@@ -431,7 +431,7 @@ function Staff() {
           <Col md={6}>
             <Form.Control
               type="text"
-              placeholder="🔍 Search name or email..."
+              placeholder="Search name or email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{ fontSize: "0.9rem" }}

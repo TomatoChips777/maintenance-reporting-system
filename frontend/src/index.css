@@ -32,6 +32,7 @@
   overflow: hidden;
   transition: margin-left 0.3s ease;
   background-color: rgb(227, 239, 251);
+
 }
 
 .sidebar.collapsed+.main-content {

@@ -66,6 +66,7 @@ function ReportPage() {
       is_anonymous: false,
       report_type: 'Maintenance',
     });
+    console.log(formData.location);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -193,9 +194,7 @@ function ReportPage() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       
-      // if(res.success){
       resetForm();
-      // }
       setError("");
       setShowSuccessModal(true);
     } catch {
@@ -207,7 +206,7 @@ function ReportPage() {
 
 
   return (
-    <Container className="mt-4 px-0 py-0 ">
+    <Container className="mt-1 px-0 py-0 ">
       <Card>
         <Card.Header className="bg-dark text-white">
           <Card.Title>
@@ -231,7 +230,7 @@ function ReportPage() {
             placeholder="e.g. Library - 2nd Floor"
             required
             value={formData.location}
-            onChange={(e) => { setFormData({ ...formData, location: e.target.value.replace(/\s+/g, " ").trimStart() }); setErrorMessage(""); }
+            onChange={(e) => { setFormData({ ...formData, location: e.target.value.replace(/\s+/g, " ").trimStart(), }); setErrorMessage(""); }
             }
           />
           {errorMessage && (
@@ -347,7 +346,7 @@ function ReportPage() {
       </Modal>
 
       {/* Success Modal */}
-      <Modal show={successModal} onHide={() => setShowSuccessModal(false)}>
+      <Modal show={successModal} onHide={() => {setShowSuccessModal(false); resetForm();}}>
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold fs-6">Report Submitted</Modal.Title>
         </Modal.Header>
@@ -358,7 +357,7 @@ function ReportPage() {
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => setShowSuccessModal(false)}
+            onClick={() => {setShowSuccessModal(false); resetForm();}}
           >
             Close
           </Button>

@@ -191,7 +191,7 @@ const CreateReport = ({ show, handleClose, staff}) => {
             <Form.Label>Assign Staff<small className='text-muted'>(Optional)</small></Form.Label>
             <Form.Control
               type="text"
-              placeholder="🔍 Search staff..."
+              placeholder="Search staff..."
               value={searchStaff}
               onChange={(e) => setSearchStaff(e.target.value)}
               className="mb-2"

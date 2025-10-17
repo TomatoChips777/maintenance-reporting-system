@@ -156,7 +156,7 @@ router.post('/create-report', upload.single('image'), async (req, res) => { // r
             await db.queryAsync('INSERT INTO notification_receivers (notification_id, user_id, is_read) VALUES ?', [receiverValues]
             );
         }
-
+      
         // Emit socket updates
         req.io.emit('updateReports');
         req.io.emit('update');
@@ -764,11 +764,11 @@ router.put("/admin/edit-report-type/:reportId", async (req, res) => { // route f
                     WHERE report_id = ?`, [priority, category, acknowledged_by, reportId]);
 
                 if (oldCategory !== category) {
-                    await logReportRemark(reportId, `Category changed from ${oldCategory || "None"} to ${category}`, "Update Category", acknowledged_by);
+                    await logReportRemark(reportId, `Category changed from ${oldCategory || "None"} to ${category}`, "Updated Category", acknowledged_by);
                 }
 
                 if (oldPriority !== priority) {
-                    await logReportRemark(reportId, `Priority changed from ${oldPriority || "None"} to ${priority}`, "Update Priority", acknowledged_by);
+                    await logReportRemark(reportId, `Priority changed from ${oldPriority || "None"} to ${priority}`, "Updated Priority", acknowledged_by);
                 }
                 // // Log acknowledgment only if it was empty before and now has value
                 // if (!oldAck && acknowledged_by) {
@@ -944,6 +944,7 @@ router.get('/report/get-report-remarks/:id', async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error" });
     }
 });
+
 // this route used by maintenance report creation
 router.post("/create", upload.single('image'), async (req, res) => {
     const {
@@ -979,7 +980,13 @@ router.post("/create", upload.single('image'), async (req, res) => {
             is_anonymous ? 1 : 0
         ]);
         const reportId = reportResult.insertId;
-
+        //Log newly created report for tracking
+        await logReportRemark(
+        reportId,
+        `A new report has been created`,
+        "New Report Created",
+            user_id
+        );
         // Step 2: Insert into related table based on report_type
         if (report_type === "Maintenance") {
             const maintenanceQuery = `
@@ -1023,6 +1030,8 @@ router.post("/create", upload.single('image'), async (req, res) => {
         } else {
             return res.json({ success: true, message: "Report created, but no specific report type handled." });
         }
+       
+
     } catch (err) {
         console.error("Error creating report:", err);
         return res.status(500).json({ success: false, message: "Failed to create report" });

@@ -5,7 +5,7 @@ import { useAuth } from "../../../AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import FormatDate from "../../extra/DateFormat";
-import ReactQuill from "react-quill-new";
+import ReactQuill, { Quill } from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { io } from "socket.io-client";
 import isEqual from "lodash/isEqual";
@@ -931,6 +931,30 @@ import "react-quill-new/dist/quill.snow.css";
 import { io } from "socket.io-client";
 import isEqual from "lodash/isEqual";
 
+const formats = [
+    'background', 'bold', 'color', 'font', 'code', 'itatalic', 'link', 'size',
+    'strike', 'script', 'underline', 'blockquote', 'header', 'indent',
+    'list', 'align', 'direction', 'code-block', 'formula'
+];
+const Clipboard = Quill.import("modules/clipboard");
+
+class CustomClipBoard extends Clipboard{
+    onPaste(e) {
+        if(!e.clipboardData || !this.quill) return;
+        const items = e.clipboardData.items;
+        if(items){
+            for(let i = 0; i < items.length; i++){
+                if(items[i].typeOf("image") !== -1){
+                    e.preventDefault();
+                    return;
+                }
+            }
+        }
+        super.onPaste(e);
+    }
+}
+Quill.register("modules/clipboard", CustomClipBoard, true);
+
 function ViewReportPage() {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -1001,6 +1025,8 @@ function ViewReportPage() {
     const [bcRecipience, setBcReciptience] =useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [reciptienceType, setReciptienceType] = useState(['to']);
+    const [sampleData, setSampleData] = useState([]);
+    const [reportType, setReportType] = useState('Maintenance');
     const filteredRecipients = recipients.filter(
         (r) =>
             r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
